@@ -13,31 +13,43 @@ local rocket_silo = table.deepcopy(data.raw["rocket-silo"]["rocket-silo"])
 
 local rocket_silo_item = data.raw["item"]["rocket-silo"]
 
-local rocket_silo_dummy = table.deepcopy(rocket_silo)
-rocket_silo_dummy.name = "ff-rocket-silo-dummy"
-rocket_silo_dummy.localised_name = {"entity-name.rocket-silo"}
-rocket_silo_dummy.localised_description = rocket_silo.localised_description or {"entity-description.rocket-silo"}
-rocket_silo_dummy.type = "mining-drill"
-rocket_silo_dummy.collision_mask = { layers = {} }
--- Mining drills want one circuit connector per direction; the dummy doesn't need any
-rocket_silo_dummy.circuit_connector = nil
-rocket_silo_dummy.circuit_wire_max_distance = nil
-rocket_silo_dummy.vector_to_place_result = {0, 0}
-rocket_silo_dummy.mining_speed = 1
-rocket_silo_dummy.resource_categories = { "ff-rocket-silo" }
-rocket_silo_dummy.resource_searching_radius = 0.49
-rocket_silo_dummy.graphics_set = { animation = rocket_silo_dummy.base_day_sprite }
-rocket_silo_dummy.created_effect = {
-  type = "direct",
-  action_delivery = {
-    type = "instant",
-    source_effects = {
-      {
-        type = "script",
-        effect_id = "ff-rocket-silo-created",
-      },
+-- Placeholder that the rocket silo item places: a mining drill that can only be built on a
+-- rocket silo hole. It is replaced by a real silo in scripts/rocket-silo.lua.
+-- Built from scratch (copying the 2.x rocket silo drags along fields a mining drill can't have).
+local rocket_silo_dummy = {
+  type = "mining-drill",
+  name = "ff-rocket-silo-dummy",
+  localised_name = {"entity-name.rocket-silo"},
+  localised_description = rocket_silo.localised_description or {"entity-description.rocket-silo"},
+  icon = rocket_silo.icon,
+  icon_size = rocket_silo.icon_size,
+  icons = rocket_silo.icons,
+  flags = {"placeable-player", "player-creation"},
+  placeable_by = {item = "rocket-silo", count = 1},
+  minable = rocket_silo.minable,
+  max_health = rocket_silo.max_health,
+  collision_box = rocket_silo.collision_box,
+  selection_box = rocket_silo.selection_box,
+  collision_mask = { layers = {} },
+  energy_source = { type = "void" },
+  energy_usage = "1W",
+  mining_speed = 1,
+  resource_categories = { "ff-rocket-silo" },
+  resource_searching_radius = 0.49,
+  vector_to_place_result = {0, 0},
+  graphics_set = { animation = table.deepcopy(rocket_silo.base_day_sprite) },
+  created_effect = {
+    type = "direct",
+    action_delivery = {
+      type = "instant",
+      source_effects = {
+        {
+          type = "script",
+          effect_id = "ff-rocket-silo-created",
+        },
+      }
     }
-  }
+  },
 }
 -- TODO give dummy correct energy usage
 

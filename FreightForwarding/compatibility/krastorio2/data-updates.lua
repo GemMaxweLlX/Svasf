@@ -149,7 +149,7 @@ if mods["PlutoniumEnergy"] then
 end
 
 -- Revert fuels' category to adv.chemical
-data.raw.item["rocket-fuel"].fuel_category = "advanced-chemical"
+data.raw.item["rocket-fuel"].fuel_categories = {"advanced-chemical"}
 
 -- Add chemical fuel back to boat (but NOT adv. chamical)
 data.raw.car["indep-boat"].burner.fuel_category = nil

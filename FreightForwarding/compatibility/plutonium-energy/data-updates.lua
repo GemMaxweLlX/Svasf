@@ -15,4 +15,5 @@ restack("used-up-breeder-fuel-cell", 5)  -- Was 20
 bzutil.add_ingredient("plutonium-atomic-bomb", "ff-titansteel-plate", 1)
 util.add_prerequisite("plutonium-atomic-bomb", "ff-titansteel-processing")
 
-data.raw.item["plutonium-fuel"].fuel_category = "advanced-chemical"
+data.raw.item["plutonium-fuel"].fuel_category = nil
+data.raw.item["plutonium-fuel"].fuel_categories = {"advanced-chemical"}

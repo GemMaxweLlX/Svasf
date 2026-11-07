@@ -17,6 +17,8 @@ Date: 7 November 2026
     - Prototypes are defined through prototypes/legacy.lua, which converts the 1.1 format (recipes, flags, hr_version, emissions, fluid boxes, collision masks, graphics sets) to 2.x
     - Custom collision layers are now collision-layer prototypes: ff_non_deep_water, ff_deep_water, ff_platform, ff_water_object, ff_substitute_player, ff_underwater_pipe, ff_lava_pool, ff_lava_pool_water_tile
     - Recipe/technology helpers no longer depend on bzlead's data-util
+    - Handles 2.1 renames: recipe categories, item fuel_categories, product independent_probability
+    - Dredger graphics are now taken from the vanilla pumpjack prototype
 ---------------------------------------------------------------------------------------------------
 Version: 1.9.0
 Date: 23 July 2024

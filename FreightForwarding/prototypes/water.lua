@@ -69,7 +69,7 @@ legacy.extend{
     icon = "__base__/graphics/icons/fluid/water.png",
     icon_size = 64, icon_mipmaps = 4,
     flags = {"not-on-map", "hidden", "placeable-off-grid"},
-    subgroup = "explosions",
+    subgroup = "fluid-explosions",
     animations = util.empty_sprite(),
     created_effect =
     {
@@ -82,7 +82,8 @@ legacy.extend{
           type = "create-particle",
           repeat_count = 3,
           repeat_count_deviation = 2,
-          particle_name = "deep-water-particle",
+          particle_name = "tintable-water-particle",  -- 2.x: "deep-water-particle" was removed
+          tint = {0.226, 0.341, 0.337, 0.314},
           offsets =
           {
             { 0, 0 }

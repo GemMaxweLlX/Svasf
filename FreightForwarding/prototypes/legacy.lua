@@ -75,6 +75,11 @@ function legacy.product(product)
   if product.amount == nil and product.amount_min == nil then
     product.amount = 1
   end
+  -- 2.1: probability -> independent_probability
+  if product.probability ~= nil and product.independent_probability == nil then
+    product.independent_probability = product.probability
+    product.probability = nil
+  end
   if product.catalyst_amount then
     product.ignored_by_productivity = product.ignored_by_productivity or product.catalyst_amount
     product.ignored_by_stats = product.ignored_by_stats or product.catalyst_amount
@@ -92,6 +97,17 @@ function legacy.fix_recipe(recipe)
     end
   end
   recipe.normal, recipe.expensive = nil, nil
+
+  -- 2.1: `category` and `additional_categories` were merged into `categories`
+  if recipe.category or recipe.additional_categories then
+    local categories = recipe.categories or {}
+    if recipe.category then table.insert(categories, 1, recipe.category) end
+    for _, category in pairs(recipe.additional_categories or {}) do
+      table.insert(categories, category)
+    end
+    recipe.categories = categories
+    recipe.category, recipe.additional_categories = nil, nil
+  end
 
   if recipe.ingredients then
     local ingredients = {}
@@ -251,6 +267,11 @@ function legacy.fix(prototype)
       prototype.collision_mask = C.mask(prototype.collision_mask)
     end
   elseif t == "item" or t == "tool" or t == "item-with-entity-data" then
+    -- 2.1: fuel_category -> fuel_categories
+    if prototype.fuel_category then
+      prototype.fuel_categories = { prototype.fuel_category }
+      prototype.fuel_category = nil
+    end
     if prototype.rocket_launch_product then
       local product = prototype.rocket_launch_product
       prototype.rocket_launch_products = { legacy.product(product) }

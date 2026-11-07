@@ -24,7 +24,7 @@ data:extend{
 }
 
 local function force_setting(setting_type, setting_name, value)
-  local setting = data.raw[setting_type .. "-setting"][setting_name]
+  local setting = (data.raw[setting_type .. "-setting"] or {})[setting_name]
   if setting then
     if setting_type == "bool" then
       setting.forced_value = value
@@ -69,7 +69,7 @@ force_setting("bool", "enable-mcraft", true)
 -- Lex's Aircraft
 -- Hide light gunship settings, ensure all ships support logistics requests
 local function hide_setting(setting_type, setting_name)
-  local setting = data.raw[setting_type .. "-setting"][setting_name]
+  local setting = (data.raw[setting_type .. "-setting"] or {})[setting_name]
   if setting then setting.hidden = true end
 end
 hide_setting("double", "lex-flying-gunship-speed-settings")

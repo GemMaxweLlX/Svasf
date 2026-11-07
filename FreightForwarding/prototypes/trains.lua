@@ -7,8 +7,12 @@ legacy.extend{
     name = "advanced-chemical"
   },
 }
-data.raw.item["rocket-fuel"].fuel_category = "advanced-chemical"
-data.raw.item["nuclear-fuel"].fuel_category = "advanced-chemical"
+-- 2.1: items use fuel_categories (list) instead of fuel_category
+for _, name in pairs{"rocket-fuel", "nuclear-fuel"} do
+  local item = data.raw.item[name]
+  item.fuel_category = nil
+  item.fuel_categories = {"advanced-chemical"}
+end
 
 local locomotive = data.raw["locomotive"]["locomotive"]
 -- 2.x: locomotives use `energy_source` instead of `burner`

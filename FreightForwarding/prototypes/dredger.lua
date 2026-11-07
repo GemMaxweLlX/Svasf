@@ -1,4 +1,27 @@
 local legacy = require "__FreightForwarding__.prototypes.legacy"
+
+-- The dredger looks like a 1.3x vanilla pumpjack. Taken from the pumpjack prototype so that sprite
+-- sizes always match the game version.
+local pumpjack = data.raw["mining-drill"]["pumpjack"]
+local dredger_scale = 1.3
+
+local function scale_sprites(t)
+  if type(t) ~= "table" then return end
+  if t.filename or t.filenames or t.stripes then
+    t.scale = (t.scale or 1) * dredger_scale
+    if t.shift then
+      local x, y = t.shift[1] or t.shift.x, t.shift[2] or t.shift.y
+      t.shift = { x * dredger_scale, y * dredger_scale }
+    end
+  end
+  for _, v in pairs(t) do scale_sprites(v) end
+end
+
+local dredger_graphics_set = { animation = table.deepcopy(pumpjack.graphics_set.animation) }
+scale_sprites(dredger_graphics_set)
+
+local dredger_radius_visualisation = table.deepcopy(pumpjack.radius_visualisation_picture)
+if dredger_radius_visualisation then dredger_radius_visualisation.scale = 5 end
 -- Dredger includes:
 -- mining-drill as place_result of item, that can only be placed on nodule deposits, and includes platform in sprite?
 -- assembling-machine which is placed instead of the mining-drill by script
@@ -115,117 +138,13 @@ legacy.extend{
     mining_speed = 1,
     resource_searching_radius = 0.5,
     vector_to_place_result = {0, 0},
+    radius_visualisation_picture = dredger_radius_visualisation,
     --[[module_specification =
     {
       module_slots = 2
     },]]
-    radius_visualisation_picture =
-    {
-      filename = "__base__/graphics/entity/pumpjack/pumpjack-radius-visualization.png",
-      width = 12,
-      height = 12,
-      scale = 5,
-    },
     monitor_visualization_tint = {r=78, g=173, b=255},
-    base_render_layer = "lower-object-above-shadow",
-    base_picture =
-    {
-      sheets =
-      {
-        {
-          filename = "__base__/graphics/entity/pumpjack/pumpjack-base.png",
-          priority = "extra-high",
-          width = 131,
-          height = 137,
-          shift = util.by_pixel(-2.5, -4.5),
-          scale = 1.3,
-          hr_version =
-          {
-            filename = "__base__/graphics/entity/pumpjack/hr-pumpjack-base.png",
-            priority = "extra-high",
-            width = 261,
-            height = 273,
-            shift = util.by_pixel(-2.25, -4.75),
-            scale = 0.5 * 1.3
-          }
-        },
-        {
-          filename = "__base__/graphics/entity/pumpjack/pumpjack-base-shadow.png",
-          priority = "extra-high",
-          width = 110,
-          height = 111,
-          draw_as_shadow = true,
-          shift = util.by_pixel(6, 0.5),
-          scale = 1.3,
-          hr_version =
-          {
-            filename = "__base__/graphics/entity/pumpjack/hr-pumpjack-base-shadow.png",
-            width = 220,
-            height = 220,
-            scale = 0.5 * 1.3,
-            draw_as_shadow = true,
-            shift = util.by_pixel(6, 0.5)
-          }
-        }
-      }
-    },
-    animations =
-    {
-      north =
-      {
-        layers =
-        {
-          {
-            priority = "high",
-            filename = "__base__/graphics/entity/pumpjack/pumpjack-horsehead.png",
-            line_length = 8,
-            width = 104,
-            height = 102,
-            frame_count = 40,
-            shift = util.by_pixel(-4, -24),
-            animation_speed = 0.5,
-            scale = 1.3,
-            hr_version =
-            {
-              priority = "high",
-              filename = "__base__/graphics/entity/pumpjack/hr-pumpjack-horsehead.png",
-              animation_speed = 0.5,
-              scale = 0.5 * 1.3,
-              line_length = 8,
-              width = 206,
-              height = 202,
-              frame_count = 40,
-              shift = util.by_pixel(-4, -24)
-            }
-          },
-          {
-            priority = "high",
-            filename = "__base__/graphics/entity/pumpjack/pumpjack-horsehead-shadow.png",
-            animation_speed = 0.5,
-            draw_as_shadow = true,
-            line_length = 8,
-            width = 155,
-            height = 41,
-            frame_count = 40,
-            shift = util.by_pixel(17.5, 14.5),
-            scale = 1.3,
-            hr_version =
-            {
-              priority = "high",
-              filename = "__base__/graphics/entity/pumpjack/hr-pumpjack-horsehead-shadow.png",
-              animation_speed = 0.5,
-              draw_as_shadow = true,
-              line_length = 8,
-              width = 309,
-              height = 82,
-              frame_count = 40,
-              scale = 0.5 * 1.3,
-              shift = util.by_pixel(17.75, 14.5)
-            }
-          }
-        }
-      }
-    },
+    graphics_set = dredger_graphics_set,
     vehicle_impact_sound = sounds.generic_impact,
     open_sound = sounds.machine_open,
     close_sound = sounds.machine_close,
@@ -287,105 +206,7 @@ legacy.extend{
     {
       module_slots = 2
     },]]
-    base_render_layer = "lower-object-above-shadow",
-    base_picture =
-    {
-      sheets =
-      {
-        {
-          filename = "__base__/graphics/entity/pumpjack/pumpjack-base.png",
-          priority = "extra-high",
-          width = 131,
-          height = 137,
-          shift = util.by_pixel(-2.5, -4.5),
-          scale = 1.3,
-          hr_version =
-          {
-            filename = "__base__/graphics/entity/pumpjack/hr-pumpjack-base.png",
-            priority = "extra-high",
-            width = 261,
-            height = 273,
-            shift = util.by_pixel(-2.25, -4.75),
-            scale = 0.5 * 1.3
-          }
-        },
-        {
-          filename = "__base__/graphics/entity/pumpjack/pumpjack-base-shadow.png",
-          priority = "extra-high",
-          width = 110,
-          height = 111,
-          draw_as_shadow = true,
-          shift = util.by_pixel(6, 0.5),
-          scale = 1.3,
-          hr_version =
-          {
-            filename = "__base__/graphics/entity/pumpjack/hr-pumpjack-base-shadow.png",
-            width = 220,
-            height = 220,
-            scale = 0.5 * 1.3,
-            draw_as_shadow = true,
-            shift = util.by_pixel(6, 0.5)
-          }
-        }
-      }
-    },
-    animation =
-    {
-      north =
-      {
-        layers =
-        {
-          {
-            priority = "high",
-            filename = "__base__/graphics/entity/pumpjack/pumpjack-horsehead.png",
-            line_length = 8,
-            width = 104,
-            height = 102,
-            frame_count = 40,
-            shift = util.by_pixel(-4, -24),
-            animation_speed = 0.5,
-            scale = 1.3,
-            hr_version =
-            {
-              priority = "high",
-              filename = "__base__/graphics/entity/pumpjack/hr-pumpjack-horsehead.png",
-              animation_speed = 0.5,
-              scale = 0.5 * 1.3,
-              line_length = 8,
-              width = 206,
-              height = 202,
-              frame_count = 40,
-              shift = util.by_pixel(-4, -24)
-            }
-          },
-          {
-            priority = "high",
-            filename = "__base__/graphics/entity/pumpjack/pumpjack-horsehead-shadow.png",
-            animation_speed = 0.5,
-            draw_as_shadow = true,
-            line_length = 8,
-            width = 155,
-            height = 41,
-            frame_count = 40,
-            shift = util.by_pixel(17.5, 14.5),
-            scale = 1.3,
-            hr_version =
-            {
-              priority = "high",
-              filename = "__base__/graphics/entity/pumpjack/hr-pumpjack-horsehead-shadow.png",
-              animation_speed = 0.5,
-              draw_as_shadow = true,
-              line_length = 8,
-              width = 309,
-              height = 82,
-              frame_count = 40,
-              scale = 0.5 * 1.3,
-              shift = util.by_pixel(17.75, 14.5)
-            }
-          }
-        }
-      }
-    },
+    graphics_set = dredger_graphics_set,
     vehicle_impact_sound = sounds.generic_impact,
     open_sound = sounds.machine_open,
     close_sound = sounds.machine_close,
