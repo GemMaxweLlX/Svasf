@@ -23,6 +23,8 @@ Date: 7 November 2026
     - Batteries are fuel tiers that burn into empty batteries and are charged again on any planet:
       1. lead-acid battery (4 MJ, anywhere), 2. cobalt-holmium battery pack (10 MJ, made on Fulgora, discharges after
       1 hour; needs electromagnetic science), 3. lithium battery pack (25 MJ, faster, holds its charge, made on Aquilo)
+    - Refrigerated containers (with Intermodal Containers): made on Gleba, carry spoilable items (Gleba produce,
+      nutrients, bioflux, bacteria, science, fish, charged battery packs) which spoil 5 times slower inside
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
   Changes:
