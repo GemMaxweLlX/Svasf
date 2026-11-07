@@ -14,6 +14,14 @@ data:extend{
     order = "b",
   },
   {
+    -- Classic mode: Freight Forwarding exactly as in 1.x on Nauvis, even with Space Age; other planets untouched
+    type = "bool-setting",
+    name = "ff-classic-mode",
+    setting_type = "startup",
+    default_value = false,
+    order = "a-b",
+  },
+  {
     type = "bool-setting",
     name = "ff-map-tags",
     setting_type = "runtime-global",

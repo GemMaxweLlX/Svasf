@@ -5,6 +5,9 @@ Date: 7 November 2026
     - Updated to Factorio 2.1
     - Optional Space Age support: Nauvis keeps the Freight Forwarding island terrain and resources, other planets are unaffected
   Space Age:
+    - Startup setting "Classic mode": Freight Forwarding exactly as in 1.x on Nauvis even with Space Age (lava pools,
+      cobalt and titansteel on Nauvis, one rocket silo type that needs a rocket silo hole on Nauvis, rocket parts with
+      titansteel frames and battery packs); other planets stay as in vanilla Space Age. Everything below is off then
     - Tiered rockets: the rocket silo technology unlocks the light rocket silo (500 kg lift, 20 rocket parts, cheaper),
       the light space platform starter pack (500 kg) and the small cargo landing pad (20 slots)
     - On Nauvis the light rocket silo can only be built exactly on a rocket silo hole (on other planets anywhere); one

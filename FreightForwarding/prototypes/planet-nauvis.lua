@@ -10,7 +10,7 @@ local mgs = nauvis.map_gen_settings
 local ff_controls = { "ff-seamount", "ff-rocket-silo-hole" }
 local ff_entities = { "ff-seamount", "ff-rocket-silo-hole" }
 -- With Space Age lava pools are on Vulcanus (prototypes/planet-vulcanus.lua)
-if not mods["space-age"] then
+if not mods["space-age"] or settings.startup["ff-classic-mode"].value then
   table.insert(ff_controls, "ff-lava-pool")
   table.insert(ff_entities, "ff-lava-pool-resource")
 end

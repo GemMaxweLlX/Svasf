@@ -9,7 +9,7 @@
 
 local util = require("__FreightForwarding__.prototypes.data-util")
 
-local space_age = mods["space-age"] ~= nil
+local space_age = mods["space-age"] ~= nil and not settings.startup["ff-classic-mode"].value
 local FULGORA = {{property = "magnetic-field", min = 99, max = 99}}
 local AQUILO = {{property = "pressure", min = 300, max = 300}}
 

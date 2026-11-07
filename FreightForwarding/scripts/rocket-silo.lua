@@ -46,7 +46,12 @@ end
 ---------------------------------------------------------------------------------------------------
 -- Space Age: light rocket silo on Nauvis must be built exactly on a hole
 
-local LIGHT_SILO = "ff-light-rocket-silo"
+-- The silo that must stand on a hole on Nauvis: the light silo, or in classic mode the normal one
+local function restricted_silo()
+  if prototypes.entity["ff-light-rocket-silo"] then return "ff-light-rocket-silo" end
+  if script.active_mods["space-age"] then return "rocket-silo" end
+  return nil  -- without Space Age the item places the hole-only dummy instead
+end
 
 local function is_on_hole(surface, position)
   return #surface.find_entities_filtered{name = "ff-rocket-silo-hole", position = position, radius = 0.6} > 0
@@ -67,7 +72,8 @@ local function on_built(event)
   if not (entity and entity.valid) then return end
   local is_ghost = entity.type == "entity-ghost"
   local name = is_ghost and entity.ghost_name or entity.name
-  if name ~= LIGHT_SILO then return end
+  local restricted = restricted_silo()
+  if not restricted or name ~= restricted then return end
   if entity.surface.name ~= "nauvis" then return end
   if not prototypes.entity["ff-rocket-silo-hole"] then return end
   if is_on_hole(entity.surface, entity.position) then return end
@@ -78,7 +84,7 @@ local function on_built(event)
     return
   end
   -- Refund the silo
-  local item = {name = LIGHT_SILO, count = 1, quality = entity.quality and entity.quality.name or nil}
+  local item = {name = restricted, count = 1, quality = entity.quality and entity.quality.name or nil}
   local surface, position, force = entity.surface, entity.position, entity.force
   local player = event.player_index and game.get_player(event.player_index)
   local buffer = event.robot and event.robot.get_inventory(defines.inventory.robot_cargo)

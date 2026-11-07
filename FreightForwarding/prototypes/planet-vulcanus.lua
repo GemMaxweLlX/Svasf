@@ -2,7 +2,8 @@
 -- Titanium and cobalt still come from Nauvis (outer islands and seabed), so titansteel needs an
 -- interplanetary supply chain.
 
-if not mods["space-age"] then return end
+-- Classic mode keeps the original Freight Forwarding (prototypes/... see settings.lua)
+if not mods["space-age"] or settings.startup["ff-classic-mode"].value then return end
 
 local vulcanus = data.raw.planet and data.raw.planet["vulcanus"]
 if not (vulcanus and vulcanus.map_gen_settings and data.raw.resource["ff-lava-pool-resource"]) then return end

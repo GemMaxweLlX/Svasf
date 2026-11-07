@@ -8,6 +8,7 @@ require "__FreightForwarding__.prototypes.planet-vulcanus"
 require "__FreightForwarding__.prototypes.planet-chains"
 require "__FreightForwarding__.prototypes.reefer-containers"
 require "__FreightForwarding__.prototypes.qol"
+require "__FreightForwarding__.prototypes.classic"
 require "__FreightForwarding__.prototypes.rocket-tiers"
 
 for _, tile in pairs(data.raw.tile) do

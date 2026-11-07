@@ -6,7 +6,8 @@
 -- empty reefer.
 -- Empty reefers can only be made on Gleba. Runs in data-updates.
 
-if not mods["space-age"] then return end
+-- Classic mode keeps the original Freight Forwarding (prototypes/... see settings.lua)
+if not mods["space-age"] or settings.startup["ff-classic-mode"].value then return end
 if not (data.raw.item["ic-container"] and data.raw["recipe-category"]["packing"]) then return end
 
 local SPOIL_SLOWDOWN = 5

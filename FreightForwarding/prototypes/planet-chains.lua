@@ -7,7 +7,8 @@
 --   1. lead-acid battery (anywhere)  2. cobalt-holmium battery pack (Fulgora)  3. lithium battery pack (Aquilo)
 -- Runs in data-updates.
 
-if not mods["space-age"] then return end
+-- Classic mode keeps the original Freight Forwarding (prototypes/... see settings.lua)
+if not mods["space-age"] or settings.startup["ff-classic-mode"].value then return end
 
 local util = require("__FreightForwarding__.prototypes.data-util")
 local N = require("__FreightForwarding__.resource-autoplace.noise-util")

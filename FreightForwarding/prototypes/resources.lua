@@ -214,16 +214,15 @@ if data.raw.resource["ff-rocket-silo-hole"] then
     },
   }
 
+  -- Only on high ground (elevation > 8), far from spawn (> 4000 tiles), away from lava pools,
+  -- plus the guaranteed first hole (not in classic mode, which keeps the 1.x placement)
+  local far_holes = N.num(1.4 / (64 * 64 ^ 2)) .. " * " .. N.control("ff-rocket-silo-hole", "frequency")
+    .. " * (elevation > 8) * (distance > 4000) * (ff_resource_spread < 0.6)"
   data.raw.resource["ff-rocket-silo-hole"].autoplace = {
     control = "ff-rocket-silo-hole",
     order = "a",
-    -- Only on high ground (elevation > 8), far from spawn (> 4000 tiles), away from lava pools,
-    -- plus the guaranteed first hole
-    probability_expression = N.max(
-      N.num(1.4 / (64 * 64 ^ 2)) .. " * " .. N.control("ff-rocket-silo-hole", "frequency")
-        .. " * (elevation > 8) * (distance > 4000) * (ff_resource_spread < 0.6)",
-      "ff_first_rocket_silo_hole"
-    ),
+    probability_expression = settings.startup["ff-classic-mode"].value and far_holes
+      or N.max(far_holes, "ff_first_rocket_silo_hole"),
     richness_expression = "10",  -- Overwritten in control by script trigger
   }
 end

@@ -16,7 +16,8 @@
 --
 -- Runs in data-updates, after Space Age has adjusted the vanilla silo, technology and recipes.
 
-if not mods["space-age"] then return end
+-- Classic mode keeps the original Freight Forwarding (prototypes/... see settings.lua)
+if not mods["space-age"] or settings.startup["ff-classic-mode"].value then return end
 
 
 local kg = 1000
