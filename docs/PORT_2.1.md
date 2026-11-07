@@ -70,9 +70,9 @@ Cargo Ships 2.1.8, BZ Lead 2.0.29, BZ Titanium 2.0.27 (вместо `cargo-ships
 загрузка прототипов **без ошибок**, все обращения к Cargo Ships и BZ нашлись.
 
 * **Intermodal Containers 2.1.3 под 2.1 не работает** (помечен 2.0 и падает на `category` → `categories`).
-  В репозитории лежит неофициальный порт **`IntermodalContainers/` 2.1.4** (GPL-3): `categories`,
-  `independent_probability`, версия игры 2.1. Проверен вместе с FF (коллизии 76/76, карта, 5 минут игры, с SA и без).
-  В `info.json` FF он по-прежнему необязательный, чтобы FF запускался и с официальной версией, когда она выйдет.
+  Поэтому сделан форк **`IntermodalContainers-continued` 2.1.4** (GPL-3): `categories`, `independent_probability`,
+  версия игры 2.1, новое имя мода (несовместим с оригиналом, имена прототипов `ic-*` прежние).
+  Проверен вместе с FF (коллизии 76/76, карта, 5 минут игры, с SA и без). FF принимает и форк, и оригинал.
 * В Cargo Ships 2.1 нефтяная вышка вынесена в отдельный мод **cargo-ships-oil-rig** — теперь это обязательная зависимость.
   Его настроек `deep_oil`/`no_oil_on_land`/`oil_richness` больше нет, поэтому FF сам убирает `crude-oil` из
   генерации Нувиса (`prototypes/planet-nauvis.lua`). Морская нефть — `offshore-oil` этого мода.

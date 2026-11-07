@@ -101,7 +101,7 @@ You must launch an interstellar communicator to win the game, which can be resea
 
 Some of Freight Forwarding's functionality is provided by other, required, mods. Many things from these mods have been changed to fit into the overall balance and progression, so if you find a bug in them, please confirm that it still occurs without Freight Forwarding enabled before reporting it to that mod's owner, or report it to me and I can let you know whether it's my bug or not.
 
-- [Intermodal Containers](https://mods.factorio.com/mod/IntermodalContainers): developed from Deadlock's Crating Machine, provides container loading and unloading functionality
+- [Intermodal Containers](https://mods.factorio.com/mod/IntermodalContainers) (for Factorio 2.1: [Intermodal Containers (continued)](https://github.com/GemMaxweLlX/Svasf/tree/main/IntermodalContainers-continued)): developed from Deadlock's Crating Machine, provides container loading and unloading functionality
 - Water mods
     - [Cargo Ships](https://mods.factorio.com/mod/cargo-ships): large inventories for transport across water; oil rigs for drilling oil in the ocean
     - [Canal Builder Simplified](https://mods.factorio.com/mod/CanalBuilderMAV): allows placing shallow water adjacent to existing water

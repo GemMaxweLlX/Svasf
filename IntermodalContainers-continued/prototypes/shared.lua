@@ -6,7 +6,7 @@ local utils = require "prototypes.utils"
 local IC = {}
 
 -- paths
-IC.PATH_MOD   = "__IntermodalContainers__/"
+IC.PATH_MOD   = "__IntermodalContainers-continued__/"
 IC.P_GRAPHICS = IC.PATH_MOD .. "graphics/"
 IC.P_G_ICONS  = IC.P_GRAPHICS .. "icons/"
 IC.P_G_ENTITY = IC.P_GRAPHICS .. "entities/"
