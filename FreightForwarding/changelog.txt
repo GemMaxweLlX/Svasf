@@ -20,7 +20,7 @@ Date: 7 November 2026
       smelted there. Titansteel processing needs metallurgic science
     - Cobalt comes from cobalt vents in the lava lakes of Vulcanus, mined with the dredger (cobalt crust can only be
       dredged on Vulcanus, seabed nodules only on Nauvis). Cobalt processing needs metallurgic science
-    - Battery packs are assembled and charged only on Fulgora; charged battery packs discharge after 1 hour.
+    - Battery packs are made only on Fulgora (charging works on any planet); charged battery packs discharge after 1 hour.
       Battery pack technology needs electromagnetic science
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel

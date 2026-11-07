@@ -1,7 +1,7 @@
 -- Space Age: every planet produces something only it can, so freight has to move between planets.
 --   Nauvis:   titanium, lead, seabed nodules (ferrous/cupric), offshore oil
 --   Vulcanus: cobalt (dredged from cobalt vents in lava lakes), titansteel smelting (prototypes/planet-vulcanus.lua)
---   Fulgora:  battery pack assembly and charging (lightning); charged packs slowly discharge
+--   Fulgora:  battery pack assembly (charging works on any planet); charged packs slowly discharge
 -- Runs in data-updates.
 
 if not mods["space-age"] then return end
@@ -78,10 +78,9 @@ restrict("ff-cupric-nodule", NAUVIS)
 add_science("ff-cobalt-processing", "metallurgic-science-pack", "metallurgic-science-pack")
 
 ---------------------------------------------------------------------------------------------------
--- Fulgora: battery packs
+-- Fulgora: battery packs are made only there; they can be charged anywhere
 
 restrict("ff-battery-pack", FULGORA)
-restrict("ff-charge-battery-pack", FULGORA)
 add_science("ff-battery-pack", "electromagnetic-science-pack", "electromagnetic-science-pack")
 
 -- Charged battery packs slowly discharge back into empty packs
