@@ -2,17 +2,17 @@
 --
 -- Tier 1 (rocket-silo technology, chemical science):
 --   * Light rocket silo: 500 kg lift, 20 rocket parts per launch, cheaper. On Nauvis it can only be built in a
---     rocket silo hole (the classic Freight Forwarding rule).
+--     rocket silo hole (the classic Freight Forwarding rule, enforced in scripts/rocket-silo.lua); on other
+--     planets it can be built anywhere, so the player can always launch home.
 --   * Light space platform starter pack: 500 kg, so the light silo can start the first platform.
 --   * Small cargo landing pad: 20 slots instead of 80, upgradable in place to the normal one.
--- Tier 2 (ff-rocket-silo-2 technology, after space science):
+-- Tier 2 (one of three "Heavy-lift rockets" technologies, each needing the science of Vulcanus, Fulgora or Gleba):
 --   * Vanilla rocket silo, starter pack and landing pad. The silo can be built anywhere.
 --
 -- Runs in data-updates, after Space Age has adjusted the vanilla silo, technology and recipes.
 
 if not mods["space-age"] then return end
 
-local util = require "__FreightForwarding__.prototypes.data-util"
 
 local kg = 1000
 local light_tint = {r = 0.75, g = 0.9, b = 1, a = 1}
@@ -53,9 +53,6 @@ light_silo.placeable_by = nil
 light_silo.next_upgrade = "rocket-silo"
 light_silo.fast_replaceable_group = silo.fast_replaceable_group
 
-local holes_exist = data.raw.resource["ff-rocket-silo-hole"] ~= nil
-local dummy = data.raw["mining-drill"]["ff-rocket-silo-dummy"]
-
 local light_silo_item = table.deepcopy(data.raw.item["rocket-silo"])
 light_silo_item.name = "ff-light-rocket-silo"
 light_silo_item.localised_name = {"entity-name.ff-light-rocket-silo"}
@@ -63,8 +60,7 @@ light_silo_item.localised_description = {"entity-description.ff-light-rocket-sil
 light_silo_item.icons = tinted_icons(data.raw.item["rocket-silo"])
 light_silo_item.icon = nil
 light_silo_item.order = (light_silo_item.order or "") .. "-a"
--- On Nauvis the light silo goes into a rocket silo hole: the item places the dummy, which only fits on a hole
-light_silo_item.place_result = (holes_exist and dummy) and "ff-rocket-silo-dummy" or "ff-light-rocket-silo"
+light_silo_item.place_result = "ff-light-rocket-silo"
 
 data:extend{
   light_silo,
@@ -82,16 +78,6 @@ data:extend{
 
 -- The normal silo item places a normal silo anywhere
 data.raw.item["rocket-silo"].place_result = "rocket-silo"
-
-if dummy then
-  dummy.localised_name = {"entity-name.ff-light-rocket-silo"}
-  dummy.localised_description = {"entity-description.ff-light-rocket-silo"}
-  dummy.icons = light_silo.icons
-  dummy.icon = nil
-  dummy.minable = {mining_time = 1, result = "ff-light-rocket-silo"}
-  dummy.placeable_by = {item = "ff-light-rocket-silo", count = 1}
-  dummy.hidden = nil
-end
 
 ---------------------------------------------------------------------------------------------------
 -- Light space platform starter pack
@@ -182,44 +168,42 @@ replace_unlock("rocket-silo", "cargo-landing-pad", "ff-small-cargo-landing-pad")
 replace_unlock("rocket-silo", "space-platform-starter-pack", "ff-light-space-platform-starter-pack")
 data.raw.technology["rocket-silo"].localised_description = {"technology-description.ff-light-rocket-silo"}
 
+-- Three alternative technologies, one per inner planet. Researching any of them unlocks the same recipes;
+-- the other two are then marked as researched by scripts/rocket-silo.lua.
 local rocket_silo_tech = data.raw.technology["rocket-silo"]
-data:extend{
-  {
-    type = "technology",
-    name = "ff-rocket-silo-2",
-    localised_name = {"technology-name.ff-rocket-silo-2"},
-    localised_description = {"technology-description.ff-rocket-silo-2"},
-    icon = rocket_silo_tech.icon,
-    icon_size = rocket_silo_tech.icon_size,
-    icons = rocket_silo_tech.icons,
-    effects = {
-      {type = "unlock-recipe", recipe = "rocket-silo"},
-      {type = "unlock-recipe", recipe = "cargo-landing-pad"},
-      {type = "unlock-recipe", recipe = "space-platform-starter-pack"},
-    },
-    prerequisites = {"rocket-silo", "space-science-pack"},
-    unit = {
-      count = 500,
-      ingredients = {
-        {"automation-science-pack", 1},
-        {"logistic-science-pack", 1},
-        {"chemical-science-pack", 1},
-        {"space-science-pack", 1},
-      },
-      time = 60,
-    },
-    order = (rocket_silo_tech.order or "") .. "-b",
-  },
+local heavy_lift_planets = {
+  {planet = "vulcanus", science = "metallurgic-science-pack"},
+  {planet = "fulgora", science = "electromagnetic-science-pack"},
+  {planet = "gleba", science = "agricultural-science-pack"},
 }
-
--- Anything that required the normal silo technology for travelling to other planets now needs tier 2
-for name, technology in pairs(data.raw.technology) do
-  if name ~= "ff-rocket-silo-2" and technology.prerequisites then
-    for _, prerequisite in pairs(technology.prerequisites) do
-      if prerequisite == "space-platform-thruster" then
-        util.add_prerequisite(name, "ff-rocket-silo-2")
-        break
-      end
-    end
+for i, entry in pairs(heavy_lift_planets) do
+  if data.raw.technology[entry.science] and (data.raw.tool[entry.science] or data.raw.item[entry.science]) then
+    data:extend{
+      {
+        type = "technology",
+        name = "ff-heavy-lift-rockets-" .. entry.planet,
+        localised_name = {"technology-name.ff-heavy-lift-rockets", {"space-location-name." .. entry.planet}},
+        localised_description = {"technology-description.ff-heavy-lift-rockets"},
+        icons = rocket_silo_tech.icons or {{icon = rocket_silo_tech.icon, icon_size = rocket_silo_tech.icon_size}},
+        effects = {
+          {type = "unlock-recipe", recipe = "rocket-silo"},
+          {type = "unlock-recipe", recipe = "cargo-landing-pad"},
+          {type = "unlock-recipe", recipe = "space-platform-starter-pack"},
+        },
+        prerequisites = {"rocket-silo", entry.science},
+        unit = {
+          count = 500,
+          ingredients = {
+            {"automation-science-pack", 1},
+            {"logistic-science-pack", 1},
+            {"chemical-science-pack", 1},
+            {"space-science-pack", 1},
+            {entry.science, 1},
+          },
+          time = 60,
+        },
+        order = (rocket_silo_tech.order or "") .. "-b" .. i,
+      },
+    }
   end
 end
