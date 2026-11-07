@@ -1,0 +1,23 @@
+{
+    "name": "IntermodalContainers-continued",
+    "version": "2.1.4",
+    "title": "Intermodal Containers (continued)",
+    "author": "Xorimuth, RedRafe; continued by GemMaxweLlX",
+    "homepage": "https://github.com/GemMaxweLlX/Svasf",
+    "source": "https://github.com/GemMaxweLlX/Svasf/tree/main/IntermodalContainers-continued",
+    "dependencies": [
+        "base >= 2.1.0",
+        "(?) ReStack",
+        "(?) Krastorio2",
+        "(?) bzaluminum",
+        "(?) bzcarbon",
+        "(?) bzgas",
+        "(?) EndgameCombat",
+        "(?) pypostprocessing",
+        "(?) PlutoniumEnergy",
+        "! DeadlockCrating",
+        "! IntermodalContainers"
+    ],
+    "description": "Continuation of Intermodal Containers for Factorio 2.1, while the original is not updated.\nLoad items into containers to boost belt throughput and train loading speeds.\nDeveloped from Deadlock's Crating Machine. Original by Xorimuth and RedRafe, licensed GPL-3.",
+    "factorio_version": "2.1"
+}
