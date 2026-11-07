@@ -1,0 +1,297 @@
+---------------------------------------------------------------------------------------------------
+Version: 1.9.0
+Date: 23 July 2024
+  Features:
+    - Added sonar buoy to scan large areas of the ocean
+---------------------------------------------------------------------------------------------------
+Version: 1.8.6
+Date: 11 March 2024
+  Compatibility:
+    - Added compatibility with true Nukes mod
+    - [K2] Balanced 'Advanced Tech Cards' to require 10->1 Lithium Battery Pack
+---------------------------------------------------------------------------------------------------
+Version: 1.8.5
+Date: 10 January 2024
+  Bugfixes:
+    - Fixed crash when loading a save while Milestones mod is enabled (thanks fgardt)
+---------------------------------------------------------------------------------------------------
+Version: 1.8.4
+Date: 10 January 2024
+  Bugfixes:
+    - Removed fake module slots in the dredger platform showing up in Extended Descriptions (thanks Dimava)
+    - Fixed dredger being deconstructable using deconstruction planner (thanks Dimava)
+  Compatibility:
+    - Added support for Picker Dollies
+    - Added support for Better Victory Screen
+    - [K2] Transport tech cards now have glow and correct name (thanks fgardt)
+---------------------------------------------------------------------------------------------------
+Version: 1.8.3
+Date: 8 December 2023
+  Compatibility:
+    - [BZ] When BZ-tin is enable, recipes with lead will not be reverted to iron
+    - [K2] Added setting to enable/disable lead ingredients in early ammos
+    - [K2] Reduced stack sizes of tech cards/research data
+    - [PF] Added compatibility with Brim Stuff, Lasing Around, and Them Thar Hills by Planetfall
+    - [RSC] Fixed rocket silo stage 1 not advancing in its own progress
+---------------------------------------------------------------------------------------------------
+Version: 1.8.2
+Date: 9 November 2023
+  Bugfixes:
+    - Actually fixed crash on load with MSI2
+---------------------------------------------------------------------------------------------------
+Version: 1.8.1
+Date: 8 November 2023
+  Features:
+    - Added map rechart on migration to reveal rocket silo holes in already-mapped chunks
+  Bugfixes:
+    - Fixed crash when updating to 1.8.0 with MSI2
+    - [BZ] Fixed crash on load with VeryBZ or BZ Basic Metals
+---------------------------------------------------------------------------------------------------
+Version: 1.8.0
+Date: 3 November 2023
+  Features:
+    - Rocket silos can now only be placed in naturally occuring rocket silo holes
+    - Rockets now require "Rocket frames" to construct, crafted from titansteel, low density structures, and lubricant
+    - Added water condensing recipe for getting rid of excess steam
+    - Added tips and tricks pages explaining vehicle fuel restrictions and new rocket silo mechanics
+    - Added logistics requests to combat aircraft
+  Changes:
+    - Reduced stack size of titansteel plates from 25 to 15
+    - Reduced stack size of Uranium-235 and Uranium-238 from 50 to 25
+    - Reduced stack size of battery packs from 200 to 100
+    - Reduced stack size of all science packs from 100 to 50
+    - Decreased cargo ships inventory from 100 to 80
+    - Decreased tanker ship capacity from 250,000 to 200,000
+    - Increased dredging machine energy usage from 800kW to 2MW
+    - Reduced amount of shallow water spawned
+    - Slightly reduced amount of regular water spawned
+    - Renamed "Locomotive" to "Electric locomotive"
+  Compatibility:
+    - Fixed dredging and titansteel recipes not being shown by FNEI
+    - [K2] Unified K2's Lithium Battery with FF's Battery Pack
+    - [K2] Increased steam-turbine max_temperature to 500°C to match titansteel steam output
+---------------------------------------------------------------------------------------------------
+Version: 1.7.2
+Date: 26 June 2023
+  Features:
+    - Updated tailings water icon (thanks to PreLeyZero!)
+  Bugfixes:
+    - Fixed crash when entering testing lab from Editor Extensions
+    - Fixed lifering drawing whilst in jetpack
+---------------------------------------------------------------------------------------------------
+Version: 1.7.1
+Date: 22 June 2023
+  Features:
+    - Player can now swim in all water types, by automatically equipping a life ring
+    - New graphics for lava pools (thanks to Galdoc!)
+  Bugfixes:
+    - Fixed aircraft not accepting rocket fuel and nuclear fuel
+  Compatibility:
+    - Added FF+Krastorio2 Milestones preset
+    - Added compatibility with Bismuth by trikop
+    - Added compatibility with Brass Tracks by Planetfall
+    - Added compatibility with If I Had a Nickel by Planetfall
+---------------------------------------------------------------------------------------------------
+Version: 1.7.0
+Date: 3 June 2023
+  Features:
+    - Added offshore storage tank that can only be placed in water
+    - Added underwater pipe
+    - Removed dependency on Underwater Pipes mod, but keep it if you still want "underground underwater pipes"
+    - Patches of regular water now spawn around seamounts for increased visibility
+  Changes:
+    - Changed default oil rig capacity from 250k to 100k
+    - Rebalanced biters so that they have more presence on the starting island, but are not as hard on other islands
+    - Biter expansion is now disabled by default
+    - Starting island is now bigger
+    - Added iron ore patch at the edge of the starting island, reduced size of central iron ore patch
+  Compatibility:
+    - [AAI] Added 30 lead plate to AAI Ironclad's recipe
+    - [AAI] Applied Ironclad's inventory size and recipe changes to Ironclad Gunboat
+    - Added compatibility with Advanced Centrifuge by kiratu11
+    - Fixed dredgers being created with the wrong force when testing with Editor Extensions
+---------------------------------------------------------------------------------------------------
+Version: 1.6.4
+Date: 18 May 2023
+  Changes:
+    - Rebalanced some recipes to increase usage of stone, lead and uranium, and decrease usage of copper:
+      - Nodule/crust washing: average stone output decreased 8 -> 2
+      - Tailings evaporation: average lead output decreased 15 -> 4
+      - Tailings evaporation: average titanium output decreased 15 -> 2
+      - Piercing rounds magazine: lead plate increased 4 -> 5
+      - Sulfuric acid: lead plate increased 1 -> 3
+      - Battery: lead plate increased 1 -> 2
+      - Electric furnace: lead plate increased 4 -> 10
+      - Electric furnace: stone brick increased 10 -> 20
+      - Rails: stone increased 1 -> 4
+      - Low density structure: copper plate decreased 20 -> 10
+      - Production science pack: uranium-238 increased 2 -> 3
+
+---------------------------------------------------------------------------------------------------
+Version: 1.6.3
+Date: 17 May 2023
+  Changes:
+    - Changed colour of seamounts on map from black to green
+    - Changed colour of discharging machines from blue to green (to distinguish them from charging machines)
+    - Locale changes corresponding to Cargo Ships v0.2.0
+  Compatibility:
+    - [BZ] Added compatibility with all BZ Ores (Very BZ)
+    - Fixed error on load with Pressurized fluids
+---------------------------------------------------------------------------------------------------
+Version: 1.6.2
+Date: 19 April 2023
+  Changes:
+    - Increased chest sizes back to vanilla values
+    - Removed hovercraft inventory, reduced missile hovercraft inventory size to 10, reduced ironclad inventory size to 20
+  Bugfixes:
+    - Fixed lead ore sometimes not spawning on starting island
+  Compatibility:
+    - [K2] Added blank tech cards to transport tech card recipe
+    - [K2] Removed steel plates from big electric pole recipe
+    - Added orange color (for transport science packs) to labs when using Disco Science
+---------------------------------------------------------------------------------------------------
+Version: 1.6.1
+Date: 18 April 2023
+  Changes:
+    - Concrete and other tiles can now be placed on landfill (thanks to Xeno Lupus!)
+    - Added new dredging tip
+---------------------------------------------------------------------------------------------------
+Version: 1.6.0
+Date: 18 April 2023
+  Features:
+    - Added "Interstellar communicator", which must be launched in a rocket to win the game
+      - Interstellar communicator unlock requires space science, so 10 satellites must be launched to unlock it
+      - This extends the endgame and makes rockets something that you have to properly support with your logistics, rather than just being an afterthought
+      - I have plans for a more interesting endgame, involving delivering resources to rocket silos spread around the map, but this will take several weeks/months to develop
+    - Added several tips and tricks items explaining key concepts
+  Compatibility:
+    - [K2] Fixed crash on load if "Long range delivery drones" was not also enabled
+    - Fixed long range delivery drones inventory size being unintentionally reduced from 5 to 3
+    - Fixed incorrect big electric pole recipe when playing with AAI Industries
+---------------------------------------------------------------------------------------------------
+Version: 1.5.1
+Date: 12 April 2023
+  Changes:
+    - Added incompatibility with Bob's Logistics (since it didn't work properly anyway)
+    - [K2] Added compatibility with Krastorio 2
+    - Increased range of seismic scanner from 24 to 30 chunks
+    - Removed titanium from hovercraft recipe, added to missile hovercraft recipe
+---------------------------------------------------------------------------------------------------
+Version: 1.5.0
+Date: 5 April 2023
+  Features:
+    - Moved dependency from Deadlock's Crating Machine to Intermodal Containers
+      - After updating, ensure that Deadlock's Crating Machine is disabled and Intermodal Containers is enabled
+      - This doesn't affect existing saves, but it will give a long list of "Changed recipes" on load
+    - Some more items can be stored in containers, including all tiles and ammo
+    - All newly-containerisable items have had their stack size halved
+    - Reworked trains and train fuel
+      - Added mini trains, which unlock where regular trains previously would
+      - Regular trains are moved to later in the tech tree, and require charged batteries as fuel
+      - Added mod setting to revert the above change so that trains from older saves can still run on burnable fuel
+    - Added several menu background simulations (thanks to sinewavey!)
+  Compatibility:
+    - [RSC] Added compatibility with Rocket-Silo Construction
+    - Bob's Logistics trains setting is now forcibly disabled (but Bob's Logistics is not recommended at all)
+---------------------------------------------------------------------------------------------------
+Version: 1.4.2
+Date: 18 March 2023
+  Bugfixes:
+    - Fixed lead ore sometimes not spawning on starting island
+---------------------------------------------------------------------------------------------------
+Version: 1.4.1
+Date: 11 March 2023
+  Changes:
+    - Discharging stations now return the being-used battery when mined
+    - Changed battery pack capacity from 20MJ to 10MJ
+    - Changed battery pack stack size from 100 to 200
+    - Removed sulfuric acid from battery pack recipe
+    - Increased battery pack charging success rate from 99% to 99.5%
+    - Battery pack recipe now allows productivity
+    - Rocket control unit recipe now requires a charged battery pack instead of cobalt ingot
+    - Satellite recipe now requires charged battery packs instead of uncharged battery packs
+---------------------------------------------------------------------------------------------------
+Version: 1.4.0
+Date: 11 March 2023
+  Features:
+    - Added seamounts (underwater mountains) which spawn sparsely in deep oceans
+    - Added dredging platforms, which can be placed on seamounts to dredge for polymetallic nodules
+      - Dredging platforms have a fixed size
+      - Underground belts and electric poles cannot be placed on dredging platforms so they should be powered by charged batteries
+      - Polymetallic nodules can be processed on-platform into small, but infinite, sources of iron, copper, and stone
+      - The player can choose which type of nodule to dredge for
+    - Added cobalt ingots, produced from cobalt crust, which can only be obtained by dredging
+      - Cobalt processing produces tailings water as a byproduct, from which lead and titanium ore can be obtained
+    - Added technologies for battery charging and battery pack
+  Changes:
+    - Recipe changes:
+      - Replaced steel with titanium in big mining drill recipe
+      - Added cobalt ingot to battery pack recipe
+      - Added cobalt ingot to rocket control unit recipe
+      - Added cobalt ingot to titansteel recipe
+      - Added titansteel to plutonium atomic bomb recipe
+    - Licence changed from MIT to GPLv3
+  Bugfixes:
+    - Fixed seismic scanner recipe being available from the start of the game
+    - Fixed transport science recipe not allowing productivity
+---------------------------------------------------------------------------------------------------
+Version: 1.3.2
+Date: 3 March 2023
+  Changes:
+    - Rails are now half as expensive (so they are now the same as vanilla cost)
+    - Transport science recipe now gives 2 science packs instead of 3, and takes 12s instead of 15s
+  Bugfixes:
+    - Fixed lava pools getting destroyed by splash damage attacks
+    - Fixed crash on load with Companion Drones
+    - Fixed crash with Exotic Industries Containers
+---------------------------------------------------------------------------------------------------
+Version: 1.3.1
+Date: 3 March 2023
+  Changes:
+    - Map generation now generates larger islands
+    - Decreased default enemy difficulty and time evolution factor
+    - Increased resource frequency, decreased resource size
+    - Doubled starting resource count
+---------------------------------------------------------------------------------------------------
+Version: 1.3.0
+Date: 2 March 2023
+  Features:
+    - Added seismic scanner for scanning connected landmasses at a longer range than radar
+    - Added battery pack for storing electricity more densely
+  Changes:
+    - Decreased radar range from 45x45 to 35x35
+    - Reduced wood cost of landfill from 2 to 1
+    - Rebalanced battery capacity and charging speeds 
+  Bugfixes:
+    - Fixed landfill not being minable
+---------------------------------------------------------------------------------------------------
+Version: 1.2.0
+Date: 1 March 2023
+  Features:
+    - Added charged battery transportation
+      - Battery items can be charged at charging stations
+      - Electricity from charged batteries can be released at discharging stations
+      - Charged batteries can be loaded into containers
+      - Charging and discharging stations share the same graphics for now
+  Changes:
+    - Reduced stack size of lead, titanium, and uranium ores from 25 to 15
+    - Removed floating electric pole
+    - Big electric pole and substation recipes now use less steel and more lead
+    - Boat travels slightly faster
+---------------------------------------------------------------------------------------------------
+Version: 1.1.0
+Date: 28 February 2023
+  Changes:
+    - Added slag as a byproduct of titansteel smelting in lava pools
+    - Tweaked titansteel smelting/cooling balance
+    - Oil rigs now have a larger electricity supply area around them
+---------------------------------------------------------------------------------------------------
+Version: 1.0.1
+Date: 27 February 2023
+  Bugfixes:
+    - Fixed gun turrets requiring lead
+---------------------------------------------------------------------------------------------------
+Version: 1.0.0
+Date: 25 February 2023
+  Features:
+    - Initial release
