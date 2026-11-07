@@ -5,6 +5,7 @@ require "__FreightForwarding__.prototypes.recipe-updates"
 require "__FreightForwarding__.prototypes.autoplace-updates"
 require "__FreightForwarding__.prototypes.planet-nauvis"
 require "__FreightForwarding__.prototypes.planet-vulcanus"
+require "__FreightForwarding__.prototypes.planet-chains"
 require "__FreightForwarding__.prototypes.rocket-tiers"
 
 for _, tile in pairs(data.raw.tile) do

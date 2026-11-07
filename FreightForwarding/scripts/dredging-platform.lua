@@ -14,8 +14,13 @@ local function on_dredger_created(event)
   local surface = dredger.surface
   local position = dredger.position
   dredger.destroy()
-  local seamount = surface.find_entity("ff-seamount", position)
-  seamount.destroy()
+  -- Seamount (Nauvis) or cobalt vent (Vulcanus, Space Age)
+  for _, name in pairs{"ff-seamount", "ff-cobalt-vent"} do
+    if prototypes.entity[name] then
+      local resource = surface.find_entity(name, position)
+      if resource then resource.destroy() end
+    end
+  end
   local created = surface.create_entity{
     name = "ff-dredger",
     position = position,

@@ -15,6 +15,10 @@ local underwater_pipe_layer = C.layer("ff_underwater_pipe")
 local seamount_resource_layer = data.raw["collision-layer"]["water_resource"] and "water_resource" or "ff_seamount"
 C.layer(seamount_resource_layer)
 data.raw["resource"]["ff-seamount"].collision_mask = C.mask{ seamount_resource_layer, non_deep_water_layer, "ground_tile" }
+-- Cobalt vents (Space Age, Vulcanus): same rule, which leaves only lava (and deep water) for them
+if data.raw["resource"]["ff-cobalt-vent"] then
+  data.raw["resource"]["ff-cobalt-vent"].collision_mask = C.mask{ seamount_resource_layer, non_deep_water_layer, "ground_tile" }
+end
 
 -- Nothing that needs to be connected/underground can be built on the dredging platform
 C.add_layer(data.raw.tile["ff-dredging-platform"], platform_layer)
