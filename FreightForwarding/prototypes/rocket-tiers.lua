@@ -11,8 +11,8 @@
 --     be crafted there; Nauvis has none, so silos for Nauvis are imported.
 --   * Vanilla cargo landing pad and space platform starter pack.
 -- Tier 3 (Aquilo, cryogenic science + titansteel):
---   * Heavy rocket silo: 2 t lift. Its rocket parts use titansteel rocket frames, which can only be smelted in
---     Nauvis lava pools - they have to be shipped across the solar system.
+--   * Heavy rocket silo: 2 t lift. Its rocket parts use titansteel rocket frames. Titansteel is smelted in the lava
+--     pools of Vulcanus from Nauvis titanium and cobalt - they have to be shipped across the solar system.
 --
 -- Runs in data-updates, after Space Age has adjusted the vanilla silo, technology and recipes.
 

@@ -15,7 +15,9 @@ Date: 7 November 2026
     - Each of these planets has its own rocket silo recipe from local materials (tungsten / superconductors and
       holmium / carbon fiber), craftable only on that planet
     - Heavy rocket silo (2000 kg) unlocked with cryogenic science and titansteel: its rocket parts use titansteel rocket
-      frames, smelted only in Nauvis lava pools. Normal silos can be upgraded to it
+      frames. Normal silos can be upgraded to it
+    - Lava pools are generated on Vulcanus (500-1200 tiles from the landing site) instead of Nauvis, so titansteel is
+      smelted there from Nauvis titanium and cobalt. Titansteel processing needs metallurgic science
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
   Changes:
