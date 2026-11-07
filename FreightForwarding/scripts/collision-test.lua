@@ -9,9 +9,8 @@ local tile_tests = {
   {"biter-spawner", false, true, true, true},
   {"car", false, false, true, true},
   {"pipe", false, true, true, true},
-  {"pump", false, false, false, false},
+  {"ship-loading-pump", false, false, false, false},
   {"iron-ore", false, true, true, true},
-  {"crude-oil", true, true, true, false},
   --{"deep_oil", true, true, true, true},  -- doesn't really matter since script-created
   {"ff-underwater-pipe", true, false, false, false},
   {"ff-offshore-storage-tank", true, false, false, false},
@@ -26,12 +25,12 @@ local tile_tests = {
 
 local entity_tests = {
   {"character", {"straight-water-way", "ff-underwater-pipe"}, false},
-  {"character", {"pump", "ff-offshore-storage-tank", "assembling-machine-1", "ic-containerization-machine-1"}, true},
-  {"indep-boat", {"straight-water-way", "ff-underwater-pipe", "buoy", "chain_buoy", "port", "pump"}, false},
-  {"indep-boat", {"ff-seamount", "ff-offshore-storage-tank", "oil_rig"}, true},
+  {"character", {"ship-loading-pump", "ff-offshore-storage-tank", "assembling-machine-1", "ic-containerization-machine-1"}, true},
+  {"indep-boat", {"straight-water-way", "ff-underwater-pipe", "buoy", "chain_buoy", "port"}, false},
+  {"indep-boat", {"ff-seamount", "ff-offshore-storage-tank", "oil_rig", "ship-loading-pump"}, true},
   {"straight-water-way", {"ff-underwater-pipe"}, false},
-  {"straight-water-way", {"ff-offshore-storage-tank", "pump"}, true},
-  {"pump", {"ff-underwater-pipe", "ff-offshore-storage-tank"}, true},
+  {"straight-water-way", {"ff-offshore-storage-tank", "ship-loading-pump"}, true},
+  {"ship-loading-pump", {"ff-underwater-pipe", "ff-offshore-storage-tank"}, true},
   {"ff-underwater-pipe", {"hcraft-entity"}, false},
   {"ff-underwater-pipe", {"oil_rig", "ff-offshore-storage-tank"}, true},
   {"ff-rocket-silo-hole", {"ff-rocket-silo-dummy"}, false},

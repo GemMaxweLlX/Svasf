@@ -32,9 +32,18 @@ for _, offshore_pump in pairs(data.raw["offshore-pump"]) do
   end
 end
 
--- Ensure collisions between pump, underwater pipe, oil rig, offshore storage tank, sonar buoy
+-- Ensure collisions between pumps on water, underwater pipe, oil rig, offshore storage tank, sonar buoy.
+-- 2.1: Cargo Ships has separate ship (un)loading pumps for water; the normal pump stays on land.
 local pump = data.raw["pump"]["pump"]
-C.add_layer(pump, water_object_layer)
+local water_pumps = {}
+for _, name in pairs{"ship-loading-pump", "ship-unloading-pump"} do
+  if data.raw["pump"][name] then table.insert(water_pumps, data.raw["pump"][name]) end
+end
+if #water_pumps == 0 then water_pumps = {pump} end  -- older Cargo Ships: the normal pump goes on water
+
+for _, water_pump in pairs(water_pumps) do
+  C.add_layer(water_pump, water_object_layer)
+end
 C.add_layer(data.raw.pipe["ff-underwater-pipe"], water_object_layer)
 C.add_layer(data.raw["radar"]["ff-sonar-buoy"], water_object_layer)
 if data.raw["mining-drill"]["oil_rig"] then
@@ -48,9 +57,10 @@ while next_pump and data.raw.pump[next_pump] do
   next_pump = data.raw.pump[next_pump].next_upgrade
 end
 
--- Offshore storage tank: like a pump, but only on water
-local offshore_tank_collision = table.deepcopy(pump.collision_mask)
+-- Offshore storage tank: like a pump on water, but never on land
+local offshore_tank_collision = C.get_mask(water_pumps[1])
 offshore_tank_collision.layers["ground_tile"] = true
+offshore_tank_collision.layers["object"] = true
 data.raw["storage-tank"]["ff-offshore-storage-tank"].collision_mask = offshore_tank_collision
 
 -- Players can swim (player layer removed from water in prototypes/water.lua),
