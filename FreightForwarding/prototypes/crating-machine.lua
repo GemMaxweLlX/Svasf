@@ -39,3 +39,6 @@ util.set_ingredients(IC_PREFIX .. "machine-3", {
 })
 -- Original: {"automation-3", IC_PREFIX.."2"}
 set_tech(IC_PREFIX .. "3", {"automation-3", IC_PREFIX .. "2"}, 300)
+
+-- Trains need containerization first (IC creates its technologies in data-updates)
+util.add_prerequisite("railway", IC_PREFIX .. "1")

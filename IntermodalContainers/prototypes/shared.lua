@@ -205,7 +205,7 @@ function IC.generate_crates(this_item)
       name = IC.LOAD_PREFIX .. this_item,
       localised_name = {"recipe-name.ic-load-recipe", base_item.localised_name or {"item-name."..this_item}},
       order = base_item.order,
-      category = "packing",
+      categories = {"packing"},
       subgroup = IC.LOAD_PREFIX .. (base_item.subgroup or this_item),
       enabled = true,
       ingredients = {
@@ -227,7 +227,7 @@ function IC.generate_crates(this_item)
       name = IC.UNLOAD_PREFIX .. this_item,
       localised_name = {"recipe-name.ic-unload-recipe", base_item.localised_name or {"item-name."..this_item}},
       order = base_item.order,
-      category = "packing",
+      categories = {"packing"},
       subgroup = IC.UNLOAD_PREFIX .. (base_item.subgroup or this_item),
       enabled = true,
       ingredients = {
@@ -235,7 +235,7 @@ function IC.generate_crates(this_item)
       },
       icons = unloadrecipeicons,
       results = {
-        {type="item", name="ic-container", amount=1, probability=1 - IC.UNLOADING_LOSS_RATE},
+        {type="item", name="ic-container", amount=1, independent_probability=1 - IC.UNLOADING_LOSS_RATE},
         {type="item", name=this_item, amount=items_per_crate},
       },
       energy_required = items_per_crate / IC.BELT_SPEED,

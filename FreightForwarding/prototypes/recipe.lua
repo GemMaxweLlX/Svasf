@@ -2,7 +2,6 @@ local util = require "__FreightForwarding__.prototypes.data-util"
 local bzutil = require "__FreightForwarding__.prototypes.data-util"
 
 util.remove_prerequisite("railway", "engine")
-util.add_prerequisite("railway", "ic-containerization-1")
 
 -- Increase stone consumption for overall usage balance
 bzutil.set_ingredient("rail", "stone", 4)  -- From 1
