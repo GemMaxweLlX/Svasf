@@ -7,6 +7,9 @@ Date: 7 November 2026
       integrations keep working. Incompatible with the original mod (use one or the other)
     - Recipes use `categories` instead of the removed `category`
     - Unloading recipes use `independent_probability` instead of the renamed `probability`
+  Bugfixes:
+    - Fixed full containers of items without an explicit weight weighing only 100 g (e.g. in Space Age rockets);
+      their weight is now container + contents (derived from the loading recipe)
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.3
 Date: 9 June 2026

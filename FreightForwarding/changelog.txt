@@ -28,6 +28,8 @@ Date: 7 November 2026
       1 hour; needs electromagnetic science), 3. lithium battery pack (25 MJ, faster, holds its charge, made on Aquilo)
     - Refrigerated containers (with Intermodal Containers): made on Gleba, carry spoilable items (Gleba produce,
       nutrients, bioflux, bacteria, science, fish, charged battery packs) which spoil 5 times slower inside
+    - Light containers (Vulcanus): any containerized item, a full one always weighs 250 kg - 4 per rocket
+    - Cryo containers (Aquilo): spoilable items spoil 20 times slower, 250 kg when full
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
   Quality of life:

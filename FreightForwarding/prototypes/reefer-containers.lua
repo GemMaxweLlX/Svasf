@@ -160,6 +160,8 @@ for _, item in pairs(cargo) do
       order = "c[" .. name .. "]",
       stack_size = 1,
       weight = item.weight and item.weight * amount or nil,
+      -- otherwise derived from the loading recipe: container + contents
+      ingredient_to_weight_coefficient = 1,
       spoil_ticks = item.spoil_ticks * SPOIL_SLOWDOWN,
       spoil_result = "ff-reefer-spoilage",
     },
@@ -179,7 +181,7 @@ for _, item in pairs(cargo) do
       },
       results = {{type = "item", name = filled, amount = 1}},
       hide_from_player_crafting = true,
-      allow_decomposition = false,
+      allow_decomposition = true,  -- lets the game derive the filled reefer weight from this recipe
       allow_as_intermediate = false,
     },
     {
