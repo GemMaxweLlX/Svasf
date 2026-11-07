@@ -4,6 +4,7 @@ require "__FreightForwarding__.prototypes.stack-sizes"
 require "__FreightForwarding__.prototypes.recipe-updates"
 require "__FreightForwarding__.prototypes.autoplace-updates"
 require "__FreightForwarding__.prototypes.planet-nauvis"
+require "__FreightForwarding__.prototypes.rocket-tiers"
 
 for _, tile in pairs(data.raw.tile) do
   tile.check_collision_with_entities = true

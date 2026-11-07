@@ -185,12 +185,45 @@ if data.raw.resource["ff-rocket-silo-hole"] then
     },
   }
 
+  -- One guaranteed hole on the second ring of islands, so the first (light) rocket silo is always reachable.
+  -- A single spot in a region covering the whole ring, placed on the most favourable high ground.
+  local first_hole_min_distance = 1600
+  local first_hole_max_distance = 2800
+  local region_size = 2 * first_hole_max_distance + 512
+  data:extend{
+    {
+      type = "noise-expression",
+      name = "ff_first_rocket_silo_hole",
+      expression = N.call("spot_noise", {
+        x = "x", y = "y",
+        seed0 = "map_seed", seed1 = 4242,
+        region_size = region_size,
+        candidate_spot_count = 512,
+        suggested_minimum_candidate_point_spacing = 48,
+        skip_span = 1,
+        skip_offset = 0,
+        density_expression = N.num(50 / (region_size * region_size)),
+        spot_quantity_expression = 50,
+        hard_region_target_quantity = 1,
+        spot_radius_expression = 3,
+        spot_favorability_expression = "(elevation > 10) * (distance > " .. first_hole_min_distance .. ") * (distance < "
+          .. first_hole_max_distance .. ") * (ff_resource_spread < 0.8) * (1 + " .. N.random(1, 4242) .. ")",
+        basement_value = -1,
+        maximum_spot_basement_radius = 8,
+      }) .. " > 0",
+    },
+  }
+
   data.raw.resource["ff-rocket-silo-hole"].autoplace = {
     control = "ff-rocket-silo-hole",
     order = "a",
-    -- Only on high ground (elevation > 8), far from spawn (> 4000 tiles), away from lava pools
-    probability_expression = N.num(1.4 / (64 * 64 ^ 2)) .. " * " .. N.control("ff-rocket-silo-hole", "frequency")
-      .. " * (elevation > 8) * (distance > 4000) * (ff_resource_spread < 0.6)",
+    -- Only on high ground (elevation > 8), far from spawn (> 4000 tiles), away from lava pools,
+    -- plus the guaranteed first hole
+    probability_expression = N.max(
+      N.num(1.4 / (64 * 64 ^ 2)) .. " * " .. N.control("ff-rocket-silo-hole", "frequency")
+        .. " * (elevation > 8) * (distance > 4000) * (ff_resource_spread < 0.6)",
+      "ff_first_rocket_silo_hole"
+    ),
     richness_expression = "10",  -- Overwritten in control by script trigger
   }
 end
