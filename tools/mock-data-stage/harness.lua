@@ -71,6 +71,7 @@ data.raw.locomotive.locomotive = {type = "locomotive", name = "locomotive", ener
 data.raw["cargo-wagon"]["cargo-wagon"] = {type = "cargo-wagon", name = "cargo-wagon", inventory_size = 40}
 data.raw.character.character = {type = "character", name = "character", inventory_size = 80}
 data.raw.pump.pump = {type = "pump", name = "pump"}
+data.raw["mining-drill"].pumpjack = {type = "mining-drill", name = "pumpjack", graphics_set = {animation = {north = {layers = {{filename = "p.png", width = 206, height = 172, scale = 0.5, shift = {0, 0}}}}}}, radius_visualisation_picture = {filename = "r.png", width = 12, height = 12}}
 data.raw.pipe.pipe = {type = "pipe", name = "pipe", icon = "__base__/graphics/icons/pipe.png", pictures = {straight_vertical = {filename = "a.png", width = 64, height = 64}, fluid_background = {filename = "b.png"}}}
 data.raw.radar.radar = {type = "radar", name = "radar", pictures = {layers = {{filename = "r.png"}, {filename = "s.png", draw_as_shadow = true}}}}
 data.raw["rocket-silo"]["rocket-silo"] = {type = "rocket-silo", name = "rocket-silo", collision_box = {{-4.4, -4.4}, {4.4, 4.4}}, selection_box = {{-4.5, -4.5}, {4.5, 4.5}}, base_day_sprite = {}, circuit_connector = {}}
