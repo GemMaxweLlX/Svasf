@@ -1,54 +1,37 @@
--- import custom Resource Autoplace
-local resource_autoplace = require "resource-autoplace.resource-autoplace"
-local noise = require "noise"
-local tne = noise.to_noise_expression
+-- Resource placement for the FF island world.
+local resource_autoplace = require("__FreightForwarding__.resource-autoplace.resource-autoplace")
+local N = require("__FreightForwarding__.resource-autoplace.noise-util")
+local call, clamp = N.call, N.clamp
 
-local function make_multioctave_noise_function(seed0,seed1,octaves,octave_output_scale_multiplier,octave_input_scale_multiplier,output_scale0,input_scale0)
-  octave_output_scale_multiplier = octave_output_scale_multiplier or 2
-  octave_input_scale_multiplier = octave_input_scale_multiplier or (1 / octave_output_scale_multiplier)
-  return function(x,y,inscale,outscale)
-    return tne{
-      type = "function-application",
-      function_name = "factorio-quick-multioctave-noise",
-      arguments =
-      {
-        x = tne(x),
-        y = tne(y),
-        seed0 = tne(seed0),
-        seed1 = tne(seed1),
-        input_scale = tne((inscale or 1) * (input_scale0 or 1)),
-        output_scale = tne((outscale or 1) * (output_scale0 or 1)),
-        octaves = tne(octaves),
-        octave_output_scale_multiplier = tne(octave_output_scale_multiplier),
-        octave_input_scale_multiplier = tne(octave_input_scale_multiplier)
-      }
-    }
-  end
-end
-
-local function clamp_aux(raw_aux)
-  return noise.clamp(raw_aux, 0, 1)
-end
-
--- Create a new expression based on vanilla's aux
+-- Large-scale noise deciding which ores appear where (replaces vanilla 'aux' for FF resources).
+-- 0.4 affects size of features. Smaller number means bigger 'islands'.
 data:extend{
   {
     type = "noise-expression",
-    name = "resource-spread",
-    --intended_property = "aux",
-    expression = noise.define_noise_function( function(x,y,tile,map)
-      x = x + 20000 -- Move the point where 'fractal similarity' is obvious off into the boonies
-      y = y
-      local raw_aux =
-        0.5 +
-        make_multioctave_noise_function(map.seed, 7, 4, 1/2, 3, 1, 0.4)(x,y,1/2048,1/4)  -- 0.4 affects size of features. Smaller number means bigger 'islands'
-      return noise.ident(clamp_aux(raw_aux))
-    end)
+    name = "ff_resource_spread",
+    expression = clamp("0.5 + " .. call("quick_multioctave_noise", {
+      x = "x + 20000", y = "y",
+      seed0 = "map_seed", seed1 = 7,
+      input_scale = (1/2048) * 0.4,
+      output_scale = 1/4,
+      octaves = 4,
+      octave_output_scale_multiplier = 1/2,
+      octave_input_scale_multiplier = 3,
+    }), 0, 1),
   },
 }
 
--- Redefine base resources here so that they pick up modified defaults from config.lua (starting_resource_placement_radius)
-data.raw.resource["iron-ore"].autoplace = resource_autoplace.resource_autoplace_settings{
+local function set_autoplace(resource_name, params)
+  local resource = data.raw.resource[resource_name]
+  if not resource then
+    log("[FreightForwarding] resource " .. resource_name .. " not found, autoplace not changed")
+    return
+  end
+  resource.autoplace = resource_autoplace.resource_autoplace_settings(params)
+end
+
+-- Redefine base resources so that they pick up modified defaults from config.lua
+set_autoplace("iron-ore", {
   -- iron-ore has a hardcoded special case in resource-autoplace.lua so that it appears both
   -- in the starting area and at the edge of the starting island
   name = "iron-ore",
@@ -58,22 +41,22 @@ data.raw.resource["iron-ore"].autoplace = resource_autoplace.resource_autoplace_
   has_starting_area_placement = true,
   regular_rq_factor_multiplier = 1.1,
   starting_rq_factor_multiplier = 1.3,
-  candidate_spot_count = 22, -- To match 0.17.50 placement
+  candidate_spot_count = 22,
   ideal_aux = 0.15,
   aux_range = 0.1,
-}
-data.raw.resource["copper-ore"].autoplace = resource_autoplace.resource_autoplace_settings{
+})
+set_autoplace("copper-ore", {
   name = "copper-ore",
   order = "b",
   base_density = 8,
   has_starting_area_placement = true,
   regular_rq_factor_multiplier = 1.1,
   starting_rq_factor_multiplier = 1.2,
-  candidate_spot_count = 22, -- To match 0.17.50 placement
+  candidate_spot_count = 22,
   ideal_aux = 0.8,
   aux_range = 0.1,
-}
-data.raw.resource["coal"].autoplace = resource_autoplace.resource_autoplace_settings{
+})
+set_autoplace("coal", {
   name = "coal",
   order = "b",
   base_density = 8,
@@ -81,8 +64,8 @@ data.raw.resource["coal"].autoplace = resource_autoplace.resource_autoplace_sett
   regular_rq_factor_multiplier = 1.0,
   starting_rq_factor_multiplier = 1.2,
   ideal_aux = 0.4,
-}
-data.raw.resource["stone"].autoplace = resource_autoplace.resource_autoplace_settings{
+})
+set_autoplace("stone", {
   name = "stone",
   order = "b",
   base_density = 4,
@@ -90,11 +73,11 @@ data.raw.resource["stone"].autoplace = resource_autoplace.resource_autoplace_set
   regular_rq_factor_multiplier = 1.0,
   starting_rq_factor_multiplier = 1.1,
   ideal_aux = 0.6,
-}
+})
 
 local empty_radius = 1800
 
-data.raw.resource["uranium-ore"].autoplace = resource_autoplace.resource_autoplace_settings{
+set_autoplace("uranium-ore", {
   name = "uranium-ore",
   order = "c",
   base_density = 0.9,
@@ -106,12 +89,11 @@ data.raw.resource["uranium-ore"].autoplace = resource_autoplace.resource_autopla
   regular_patch_fade_in_distance_start = empty_radius,
   regular_patch_fade_in_distance = empty_radius + 100,
   ideal_aux = 0.3,
-}
-
+})
 
 if mods["bzlead"] then
   -- override BZ's autoplace, but keeping same values for richness
-  data.raw.resource["lead-ore"].autoplace = resource_autoplace.resource_autoplace_settings{
+  set_autoplace("lead-ore", {
     name = "lead-ore",
     order = "b-z",
     base_density = 6,
@@ -120,17 +102,15 @@ if mods["bzlead"] then
     regular_rq_factor_multiplier = 1.2,
     starting_rq_factor_multiplier = 1.7,
     starting_resource_placement_ring_radius = 775,  -- Spawns the starting patch somewhere at distance from the center
-    starting_resource_placement_radius = 1200,  -- Keep it reasonably above starting_resource_placement_ring_radius?
+    starting_resource_placement_radius = 1200,
     regular_patch_fade_in_distance_start = 1200,
     regular_patch_fade_in_distance = 1200,
     ideal_aux = 0.7,
-  }
-  --data.raw.resource["lead-ore"].map_color = {r=1, g=0, b=0}  -- For debug
+  })
 end
 
 if mods["bztitanium"] then
-  -- override BZ's autoplace, but keeping same values for richness
-  data.raw.resource["titanium-ore"].autoplace = resource_autoplace.resource_autoplace_settings{
+  set_autoplace("titanium-ore", {
     name = "titanium-ore",
     order = "b-z",
     base_density = 3,
@@ -140,40 +120,27 @@ if mods["bztitanium"] then
     regular_patch_fade_in_distance = empty_radius + 100,
     ideal_aux = 0.5,
     aux_range = 0.1,
-  }
+  })
 end
 
--- Seamounts
+-- Seamounts: in deep ocean only
 data:extend{
   {
     type = "autoplace-control",
     name = "ff-seamount",
-    --localised_name = {"", "[entity=ff-seamount] ", {"entity-name.ff-seamount"}},
     localised_name = {"entity-name.ff-seamount"},
     richness = false,
     order = "z-a",
-    category = "resource"
+    category = "resource",
   },
 }
 
 data.raw.resource["ff-seamount"].autoplace = {
   control = "ff-seamount",
   order = "c",
-  probability_expression = noise.define_noise_function( function(x, y, tile, map)
-      -- Frequency value from map gen settings
-      local frequency_multiplier = noise.var("control-setting:ff-seamount:frequency:multiplier")
-      local desired_frequency = 0.8 / (64 * 64^2)
-
-      local elevation = noise.var("elevation")
-      local elevation_multiplier = noise.if_else_chain(
-        noise.less_than(elevation, -20), 1,  -- only spawn at elevation -20 or lower
-        0
-      )
-      return desired_frequency * frequency_multiplier * elevation_multiplier
-    end),
-  richness_expression = noise.define_noise_function( function(x, y, tile, map)
-    return 10  -- Overwritten in control by script trigger
-  end)
+  -- 0.8 seamounts per 64x64 area of deep (elevation < -20) ocean, scaled by the frequency slider
+  probability_expression = N.num(0.8 / (64 * 64 ^ 2)) .. " * " .. N.control("ff-seamount", "frequency") .. " * (elevation < -20)",
+  richness_expression = "10",  -- Overwritten in control by script trigger
 }
 
 -- Lava pools
@@ -184,13 +151,12 @@ data:extend{
     localised_name = {"", "[entity=ff-lava-pool] ", {"entity-name.ff-lava-pool"}},
     richness = false,
     order = "z-b",
-    category = "resource"
+    category = "resource",
   },
 }
 
-resource_autoplace.initialize_patch_set("ff-lava-pool-resource", false)  -- No idea what it does but it says to call it before resource_autoplace_settings
-data.raw.resource["ff-lava-pool-resource"].autoplace = resource_autoplace.resource_autoplace_settings
-{
+resource_autoplace.initialize_patch_set("ff-lava-pool", false)
+data.raw.resource["ff-lava-pool-resource"].autoplace = resource_autoplace.resource_autoplace_settings{
   name = "ff-lava-pool",
   order = "a", -- Other resources are "b"; lava will override if something else is already there.
   base_density = 8.2,
@@ -207,45 +173,24 @@ data.raw.resource["ff-lava-pool-resource"].autoplace = resource_autoplace.resour
   ideal_aux = 0.9,
 }
 
-if not (mods["Mining-Space-Industries-II"] or mods["LunarLandings"] or mods["space-exploration"]) then
-
+if data.raw.resource["ff-rocket-silo-hole"] then
   data:extend{
     {
       type = "autoplace-control",
       name = "ff-rocket-silo-hole",
-      --localised_name = {"", "[entity=ff-seamount] ", {"entity-name.ff-seamount"}},
       localised_name = {"entity-name.ff-rocket-silo-hole"},
       richness = false,
       order = "z-c",
-      category = "resource"
+      category = "resource",
     },
   }
 
   data.raw.resource["ff-rocket-silo-hole"].autoplace = {
     control = "ff-rocket-silo-hole",
     order = "a",
-    probability_expression = noise.define_noise_function( function(x, y, tile, map)
-        -- Frequency value from map gen settings
-        local frequency_multiplier = noise.var("control-setting:ff-rocket-silo-hole:frequency:multiplier")
-        local desired_frequency = 1.4 / (64 * 64^2)
-
-        local elevation = noise.var("elevation")
-        local distance = noise.var("distance")
-        local aux = noise.var("resource-spread")
-
-        local elevation_multiplier = noise.if_else_chain(
-          noise.less_than(8, elevation),  -- only spawn at elevation 10 or higher
-            noise.if_else_chain(
-              noise.less_than(4000, distance),   -- spawn far from start
-              noise.if_else_chain(noise.less_than(aux, 0.6), 1, 0),  -- keep away from lava pools
-              0
-            ),
-            0
-        )
-        return desired_frequency * frequency_multiplier * elevation_multiplier
-      end),
-    richness_expression = noise.define_noise_function( function(x, y, tile, map)
-      return 10  -- Overwritten in control by script trigger
-    end)
+    -- Only on high ground (elevation > 8), far from spawn (> 4000 tiles), away from lava pools
+    probability_expression = N.num(1.4 / (64 * 64 ^ 2)) .. " * " .. N.control("ff-rocket-silo-hole", "frequency")
+      .. " * (elevation > 8) * (distance > 4000) * (ff_resource_spread < 0.6)",
+    richness_expression = "10",  -- Overwritten in control by script trigger
   }
 end

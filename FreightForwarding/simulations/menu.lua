@@ -28,6 +28,11 @@ if settings.startup["ff-disable-default-sims"].value then
   sims.train_junction = nil
 end
 
+-- The FF menu simulations below were saved with Factorio 1.1 and its mods. Loading them in 2.x
+-- would need a save migration with 2.x versions of every dependency, and a failing menu simulation
+-- breaks the main menu, so they are disabled until they are re-recorded in 2.x.
+if true then return end
+
 -- sims.name = 
 -- {
 --   checkboard = false,
@@ -74,20 +79,20 @@ sims.oil_rigs =
 
     local function powerOilRig(e)
       if e.tick % 120 == 0 then
-        if global.or_generators == nil then
-          global.or_generators = {}
+        if storage.or_generators == nil then
+          storage.or_generators = {}
           for _, surface in pairs(game.surfaces) do
             for _, generator in pairs(surface.find_entities_filtered{name="or_power"}) do
-              table.insert(global.or_generators, generator)
+              table.insert(storage.or_generators, generator)
             end
           end
         end
-        for i, generator in pairs(global.or_generators) do
+        for i, generator in pairs(storage.or_generators) do
           if(generator.valid) then
             generator.fluidbox[1] = {name="steam", amount = 200, temperature=165}
           else
             --game.players[1].print("found invalid")
-            table.remove(global.or_generators,i)
+            table.remove(storage.or_generators,i)
           end
         end
       end

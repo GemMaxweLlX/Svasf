@@ -47,50 +47,71 @@ local function get_offset(walking_state)
   return {x = offset.x, y = offset.y-0.7}
 end
 
+-- 2.x: rendering functions return LuaRenderObject instead of numeric ids.
+-- Ids stored by 1.1 saves are converted on the fly.
+local function get_object(object)
+  if type(object) == "number" then
+    return rendering.get_object_by_id(object)
+  end
+  return object
+end
+
+local function set_target(object, entity, offset)
+  object = get_object(object)
+  if object and object.valid then
+    object.target = { entity = entity, offset = offset }
+  end
+end
+
+local function destroy(object)
+  object = get_object(object)
+  if object and object.valid then
+    object.destroy()
+  end
+end
+
 local function on_tick()
   for _, player in pairs(game.players) do
-    local tile = player.surface.get_tile(player.position.x, player.position.y)
-    if not tile or not tile.valid then goto continue end
-    local tile_name = tile.name
+    -- 2.x: player.position/surface follow remote view, so use the character
+    local character = player.character
+    local tile = character and character.surface.get_tile(character.position.x, character.position.y)
+    if character and (not tile or not tile.valid) then goto continue end
+    local tile_name = tile and tile.name
     if (tile_name == "water" or tile_name == "deepwater")
       and player.character and not player.vehicle
       and (not (remote.interfaces["jetpack"] and remote.interfaces["jetpack"].is_jetpacking) or not remote.call("jetpack", "is_jetpacking", {character=player.character}))
       then
       local offset = get_offset(player.walking_state)
-      if not global.liferings[player.index] and player.character then
-        global.liferings[player.index] = {
+      if not storage.liferings[player.index] and player.character then
+        storage.liferings[player.index] = {
           front = rendering.draw_sprite{
             sprite = "ff-life-ring-front",
-            target = player.character,
-            surface = player.surface,
-            target_offset = offset,
+            target = {entity = player.character, offset = offset},
+            surface = player.character.surface,
             x_scale = scale,
             y_scale = scale+0.1,
             render_layer = "higher-object-under",
           },
           back = rendering.draw_sprite{
             sprite = "ff-life-ring-back",
-            target = player.character,
-            surface = player.surface,
-            target_offset = offset,
+            target = {entity = player.character, offset = offset},
+            surface = player.character.surface,
             x_scale = scale,
             y_scale = scale+0.1,
             render_layer = "lower-object-above-shadow",
           },
           shadow = rendering.draw_sprite{
             sprite = "ff-life-ring-front-shadow",
-            target = player.character,
-            surface = player.surface,
-            target_offset = add_offset(offset, shadow_offset),
+            target = {entity = player.character, offset = add_offset(offset, shadow_offset)},
+            surface = player.character.surface,
             x_scale = scale*1.25,
             y_scale = scale+0.1,
             render_layer = "lower-object",
           },
           legs = rendering.draw_sprite{
             sprite = "ff-water-legs",  -- Partially covers up legs
-            target = player.character,
-            surface = player.surface,
-            target_offset = add_offset(offset, legs_offset),
+            target = {entity = player.character, offset = add_offset(offset, legs_offset)},
+            surface = player.character.surface,
             x_scale = 0.6,
             y_scale = 0.4,
             render_layer = "object",
@@ -98,32 +119,26 @@ local function on_tick()
 
         }
       else
-        if rendering.is_valid(global.liferings[player.index].front) then
-          rendering.set_target(global.liferings[player.index].front, player.character, offset)
-        end
-        if rendering.is_valid(global.liferings[player.index].back) then
-          rendering.set_target(global.liferings[player.index].back, player.character, offset)
-        end
-        if rendering.is_valid(global.liferings[player.index].shadow or 0) then
-          rendering.set_target(global.liferings[player.index].shadow, player.character, add_offset(offset, shadow_offset))
-        end
-        if rendering.is_valid(global.liferings[player.index].legs or 0) then
-          rendering.set_target(global.liferings[player.index].legs, player.character, add_offset(offset, legs_offset))
-        end
+        local rings = storage.liferings[player.index]
+        set_target(rings.front, player.character, offset)
+        set_target(rings.back, player.character, offset)
+        set_target(rings.shadow, player.character, add_offset(offset, shadow_offset))
+        set_target(rings.legs, player.character, add_offset(offset, legs_offset))
       end
       for _, splash_position in pairs(splash_positions) do
-        player.surface.create_entity{
+        character.surface.create_entity{
           name = "ff-life-ring-splash",
-          position = add_offset(add_offset(player.position, splash_position), offset),
+          position = add_offset(add_offset(character.position, splash_position), offset),
         }
       end
     else
-      if global.liferings[player.index] then
-        rendering.destroy(global.liferings[player.index].front)
-        rendering.destroy(global.liferings[player.index].back)
-        rendering.destroy(global.liferings[player.index].shadow or 0)
-        rendering.destroy(global.liferings[player.index].legs or 0)
-        global.liferings[player.index] = nil
+      if storage.liferings[player.index] then
+        local rings = storage.liferings[player.index]
+        destroy(rings.front)
+        destroy(rings.back)
+        destroy(rings.shadow)
+        destroy(rings.legs)
+        storage.liferings[player.index] = nil
       end
     end
     ::continue::
@@ -139,11 +154,11 @@ LifeRing.events = {
 }
 
 LifeRing.on_init = function ()
-  global.liferings = {}
+  storage.liferings = {}
 end
 
 LifeRing.on_configuration_changed = function(changed_data)
-  global.liferings = global.liferings or {}
+  storage.liferings = storage.liferings or {}
 end
 
 return LifeRing

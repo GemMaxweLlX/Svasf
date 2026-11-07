@@ -1,11 +1,17 @@
+if not mods["lex-aircraft"] then return end
+
 local util = require "__FreightForwarding__.prototypes.data-util"
-local bzutil = require "__bzlead__.data-util"
+local bzutil = require "__FreightForwarding__.prototypes.data-util"
 
 -- Hide light gunship
-data.raw.technology["lex-flying-gunship-ships"].hidden = true
-data.raw.recipe["lex-flying-gunship"].hidden = true
-table.insert(data.raw["item-with-entity-data"]["lex-flying-gunship"].flags, "hidden")
-table.insert(data.raw["spider-vehicle"]["lex-flying-gunship"].flags, "hidden")
+util.hide_technology("lex-flying-gunship-ships")
+for _, prototype in pairs{
+  data.raw.recipe["lex-flying-gunship"],
+  data.raw["item-with-entity-data"]["lex-flying-gunship"],
+  data.raw["spider-vehicle"]["lex-flying-gunship"],
+} do
+  prototype.hidden = true
+end
 util.remove_prerequisite("lex-flying-heavyship-ships", "lex-flying-gunship-ships")
 
 -- Doesn't have any effect anyway because automatic_weapon_cycling = false, so remove from tooltip
@@ -41,6 +47,6 @@ util.remove_prerequisite("lex-flying-heavyship-ships", "lex-flying-cargo-ships")
 bzutil.remove_recipe_effect("lex-flying-heavyship-ships", "spidertron-remote")
 
 -- Make spidertron slightly earlier since it is weaker than lex heavy ship
-util.remove_prerequisite("effectivity-module-3", "production-science-pack")
-util.remove_research_ingredient("effectivity-module-3", "production-science-pack")
+util.remove_prerequisite("efficiency-module-3", "production-science-pack")
+util.remove_research_ingredient("efficiency-module-3", "production-science-pack")
 util.remove_research_ingredient("spidertron", "production-science-pack")

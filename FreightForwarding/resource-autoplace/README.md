@@ -1,5 +1,12 @@
 # Resource-Autoplace Documentation
 
+> **Factorio 2.x:** this module now builds noise expressions as **strings** (2.x removed the Lua
+> `noise` library). `noise.lua` and `expression-to-ascii-math.lua` were removed; string helpers live in
+> `noise-util.lua`. Parameters and presets are unchanged. Each resource gets a named noise expression
+> `ff_<resource>_patches` shared by its probability and richness expressions, and patch sets are shared
+> with vanilla's `resource-autoplace` when possible. Require it as
+> `require("__FreightForwarding__.resource-autoplace.resource-autoplace")`.
+
 Here's a quick guide on how to use the *Resource-Autoplace* module.
 
 ---
@@ -16,8 +23,7 @@ local resource_autoplace = require("resource-autoplace/resource-autoplace")
 
 The `resource-autoplace` directory is organized as follows:
 - `config.lua`: this is the entry point to tweak the parameters of ResourceAutoplace and customize the placement of your resources. More details in the section below.
-- `expression-to-ascii-math.lua`: helper functions for *RA*, do not touch.
-- `noise.lua`: helper functions for *RA*, do not touch.
+- `noise-util.lua`: helpers for building 2.x noise expression strings.
 - `resource-autoplace.lua`: the core functions of *RA*, theoretically there's no need to touch this file, but edge-cases and specific behaviors of resource placement may require some tweaking (hopefully not!).
 - `README.md`: documentation.
 

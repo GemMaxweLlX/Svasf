@@ -1,42 +1,41 @@
+-- Intermodal Containers machines rebalanced for FF
+local util = require "__FreightForwarding__.prototypes.data-util"
+
 local IC_PREFIX = "ic-containerization-"
 
-data.raw.item["red-wire"].ic_create_container = false
-data.raw.item["green-wire"].ic_create_container = false
+local function set_tech(name, prerequisites, count)
+  local technology = data.raw.technology[name]
+  if not technology then return end
+  local existing = {}
+  for _, prerequisite in pairs(prerequisites) do
+    if data.raw.technology[prerequisite] then existing[#existing + 1] = prerequisite end
+  end
+  technology.prerequisites = existing
+  if technology.unit then technology.unit.count = count end
+end
 
-local recipe1 = data.raw.recipe[IC_PREFIX.."machine-1"]
-recipe1.ingredients = {
+util.set_ingredients(IC_PREFIX .. "machine-1", {
   {"engine-unit", 2},
   {"fast-inserter", 4},
   {"steel-plate", 5},
-}
-
-local technology1 = data.raw.technology[IC_PREFIX.."1"]
+})
 -- Original: {"automation", "stack-inserter"}
-technology1.prerequisites = {"engine", "fast-inserter"}
-technology1.unit.count = 100
+set_tech(IC_PREFIX .. "1", {"engine", "fast-inserter"}, 100)
 
-local recipe2 = data.raw.recipe[IC_PREFIX.."machine-2"]
-recipe2.ingredients = {
-  {IC_PREFIX.."machine-1", 1},
+util.set_ingredients(IC_PREFIX .. "machine-2", {
+  {IC_PREFIX .. "machine-1", 1},
   {"electric-engine-unit", 2},
-  {"stack-inserter", 2},
+  {"bulk-inserter", 2},  -- 1.1 "stack-inserter"
   {"steel-plate", 20},
-}
-
-local technology2 = data.raw.technology[IC_PREFIX.."2"]
+})
 -- Original: {"automation-2", IC_PREFIX.."1"},
-technology2.prerequisites = {"electric-engine", "stack-inserter", IC_PREFIX.."1"}
-technology2.unit.count = 200
+set_tech(IC_PREFIX .. "2", {"electric-engine", "bulk-inserter", IC_PREFIX .. "1"}, 200)
 
-local recipe3 = data.raw.recipe[IC_PREFIX.."machine-3"]
-recipe3.ingredients = {
-  {IC_PREFIX.."machine-2", 1},
+util.set_ingredients(IC_PREFIX .. "machine-3", {
+  {IC_PREFIX .. "machine-2", 1},
   {"electric-engine-unit", 8},
   {"advanced-circuit", 8},
   {"steel-plate", 30},
-}
-
-local technology3 = data.raw.technology[IC_PREFIX.."3"]
+})
 -- Original: {"automation-3", IC_PREFIX.."2"}
-technology3.prerequisites = {"automation-3", IC_PREFIX.."2"}
-technology3.unit.count = 300
+set_tech(IC_PREFIX .. "3", {"automation-3", IC_PREFIX .. "2"}, 300)

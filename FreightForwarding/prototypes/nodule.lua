@@ -1,4 +1,5 @@
-data:extend{
+local legacy = require "__FreightForwarding__.prototypes.legacy"
+legacy.extend{
   {
     type = "item",
     name = "ff-ferrous-nodule",

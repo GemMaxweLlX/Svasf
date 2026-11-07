@@ -14,8 +14,8 @@ if mods["bztin"] and not (mods["bztungsten"] or mods["bzzirconium"]) then
   error("\nUsing BZ Tin without either Tungsten or Zirconium is not allowed for progression reasons")
 end
 
-local resource_autoplace = require "resource-autoplace.resource-autoplace"
-local bzutil = require "__bzlead__.data-util"
+local resource_autoplace = require "__FreightForwarding__.resource-autoplace.resource-autoplace"
+local bzutil = require "__FreightForwarding__.prototypes.data-util"
 local util = require "__FreightForwarding__.prototypes.data-util"
 
 local START_RADIUS =  175
@@ -194,7 +194,7 @@ end
 if mods["bzgold"] and data.raw.resource["rich-copper-ore"] then 
   data.raw.resource["rich-copper-ore"].autoplace = resource_autoplace.resource_autoplace_settings{
     name = "rich-copper-ore",
-    autoplace_control_name = bzutil.se6() and "rich-copper-ore" or "copper-ore",
+    autoplace_control_name = data.raw["autoplace-control"]["rich-copper-ore"] and "rich-copper-ore" or "copper-ore",
     order = "b-z",
     base_density = 4,
     base_spots_per_km2 = 1,
@@ -239,7 +239,7 @@ if mods["bztungsten"] then
 
   -- This sim crashes
   local s = data.raw["utility-constants"]["default"].main_menu_simulations
-  s['tungsten-nozzle'] = nil
+  if s then s['tungsten-nozzle'] = nil end
 end
 
 -- Add zircon to transport science

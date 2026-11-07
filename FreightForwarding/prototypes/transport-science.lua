@@ -1,6 +1,7 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 local util = require "__FreightForwarding__.prototypes.data-util"
 
-data:extend{
+legacy.extend{
   {
     type = "tool",
     name = "ff-transport-science-pack",
@@ -71,17 +72,31 @@ util.remove_prerequisite("automobilism", "logistics-2")
 
 
 data.raw.recipe["pipe-to-ground"].enabled = false
-table.insert(data.raw.technology["fluid-handling"].effects, 1, {type = "unlock-recipe", recipe = "pipe-to-ground"})
+util.add_unlock("fluid-handling", "pipe-to-ground", 1)
 
-table.insert(data.raw.lab.lab.inputs, 3, "ff-transport-science-pack")
+-- Every lab that accepts logistic science also accepts transport science (incl. Space Age's biolab)
+for _, lab in pairs(data.raw.lab) do
+  local inputs = lab.inputs or {}
+  for i, input in pairs(inputs) do
+    if input == "logistic-science-pack" then
+      table.insert(inputs, i + 1, "ff-transport-science-pack")
+      break
+    end
+  end
+end
 util.allow_productivity("ff-transport-science-pack")
 
 -- Merge deep sea oil with pumpjack tech
 local deep_sea_oil = data.raw.technology["deep_sea_oil_extraction"]
 local oil_processing = data.raw.technology["oil-processing"]
-deep_sea_oil.hidden = true
-oil_processing.icon = deep_sea_oil.icon
-oil_processing.icon_size = deep_sea_oil.icon_size
-oil_processing.icon_mipmaps = deep_sea_oil.icon_mipmaps
-
-table.insert(oil_processing.effects, 2, {type = "unlock-recipe", recipe = "oil_rig"})
+if deep_sea_oil and oil_processing then
+  deep_sea_oil.hidden = true
+  if deep_sea_oil.icons then
+    oil_processing.icons = table.deepcopy(deep_sea_oil.icons)
+  else
+    oil_processing.icon = deep_sea_oil.icon
+    oil_processing.icon_size = deep_sea_oil.icon_size
+    oil_processing.icons = nil
+  end
+  util.add_unlock("oil-processing", "oil_rig", 2)
+end

@@ -1,12 +1,15 @@
--- Adjust water autoplace
--- max_elevation, influence
--- Water:     autoplace = make_water_autoplace_settings(0, 100),
--- Deepwater: autoplace = make_water_autoplace_settings(-2, 200),
+local legacy = require "__FreightForwarding__.prototypes.legacy"
+local C = require "__FreightForwarding__.prototypes.collision-util"
 
-data.raw["tile"]["water-shallow"].autoplace = make_water_autoplace_settings(0, 25)
--- data.raw["tile"]["water-mud"].autoplace = make_water_autoplace_settings(-2, 50)
-data.raw["tile"]["water"].autoplace = make_water_autoplace_settings(-2.5, 100)
-data.raw["tile"]["deepwater"].autoplace = make_water_autoplace_settings(-8, 200)
+-- Adjust water autoplace (max_elevation, influence), see ff_water_autoplace in map-gen.lua
+-- Vanilla 1.1:  Water: (0, 100), Deepwater: (-2, 200)
+local function water_autoplace(max_elevation, influence)
+  return { probability_expression = "ff_water_autoplace(" .. max_elevation .. ", " .. influence .. ")" }
+end
+
+data.raw["tile"]["water-shallow"].autoplace = water_autoplace(0, 25)
+data.raw["tile"]["water"].autoplace = water_autoplace(-2.5, 100)
+data.raw["tile"]["deepwater"].autoplace = water_autoplace(-8, 200)
 
 local mud_water = data.raw.tile["water-mud"]
 mud_water.walking_speed_modifier = 0.7  -- Default 0.8
@@ -15,28 +18,20 @@ mud_water.vehicle_friction_modifier = 32
 local shallow_water = data.raw.tile["water-shallow"]
 shallow_water.walking_speed_modifier = 0.7  -- Default 0.8
 shallow_water.vehicle_friction_modifier = 32  -- Default 1
-
-shallow_water.collision_mask = {
-  "water-tile",
-  "floor-layer",
-  "resource-layer",
-  "doodad-layer",  -- Stops decoratives spawning on shallow water
-}
+-- doodad stops decoratives spawning on shallow water
+shallow_water.collision_mask = C.mask{ "water_tile", "floor", "resource", "doodad" }
 
 -- Allow player to swim in water
-local collision_mask_util = require "__core__.lualib.collision-mask-util"
 local water = data.raw.tile["water"]
 local deep_water = data.raw.tile["deepwater"]
 water.walking_speed_modifier = 0.25
 deep_water.walking_speed_modifier = 0.25
 
 for _, water_tile in pairs{water, deep_water} do
-  local mask = collision_mask_util.get_mask(water_tile)
-  collision_mask_util.remove_layer(mask, "player-layer")
-  water_tile.collision_mask = mask
+  C.remove_layer(water_tile, "player")
 end
 
-data:extend{
+legacy.extend{
   {
     type = "sprite",
     name = "ff-life-ring-front",

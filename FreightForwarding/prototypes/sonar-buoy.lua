@@ -1,9 +1,21 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 local hit_effects = require "__base__.prototypes.entity.hit-effects"
 local sounds = require "__base__.prototypes.entity.sounds"
 
 data.raw["fluid"]["crude-oil"].fuel_value = "300kJ"
 
-data:extend({
+-- Vanilla radar graphics, tinted cyan
+local sonar_pictures = table.deepcopy(data.raw["radar"]["radar"].pictures)
+local function tint_layers(sprite)
+  if sprite.layers then
+    for _, layer in pairs(sprite.layers) do tint_layers(layer) end
+  elseif not sprite.draw_as_shadow then
+    sprite.tint = { r = 0.0, g = 0.8, b = 0.8, a = 1.0 }
+  end
+end
+tint_layers(sonar_pictures)
+
+legacy.extend({
   {
     type = "technology",
     name = "ff-sonar-buoy",
@@ -15,7 +27,7 @@ data:extend({
       },
     },
     order = "sonar buoy",
-    prerequisites = { "laser", "advanced-electronics-2" },
+    prerequisites = { "laser", "processing-unit" },
     unit = {
       time = 30,
       count = 300,
@@ -39,7 +51,7 @@ data:extend({
     enabled = false,
     ingredients = {
       { "processing-unit", 5 },
-      { "empty-barrel",    10 },
+      { "barrel",          10 },
       { "radar",           1 },
     },
     result = "ff-sonar-buoy",
@@ -134,55 +146,7 @@ data:extend({
       }
     },
 
-    pictures = {
-      layers = {
-        {
-          filename = "__base__/graphics/entity/radar/radar.png",
-          apply_projection = false,
-          priority = "low",
-          line_length = 8,
-          width = 98,
-          height = 128,
-          direction_count = 64,
-          shift = { 0.03125, -0.5 },
-          tint = { r = 0.0, g = 0.8, b = 0.8, a = 1.0 },
-          hr_version = {
-            filename = "__base__/graphics/entity/radar/hr-radar.png",
-            apply_projection = false,
-            priority = "low",
-            line_length = 8,
-            width = 196,
-            height = 254,
-            scale = 0.5,
-            direction_count = 64,
-            shift = { 0.03125, -0.5 },
-            tint = { r = 0.0, g = 0.8, b = 0.8, a = 1.0 },
-          },
-        },
-        {
-          filename = "__base__/graphics/entity/radar/radar-shadow.png",
-          apply_projection = false,
-          priority = "low",
-          line_length = 8,
-          width = 172,
-          height = 94,
-          direction_count = 64,
-          draw_as_shadow = true,
-          shift = { 1.21875, 0.09375 },
-          hr_version = {
-            filename = "__base__/graphics/entity/radar/hr-radar-shadow.png",
-            apply_projection = false,
-            priority = "low",
-            line_length = 8,
-            width = 343,
-            height = 186,
-            scale = 0.5,
-            direction_count = 64,
-            draw_as_shadow = true,
-            shift = { 1.2265625, 0.09375 },
-          },
-        },
-      },
-    },
+    pictures = sonar_pictures,
+    connects_to_other_radars = false,
   } --[[@as data.RadarPrototype]]
 })

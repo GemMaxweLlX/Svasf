@@ -1,3 +1,4 @@
+local EntityUtil = require("scripts/entity-util")
 local util = require("scripts/chunk-util")
 local entity_name = "ff-sonar-buoy"
 local scanner_range = 125
@@ -18,10 +19,10 @@ local scanner_range = 125
 ---@return SonarScannerData
 local function get_scanner_data(scanner)
   local unit_number = scanner.unit_number --[[@as uint]]
-  global.scanner_data = global.scanner_data or {}
-  if not global.scanner_data[unit_number] then
+  storage.scanner_data = storage.scanner_data or {}
+  if not storage.scanner_data[unit_number] then
     local chunk_position = util.to_chunk_position(scanner.position)
-    global.scanner_data[unit_number] = {
+    storage.scanner_data[unit_number] = {
       shadow_angles = {},
       explored_chunks = {},
       explored_chunks_by_radius = { {} },
@@ -31,14 +32,14 @@ local function get_scanner_data(scanner)
       current_circle_len = 1,
     }
   end
-  return global.scanner_data[unit_number]
+  return storage.scanner_data[unit_number]
 end
 
 ---@param radius uint
 ---@return ChunkPosition[] circle_points, uint point_count
 local function get_chunks_circle(radius)
-  global.scanner_circle_cache = global.scanner_circle_cache or { { points = { { x = 0, y = 0 } }, len = 1 } }
-  local bucket = global.scanner_circle_cache[radius + 1]
+  storage.scanner_circle_cache = storage.scanner_circle_cache or { { points = { { x = 0, y = 0 } }, len = 1 } }
+  local bucket = storage.scanner_circle_cache[radius + 1]
   if bucket then
     return bucket.points, bucket.len
   end
@@ -71,7 +72,7 @@ local function get_chunks_circle(radius)
   end
 
   bucket.len = c * 4
-  global.scanner_circle_cache[radius + 1] = bucket
+  storage.scanner_circle_cache[radius + 1] = bucket
   return bucket.points, bucket.len
 end
 
@@ -273,8 +274,8 @@ local function on_sector_scanned(event)
   local charted_chunk_yet = false
   while not charted_chunk_yet do
     if table_size(scanner_data.to_be_explored_chunks) == 0 then
-      global.scanner_data[scanner.unit_number] = nil
-      scanner.active = false
+      storage.scanner_data[scanner.unit_number] = nil
+      EntityUtil.set_active(scanner, false)
       return
     end
 
@@ -295,40 +296,47 @@ end
 ---| EventData.on_built_entity
 ---| EventData.on_robot_built_entity
 local function on_scanner_built(event)
-  local scanner = event.created_entity
+  local scanner = event.entity
   if scanner.name ~= entity_name then return end
 
-  script.register_on_entity_destroyed(scanner)
-  scanner.backer_name = ""
-  scanner.active = false
+  script.register_on_object_destroyed(scanner)
+  EntityUtil.clear_backer_name(scanner)
+  EntityUtil.set_active(scanner, false)
 
-  game.get_player(event.player_index).create_local_flying_text({
-    text = { "freight-forwarding.sonar-buoy-warmup" },
-    position = scanner.position,
-  })
+  local player = event.player_index and game.get_player(event.player_index)
+  if player then
+    player.create_local_flying_text({
+      text = { "freight-forwarding.sonar-buoy-warmup" },
+      position = scanner.position,
+    })
+  end
 
-  global.sonar_scanner_warmup = global.sonar_scanner_warmup or {}
-  global.sonar_scanner_warmup[scanner.unit_number] = scanner
+  storage.sonar_scanner_warmup = storage.sonar_scanner_warmup or {}
+  storage.sonar_scanner_warmup[scanner.unit_number] = scanner
 end
 
----@param event EventData.on_entity_destroyed
+---@param event EventData.on_object_destroyed
 local function on_scanner_destroyed(event)
-  if not event.unit_number then return end
+  -- 2.x: for entities `useful_id` is the unit number
+  if event.type ~= defines.target_type.entity or not event.useful_id then return end
 
-  global.scanner_data = global.scanner_data or {}
-  global.scanner_data[event.unit_number] = nil
+  storage.scanner_data = storage.scanner_data or {}
+  storage.scanner_data[event.useful_id] = nil
+  if storage.sonar_scanner_warmup then
+    storage.sonar_scanner_warmup[event.useful_id] = nil
+  end
 end
 
 ---@param event EventData.on_tick
 local function scanner_warmup(event)
-  local warmups = table_size(global.sonar_scanner_warmup or {})
+  local warmups = table_size(storage.sonar_scanner_warmup or {})
   if warmups == 0 then return end
 
   local checks = math.ceil(10 / warmups) -- do a total of 10 chunks per tick
 
-  for unit_number, scanner in pairs(global.sonar_scanner_warmup) do
+  for unit_number, scanner in pairs(storage.sonar_scanner_warmup) do
     if not scanner or not scanner.valid then
-      global.sonar_scanner_warmup[unit_number] = nil
+      storage.sonar_scanner_warmup[unit_number] = nil
       goto next
     end
 
@@ -350,8 +358,8 @@ local function scanner_warmup(event)
       cost = cost + iters
 
       if completed or not chunk then
-        global.sonar_scanner_warmup[unit_number] = nil
-        scanner.active = true
+        storage.sonar_scanner_warmup[unit_number] = nil
+        EntityUtil.set_active(scanner, true)
         goto next
       end
 
@@ -367,8 +375,8 @@ local function scanner_warmup(event)
         scanner_data.explored_chunks[chunk_str] = nil
         scanner_data.to_be_explored_chunks[chunk_str] = true
 
-        global.sonar_scanner_warmup[unit_number] = nil
-        scanner.active = true
+        storage.sonar_scanner_warmup[unit_number] = nil
+        EntityUtil.set_active(scanner, true)
         goto next
       end
     end
@@ -383,7 +391,7 @@ local SonarScanning = {}
 SonarScanning.events = {
   [defines.events.on_built_entity]       = on_scanner_built,
   [defines.events.on_robot_built_entity] = on_scanner_built,
-  [defines.events.on_entity_destroyed]   = on_scanner_destroyed,
+  [defines.events.on_object_destroyed]   = on_scanner_destroyed,
   [defines.events.on_sector_scanned]     = on_sector_scanned,
   [defines.events.on_tick]               = scanner_warmup,
 }

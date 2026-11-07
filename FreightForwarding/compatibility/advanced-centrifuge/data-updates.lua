@@ -1,7 +1,7 @@
 if not mods["advanced-centrifuge"] then return end
 
 local util = require "__FreightForwarding__.prototypes.data-util"
-local bzutil = require "__bzlead__.data-util"
+local bzutil = require "__FreightForwarding__.prototypes.data-util"
 
 -- Entity rebalance
 local k11 = data.raw["assembling-machine"]["k11-advanced-centrifuge"]

@@ -29,16 +29,24 @@ local function multiply_recipe_ingredients(recipe, multiplier, ingredient_name)
   end
 end
 
+local function set_single_result(recipe_name)
+  local recipe = data.raw.recipe[recipe_name]
+  if recipe.result_count then recipe.result_count = 1 end
+  for _, product in pairs(recipe.results or {}) do
+    product.amount = 1
+  end
+end
+
 -- Bridges automatically get ingredients based on "rail" cost and hardcoded setting
 if data.raw.recipe["bbr-rail-wood"] then
-  data.raw.recipe["bbr-rail-wood"].result_count = 1
+  set_single_result("bbr-rail-wood")
   multiply_recipe_ingredients(data.raw.recipe["bbr-rail-wood"], 2)
 end
 if data.raw.recipe["bbr-rail-iron"] then
-  data.raw.recipe["bbr-rail-iron"].result_count = 1
+  set_single_result("bbr-rail-iron")
   multiply_recipe_ingredients(data.raw.recipe["bbr-rail-iron"], 2)
 end
 if data.raw.recipe["bbr-rail-brick"] then
-  data.raw.recipe["bbr-rail-brick"].result_count = 1
+  set_single_result("bbr-rail-brick")
   multiply_recipe_ingredients(data.raw.recipe["bbr-rail-brick"], 2)
 end

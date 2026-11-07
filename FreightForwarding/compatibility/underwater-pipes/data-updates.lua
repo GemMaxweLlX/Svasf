@@ -4,16 +4,20 @@ local util = require "__FreightForwarding__.prototypes.data-util"
 
 -- Main underwater pipe is now provided by FF, so hide it
 
-table.insert(data.raw.pipe["underwater-pipe"].flags, "hidden")
-table.insert(data.raw.pipe["underwater-pipe-placer"].flags, "hidden")
-data.raw.item["underwater-pipe"].flags = {"hidden"}
-data.raw.recipe["underwater-pipe"].hidden = true
+for _, prototype in pairs{
+  data.raw.pipe["underwater-pipe"],
+  data.raw.pipe["underwater-pipe-placer"],
+  data.raw.item["underwater-pipe"],
+  data.raw.recipe["underwater-pipe"],
+} do
+  prototype.hidden = true
+end
 
-data.raw.recipe["underwater-pipe-to-ground"].ingredients = {
+util.set_ingredients("underwater-pipe-to-ground", {
   {"ff-underwater-pipe", 20},
-}
+})
 
-table.remove(data.raw.technology["underwater-pipes"].effects, 1)  -- Remove underwater pipe
+util.remove_recipe_effect("underwater-pipes", "underwater-pipe")
 
 -- Revert bztitanium's changes to underwater pipes
 util.remove_prerequisite("underwater-pipes", "titanium-processing")

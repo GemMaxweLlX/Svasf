@@ -1,3 +1,4 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 -- Dredger includes:
 -- mining-drill as place_result of item, that can only be placed on nodule deposits, and includes platform in sprite?
 -- assembling-machine which is placed instead of the mining-drill by script
@@ -6,7 +7,7 @@
 local sounds = require "__base__.prototypes.entity.sounds"
 local hit_effects = require "__base__.prototypes.entity.hit-effects"
 
-data:extend{
+legacy.extend{
   {
     type = "recipe-category",
     name = "ff-dredging",
@@ -417,7 +418,7 @@ data:extend{
     --selection_box = {{-1, -1}, {1, 1}},
     maximum_wire_distance = 0,
     supply_area_distance = 14,
-    pictures = util.empty_sprite(),
+    pictures = { filename = "__core__/graphics/empty.png", width = 1, height = 1, direction_count = 1 },
     --vehicle_impact_sound = sounds.generic_impact,
     --open_sound = sounds.electric_network_open,
     --close_sound = sounds.electric_network_close,
@@ -461,62 +462,41 @@ data:extend{
   },
 }
 
-local concrete = table.deepcopy(data.raw["tile"]["concrete"])
-local tile_variants = {
-  main = concrete.variants.main,
-  inner_corner_mask = concrete.variants.inner_corner_mask,
-  outer_corner_mask = concrete.variants.outer_corner_mask,
-  side_mask = concrete.variants.side_mask,
-  u_transition_mask = concrete.variants.u_transition_mask,
-  o_transition_mask = concrete.variants.o_transition_mask,
-  material_background = {
-    picture = "__FreightForwarding__/graphics/dredging-platform/concrete.png",
-    count = 8,
-    hr_version = {
-      picture = "__FreightForwarding__/graphics/dredging-platform/hr-concrete.png",
-      count = 8,
-      scale = 0.5
-    }
-  }
+-- Dredging platform tile: concrete with a custom texture
+local platform = table.deepcopy(data.raw["tile"]["concrete"])
+platform.name = "ff-dredging-platform"
+platform.order = "a[artificial]-b[tier-2]-a[concrete]"
+platform.minable = nil
+platform.mined_sound = nil
+platform.next_direction = nil
+platform.collision_mask = { layers = { ground_tile = true } }  -- Gets added to later
+platform.walking_speed_modifier = 1.4
+platform.decorative_removal_probability = 0.25
+platform.map_color = {r=63, g=61, b=59}
+platform.absorptions_per_second = nil
+platform.autoplace = nil
+platform.variants.material_background = {
+  picture = "__FreightForwarding__/graphics/dredging-platform/hr-concrete.png",
+  count = 8,
+  scale = 0.5,
 }
-
-data:extend{
-  {
-    type = "tile",
-    name = "ff-dredging-platform",
-    order = "a[artificial]-b[tier-2]-a[concrete]",
-    needs_correction = false,
-    collision_mask = {"ground-tile"},  -- Gets added to later
-    walking_speed_modifier = 1.4,
-    layer = 61,
-    transition_overlay_layer_offset = 2, -- need to render border overlay on top of hazard-concrete
-    decorative_removal_probability = 0.25,
-    variants = tile_variants,
-    transitions = concrete.transitions,
-    transitions_between_transitions = concrete.transitions_between_transitions,
-
-    walking_sound = concrete.walking_sound,
-    build_sound = concrete.build_sound,
-    map_color={r=63, g=61, b=59},
-    scorch_mark_color = {r = 0.373, g = 0.307, b = 0.243, a = 1.000},
-    pollution_absorption_per_second = 0,
-    vehicle_friction_modifier = concrete.vehicle_friction_modifier,
-
-    trigger_effect = concrete.trigger_effect,
-  },
-}
+data:extend{platform}
 
 local radar = table.deepcopy(data.raw["radar"]["radar"])
 radar.name = "ff-dredger-radar"
-radar.flags = {"hidden", "not-on-map", "not-blueprintable", "not-deconstructable", "placeable-off-grid"}
+radar.flags = {"not-on-map", "not-blueprintable", "not-deconstructable", "placeable-off-grid"}
+radar.hidden = true
+radar.minable = nil
+radar.connects_to_other_radars = false
+radar.circuit_connector = nil
 radar.selectable_in_game = false
 radar.allow_copy_paste = false
-radar.collision_mask = {}
+radar.collision_mask = { layers = {} }
 radar.collision_box = nil
 radar.selection_box = nil
 radar.fast_replaceable_group = nil
 radar.next_upgrade = nil
-radar.pictures = emptypic
+radar.pictures = { filename = "__core__/graphics/empty.png", width = 1, height = 1, direction_count = 1 }
 radar.max_distance_of_sector_revealed = 0
 radar.energy_source = {
   type = "void"
@@ -524,4 +504,4 @@ radar.energy_source = {
 radar.energy_usage = "50kW"
 radar.water_reflection = nil
 radar.working_sound = nil
-data:extend{radar}
+legacy.extend{radar}

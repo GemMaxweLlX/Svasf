@@ -1,3 +1,4 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 -- Taken from se-space-trains
 local hit_effects = require "__base__.prototypes.entity.hit-effects"
 local sounds = require "__base__.prototypes.entity.sounds"
@@ -91,7 +92,7 @@ local function space_accumulator_charge(discharging_graphics)
   }
 end
 
-data:extend{ -- Battery charging interface
+legacy.extend{ -- Battery charging interface
   {
     type = "furnace",
     name = "ff-charging-station",
@@ -144,7 +145,7 @@ data:extend{ -- Battery charging interface
         animation = space_accumulator_charge()
     }},
 
-    water_reflection = accumulator_reflection(),
+    water_reflection = accumulator_reflection and accumulator_reflection() or nil,
 
     energy_usage = "800kW",
     crafting_categories = {"battery"},
@@ -216,7 +217,7 @@ data:extend{ -- Battery charging interface
     idle_animation = space_accumulator_picture(nil, 30, true),
     animation = space_accumulator_charge(true),
 
-    water_reflection = accumulator_reflection(),
+    water_reflection = accumulator_reflection and accumulator_reflection() or nil,
     vehicle_impact_sound = sounds.generic_impact,
     open_sound = sounds.machine_open,
     close_sound = sounds.machine_close,
@@ -464,7 +465,7 @@ data:extend{ -- Battery charging interface
   },
 }
 
-data:extend(
+legacy.extend(
 {
   {
     type = "fuel-category",

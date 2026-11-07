@@ -1,3 +1,4 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 local sounds = require "__base__.prototypes.entity.sounds"
 
 local empty_sprite = {
@@ -11,35 +12,28 @@ local empty_sprite = {
   variation_count = 1,
 }
 
-local collision_mask_util = require "__core__.lualib.collision-mask-util"
+local C = require "__FreightForwarding__.prototypes.collision-util"
 
-local lava_pool_layer = collision_mask_util.get_first_unused_layer()
-log("FF lava_pool_layer assigned to " .. lava_pool_layer)
 -- Make lava pool resource collide with trees, rocks, and cliffs
+local lava_pool_layer = C.layer("ff_lava_pool")
 for _, type in pairs{"tree", "simple-entity", "cliff"} do
-  for _, prototype in pairs(data.raw[type]) do
-    local collision_mask = collision_mask_util.get_mask(prototype)
-    if collision_mask_util.mask_contains_layer(collision_mask, "object-layer") then
-      collision_mask_util.add_layer(collision_mask, lava_pool_layer)
-      prototype.collision_mask = collision_mask
+  for _, prototype in pairs(data.raw[type] or {}) do
+    if C.has_layer(prototype, "object") then
+      C.add_layer(prototype, lava_pool_layer)
     end
   end
 end
 
-local lava_pool_water_tile_layer = collision_mask_util.get_first_unused_layer()
-log("FF lava_pool_water_tile_layer assigned to " .. lava_pool_water_tile_layer)
-
--- Make lava pool resource collide with trees, rocks, and cliffs
+-- ... and with water
+local lava_pool_water_tile_layer = C.layer("ff_lava_pool_water_tile")
 for _, prototype in pairs(data.raw.tile) do
-  local collision_mask = collision_mask_util.get_mask(prototype)
-  if collision_mask_util.mask_contains_layer(collision_mask, "water-tile") then
-    collision_mask_util.add_layer(collision_mask, lava_pool_water_tile_layer)
-    prototype.collision_mask = collision_mask
+  if C.has_layer(prototype, "water_tile") then
+    C.add_layer(prototype, lava_pool_water_tile_layer)
   end
 end
 
 
-data:extend{
+legacy.extend{
   {
     type = "item",
     name = "ff-lava-pool-dummy",  -- So that the correct words appear when hovering over the patch in map view, and for FNEI
@@ -90,7 +84,7 @@ data:extend{
       result = "ff-lava-pool-dummy",
     },
     --walking_sound = sounds.oil,
-    collision_mask = {lava_pool_layer, lava_pool_water_tile_layer},
+    collision_mask = C.mask{lava_pool_layer, lava_pool_water_tile_layer},
     collision_box = {{-2, -2}, {2, 2}},
     --selection_box = {{-2, -2}, {2, 2}},
     stage_counts = {0},

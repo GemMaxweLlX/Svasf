@@ -1,3 +1,4 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 -- Adapted from https://mods.factorio.com/mod/exotic-industries-tanks
 
 local ei_tank_1 = {
@@ -40,7 +41,7 @@ local ei_tank_1 = {
   }
 }
 
-data:extend{
+legacy.extend{
   {
     name = "ff-offshore-storage-tank",
     type = "item",
@@ -81,8 +82,7 @@ data:extend{
     selection_box = {{-2.5, -2.5}, {2.5, 2.5}},
     --collision_mask = table.deepcopy(data.raw["pipe"]["storage-tank"].collision_mask),
     collision_mask = {"ground-tile", "object-layer"},  -- Fixed in data-final-fixes
-    circuit_wire_connection_points = circuit_connector_definitions["storage-tank"].points,
-    circuit_connector_sprites = circuit_connector_definitions["storage-tank"].sprites,
+    circuit_connector = circuit_connector_definitions["storage-tank"],
     circuit_wire_max_distance = 20,
     flow_length_in_ticks = 1,
     map_color = data.raw["storage-tank"]["storage-tank"].map_color,
@@ -118,9 +118,4 @@ data:extend{
 }
 
 
-table.insert(data.raw["technology"]["tank_ship"].effects, 3,
-  {
-    type = "unlock-recipe",
-    recipe = "ff-offshore-storage-tank"
-  }
-)
+require("__FreightForwarding__.prototypes.data-util").add_unlock("tank_ship", "ff-offshore-storage-tank", 3)

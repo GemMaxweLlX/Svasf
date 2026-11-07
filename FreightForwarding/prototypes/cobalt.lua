@@ -1,6 +1,7 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 local util = require "__FreightForwarding__.prototypes.data-util"
 
-data:extend{
+legacy.extend{
   {
     type = "item",
     name = "ff-cobalt-ore",

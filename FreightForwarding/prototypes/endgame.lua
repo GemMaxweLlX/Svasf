@@ -1,8 +1,10 @@
-if mods["Krastorio2"] or mods["SpaceMod"] then return end
+local legacy = require "__FreightForwarding__.prototypes.legacy"
+-- With Space Age the game is won by reaching the solar system edge, so the FF endgame is not used.
+if mods["Krastorio2"] or mods["SpaceMod"] or mods["space-age"] then return end
 
-local bzutil = require "__bzlead__.data-util"
+local bzutil = require "__FreightForwarding__.prototypes.data-util"
 
-data:extend{
+legacy.extend{
   {
     type = "technology",
     name = "ff-interstellar-communication",
@@ -58,7 +60,7 @@ data:extend{
     subgroup = "space-related",
     order = "n[interstellar-communicator]",
     stack_size = 1,
-    rocket_launch_product = {"space-science-pack", 1000}
+    rocket_launch_products = {{type = "item", name = "space-science-pack", amount = 1000}}
   },
   {
     type = "recipe",
@@ -70,7 +72,7 @@ data:extend{
     {
       {"satellite", 1},
       {"low-density-structure", 50},
-      {"rocket-control-unit", 50},
+      {"processing-unit", 50},  -- 2.x: rocket control units were removed
       {"nuclear-fuel", 10}
     },
     result = "ff-interstellar-communicator",
@@ -87,7 +89,10 @@ data:extend{
   {"rocket-fuel", 50}
 ]]
 local satellite_item = data.raw.item["satellite"]
-satellite_item.rocket_launch_product = {"space-science-pack", 200}
+if satellite_item then
+  satellite_item.rocket_launch_product = nil
+  satellite_item.rocket_launch_products = {{type = "item", name = "space-science-pack", amount = 200}}
+end
 
 -- Reduce satellite cost
 bzutil.set_ingredient("satellite", "low-density-structure", 50)

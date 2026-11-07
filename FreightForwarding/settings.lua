@@ -13,6 +13,14 @@ data:extend{
     default_value = false,
     order = "b",
   },
+  {
+    -- 2.x: also apply the FF island terrain to Nauvis' defaults, not only to the "Freight Forwarding" preset
+    type = "bool-setting",
+    name = "ff-island-terrain-by-default",
+    setting_type = "startup",
+    default_value = true,
+    order = "c",
+  },
 }
 
 local function force_setting(setting_type, setting_name, value)
@@ -60,8 +68,12 @@ force_setting("bool", "enable-mcraft", true)
 
 -- Lex's Aircraft
 -- Hide light gunship settings, ensure all ships support logistics requests
-data.raw["double-setting"]["lex-flying-gunship-speed-settings"].hidden = true
-data.raw["int-setting"]["lex-gunship-inventory-size-settings"].hidden = true
+local function hide_setting(setting_type, setting_name)
+  local setting = data.raw[setting_type .. "-setting"][setting_name]
+  if setting then setting.hidden = true end
+end
+hide_setting("double", "lex-flying-gunship-speed-settings")
+hide_setting("int", "lex-gunship-inventory-size-settings")
 force_setting("int", "lex-flying-cargo-trash-inventory-size-settings", 20)
 force_setting("int", "lex-gunship-trash-inventory-size-settings", 10)
 force_setting("int", "lex-flying-heavyship-trash-inventory-size-settings", 10)

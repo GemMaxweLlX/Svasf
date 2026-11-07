@@ -1,3 +1,4 @@
+local EntityUtil = require("scripts/entity-util")
 local util = require("scripts/chunk-util")
 local entity_name = "ff-seismic-scanner"
 local scanner_range = 80
@@ -11,12 +12,12 @@ local min_tiles_from_water = 16
 ---@return SeismicScannerData
 local function get_scanner_data(scanner)
   local unit_number = scanner.unit_number --[[@as uint]]
-  global.scanner_data = global.scanner_data or {}
-  if not global.scanner_data[unit_number] then
+  storage.scanner_data = storage.scanner_data or {}
+  if not storage.scanner_data[unit_number] then
     local chunk_position = util.to_chunk_position(scanner.position)
-    global.scanner_data[unit_number] = { explored_chunks = {}, to_be_explored_chunks = { [util.position_to_str(chunk_position)] = true } }
+    storage.scanner_data[unit_number] = { explored_chunks = {}, to_be_explored_chunks = { [util.position_to_str(chunk_position)] = true } }
   end
-  return global.scanner_data[unit_number]
+  return storage.scanner_data[unit_number]
 end
 
 ---@param event EventData.on_sector_scanned
@@ -59,8 +60,8 @@ local function on_sector_scanned(event)
         end
       end
     else
-      global.scanner_data[scanner.unit_number] = nil
-      -- scanner.active = false
+      storage.scanner_data[scanner.unit_number] = nil
+      -- EntityUtil.set_active(scanner, false)
       return
     end
   end
@@ -71,20 +72,20 @@ end
 ---| EventData.on_robot_built_entity
 local function on_scanner_built(event)
   -- Disable scanner if within 16 tiles of water
-  local scanner = event.created_entity
+  local scanner = event.entity
   if scanner.name ~= entity_name then return end
 
-  scanner.backer_name = ""
+  EntityUtil.clear_backer_name(scanner)
   local surface = scanner.surface
-  local water_tile_count = surface.count_tiles_filtered { position = scanner.position, radius = min_tiles_from_water, collision_mask = "water-tile", limit = 1 }
+  local water_tile_count = surface.count_tiles_filtered { position = scanner.position, radius = min_tiles_from_water, collision_mask = "water_tile", limit = 1 }
   if water_tile_count > 0 then
-    scanner.active = false
+    EntityUtil.set_active(scanner, false)
     if event.player_index then
       game.get_player(event.player_index).create_local_flying_text({ text = { "freight-forwarding.seismic-scanner-too-close-to-water", min_tiles_from_water }, create_at_cursor = true })
     end
   end
 
-  script.register_on_entity_destroyed(scanner)
+  script.register_on_object_destroyed(scanner)
 end
 
 ---@type ScriptLib

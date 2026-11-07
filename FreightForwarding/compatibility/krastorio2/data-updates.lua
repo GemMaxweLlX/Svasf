@@ -1,7 +1,7 @@
 if not mods["Krastorio2"] then return end
 
 local util = require "__FreightForwarding__.prototypes.data-util"
-local bzutil = require "__bzlead__.data-util"
+local bzutil = require "__FreightForwarding__.prototypes.data-util"
 
 -- Update kr-steel-pump
 data.raw.pump["kr-steel-pump"].energy_source.drain = "1.5kW"
@@ -45,11 +45,11 @@ data.raw.technology["ff-transport-science-pack"].icon = "__FreightForwarding__/g
 data.raw.technology["ff-transport-science-pack"].localised_name = { "item-name.ff-k2-transport-tech-card" }
 bzutil.set_product_amount("ff-transport-science-pack", "ff-transport-science-pack", 5)
 bzutil.set_recipe_time("ff-transport-science-pack", 20)
-data.raw.recipe["ff-transport-science-pack"].ingredients = {
-  { name = "big-electric-pole", amount = 1},
-  { name = "rail",              amount = 5},
-  { name = "blank-tech-card",   amount = 5}
-}
+bzutil.set_ingredients("ff-transport-science-pack", {
+  { type = "item", name = "big-electric-pole", amount = 1},
+  { type = "item", name = "rail",              amount = 5},
+  { type = "item", name = "blank-tech-card",   amount = 5}
+})
 
 -- Big-electric-pole recipe
 bzutil.remove_ingredient("big-electric-pole", "steel-plate")
@@ -170,7 +170,7 @@ end
 
 -- Replace all K2 lithium-sulfur-battery instances with FF's battery-pack
 data.raw.recipe["lithium-sulfur-battery"].hidden = true
-data.raw.item["lithium-sulfur-battery"].flags = {"hidden"}
+data.raw.item["lithium-sulfur-battery"].hidden = true
 data.raw.item["lithium-sulfur-battery"].ic_create_container = false
 bzutil.remove_recipe_effect("kr-lithium-sulfur-battery", "lithium-sulfur-battery")
 for ___, recipe in pairs(data.raw.recipe) do

@@ -4,7 +4,11 @@
 local function better_victory_screen_statistics(winning_force, forces)
   local statistics = { by_force = {} }
   for _, force in pairs(forces) do
-    local containers_created = force.item_production_statistics.get_input_count("ic-container")
+    -- 2.x: production statistics are per surface
+    local containers_created = 0
+    for _, surface in pairs(game.surfaces) do
+      containers_created = containers_created + force.get_item_production_statistics(surface).get_input_count("ic-container")
+    end
     statistics.by_force[force.name] = {
       -- Add it to the existing production category
       ["production"] = { stats = {

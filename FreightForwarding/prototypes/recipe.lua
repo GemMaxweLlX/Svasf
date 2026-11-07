@@ -1,5 +1,5 @@
 local util = require "__FreightForwarding__.prototypes.data-util"
-local bzutil = require "__bzlead__.data-util"
+local bzutil = require "__FreightForwarding__.prototypes.data-util"
 
 util.remove_prerequisite("railway", "engine")
 util.add_prerequisite("railway", "ic-containerization-1")
@@ -30,8 +30,13 @@ bzutil.replace_ingredient("lex-flying-gunship", "steel-plate", "titanium-plate")
 bzutil.replace_ingredient("lex-flying-cargo", "steel-plate", "titanium-plate")
 bzutil.replace_ingredient("lex-flying-heavyship", "steel-plate", "titanium-plate")
 
-bzutil.add_ingredient("rocket-control-unit", "ff-charged-battery-pack", 1)
-util.add_prerequisite("rocket-control-unit", "ff-battery-pack")
+-- 2.x removed rocket control units (1.1: +1 charged battery pack per RCU, 10 RCU per rocket part).
+-- Not with Space Age, where rocket parts are needed in far larger amounts on every planet.
+-- Satellites (and space science from rockets) don't exist in Space Age progression either.
+if not mods["space-age"] then
+  bzutil.add_ingredient("rocket-part", "ff-charged-battery-pack", 5)
+  util.add_prerequisite("rocket-silo", "ff-battery-pack")
 
-bzutil.replace_ingredient("satellite", "accumulator", "ff-charged-battery-pack")
-util.add_prerequisite("space-science-pack", "ff-battery-pack")
+  bzutil.replace_ingredient("satellite", "accumulator", "ff-charged-battery-pack")
+  util.add_prerequisite("space-science-pack", "ff-battery-pack")
+end

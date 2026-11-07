@@ -1,4 +1,23 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.0.0
+Date: 7 November 2026
+  Major Features:
+    - Updated to Factorio 2.1
+    - Optional Space Age support: Nauvis keeps the Freight Forwarding island terrain and resources, other planets are unaffected
+  Changes:
+    - Map generation rewritten for the 2.x string noise expressions (island elevation, resource placement, enemy spread, water tiles). The generated world follows the same formulas as 1.x
+    - The "Freight Forwarding" map preset now uses the "water" autoplace control (Scale / Coverage) instead of the removed terrain segmentation / water settings
+    - Added startup setting "Island terrain by default" (on by default): Nauvis uses the island terrain even with the Default preset
+    - Cliffs follow the Freight Forwarding elevation
+    - Rocket control units no longer exist: rockets parts need 5 charged battery packs instead (not with Space Age)
+    - With Space Age: rocket silos can be built anywhere on other planets; on Nauvis they still need a rocket silo hole. Satellite/space science and the interstellar communicator endgame are disabled (Space Age has its own victory)
+    - Mini Trains, Spidertron Patrols, Lex's Aircraft, Hovercrafts, Canal Builder and Beautiful Bridge Railway are now optional dependencies
+    - Freight Forwarding main menu simulations are disabled until they are re-recorded in 2.x
+  Modding:
+    - Prototypes are defined through prototypes/legacy.lua, which converts the 1.1 format (recipes, flags, hr_version, emissions, fluid boxes, collision masks, graphics sets) to 2.x
+    - Custom collision layers are now collision-layer prototypes: ff_non_deep_water, ff_deep_water, ff_platform, ff_water_object, ff_substitute_player, ff_underwater_pipe, ff_lava_pool, ff_lava_pool_water_tile
+    - Recipe/technology helpers no longer depend on bzlead's data-util
+---------------------------------------------------------------------------------------------------
 Version: 1.9.0
 Date: 23 July 2024
   Features:

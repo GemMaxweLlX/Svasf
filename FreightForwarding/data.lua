@@ -39,11 +39,16 @@ Vanilla radar:
   energy_per_nearby_scan = "250kJ"
 ]]
 
-data.raw["spider-vehicle"]["lex-flying-gunship"].torso_bob_speed = 0.7
-data.raw["spider-vehicle"]["lex-flying-cargo"].torso_bob_speed = 0.3
-data.raw["spider-vehicle"]["lex-flying-heavyship"].torso_bob_speed = 0.45
-data.raw["spider-vehicle"]["lex-flying-cargo"].chunk_exploration_radius = 6
-data.raw["spider-vehicle"]["lex-flying-heavyship"].chunk_exploration_radius = 6
+local spiders = data.raw["spider-vehicle"]
+if spiders["lex-flying-gunship"] then spiders["lex-flying-gunship"].torso_bob_speed = 0.7 end
+if spiders["lex-flying-cargo"] then
+  spiders["lex-flying-cargo"].torso_bob_speed = 0.3
+  spiders["lex-flying-cargo"].chunk_exploration_radius = 6
+end
+if spiders["lex-flying-heavyship"] then
+  spiders["lex-flying-heavyship"].torso_bob_speed = 0.45
+  spiders["lex-flying-heavyship"].chunk_exploration_radius = 6
+end
 
 -- Compatibility
 require "__FreightForwarding__.compatibility.advanced-centrifuge.data"

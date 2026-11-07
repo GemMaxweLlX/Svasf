@@ -1,6 +1,7 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 local sounds = require "__base__.prototypes.entity.sounds"
 
-data:extend{
+legacy.extend{
   {
     type = "item",
     name = "ff-seamount-dummy",  -- So that the correct words appear when hovering over the patch in map view

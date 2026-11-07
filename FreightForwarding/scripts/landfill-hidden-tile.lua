@@ -1,5 +1,5 @@
 -- data structure:
--- global.landfill -> array of
+-- storage.landfill -> array of
 --   {
 --     x : x-position of tile
 --   , y : y-position of tile
@@ -7,29 +7,29 @@
 --   }
 
 local function set_landfill_hidden_tile(x, y, tile)
-	if global.landfill == nil then
-		global.landfill = {}
+	if storage.landfill == nil then
+		storage.landfill = {}
 	end
 
-	for _, data in pairs(global.landfill) do
+	for _, data in pairs(storage.landfill) do
 		if data.x == x and data.y == y then
 			data.tile = tile
 			return
 		end
 	end
 	local data = {x = x, y = y, tile = tile}
-	table.insert(global.landfill, data)
+	table.insert(storage.landfill, data)
 end
 
 local function get_landfill_hidden_tile(x, y)
-	if global.landfill == nil then
+	if storage.landfill == nil then
 		game.print("error failed to get tile below landfill. using default")
 		return "water"
 	end
 
-	for index, data in pairs(global.landfill) do
+	for index, data in pairs(storage.landfill) do
 		if data.x == x and data.y == y then
-			table.remove(global.landfill, index)
+			table.remove(storage.landfill, index)
 			return data.tile
 		end
 	end
@@ -75,8 +75,10 @@ local function on_robot_built_tile(event)
 
 	if landfill_count > 0 then
 		--game.print("steal robot "..landfill_count.." landfill")
-		local inventory = event.robot.get_inventory(defines.inventory.character_main)
-		inventory.remove({name="landfill", count=landfill_count})
+		local inventory = event.robot.get_inventory(defines.inventory.robot_cargo)
+		if inventory then
+			inventory.remove({name="landfill", count=landfill_count})
+		end
 	end
 end
 

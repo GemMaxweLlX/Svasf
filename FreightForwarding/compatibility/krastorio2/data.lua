@@ -1,9 +1,10 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 if not mods["Krastorio2"] then return end
 
 local matter = require "__Krastorio2__.lib.public.data-stages.matter-util"
 
 -- Matter technology
-data:extend({
+legacy.extend({
   {
     type = "technology",
     name = "kr-matter-cobalt-processing",

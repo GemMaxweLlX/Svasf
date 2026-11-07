@@ -39,6 +39,9 @@ local entity_tests = {
 }
 
 local function test_collision(mask1, mask2, name1, name2, should_collide)
+  -- 2.x: CollisionMask is {layers = {...}, ...}
+  mask1 = mask1.layers or mask1
+  mask2 = mask2.layers or mask2
   local collides = false
   for layer in pairs(mask1) do
     if mask2[layer] then
@@ -58,8 +61,8 @@ local function test_collision(mask1, mask2, name1, name2, should_collide)
 end
 
 local function test_tile_collisions()
-  local tiles = game.tile_prototypes
-  local entities = game.entity_prototypes
+  local tiles = prototypes.tile
+  local entities = prototypes.entity
 
   local grass_mask = tiles["grass-1"].collision_mask
   local shallow_mask = tiles["water-shallow"].collision_mask
@@ -80,7 +83,7 @@ local function test_tile_collisions()
 end
 
 local function test_entity_collisions()
-  local entities = game.entity_prototypes
+  local entities = prototypes.entity
 
   for _, test_case in pairs(entity_tests) do
     local entity_name = test_case[1]

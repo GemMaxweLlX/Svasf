@@ -1,3 +1,4 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 if mods["Mining-Space-Industries-II"] or mods["LunarLandings"] or mods["space-exploration"] then return end
 
 local sounds = require "__base__.prototypes.entity.sounds"
@@ -17,12 +18,15 @@ rocket_silo_dummy.name = "ff-rocket-silo-dummy"
 rocket_silo_dummy.localised_name = {"entity-name.rocket-silo"}
 rocket_silo_dummy.localised_description = rocket_silo.localised_description or {"entity-description.rocket-silo"}
 rocket_silo_dummy.type = "mining-drill"
-rocket_silo_dummy.collision_mask = {}
+rocket_silo_dummy.collision_mask = { layers = {} }
+-- Mining drills want one circuit connector per direction; the dummy doesn't need any
+rocket_silo_dummy.circuit_connector = nil
+rocket_silo_dummy.circuit_wire_max_distance = nil
 rocket_silo_dummy.vector_to_place_result = {0, 0}
 rocket_silo_dummy.mining_speed = 1
 rocket_silo_dummy.resource_categories = { "ff-rocket-silo" }
 rocket_silo_dummy.resource_searching_radius = 0.49
-rocket_silo_dummy.animations = rocket_silo_dummy.base_day_sprite
+rocket_silo_dummy.graphics_set = { animation = rocket_silo_dummy.base_day_sprite }
 rocket_silo_dummy.created_effect = {
   type = "direct",
   action_delivery = {
@@ -37,9 +41,15 @@ rocket_silo_dummy.created_effect = {
 }
 -- TODO give dummy correct energy usage
 
-rocket_silo_item.place_result = "ff-rocket-silo-dummy"
+if mods["space-age"] then
+  -- Rocket silos are needed on every planet, but holes only exist on Nauvis: there the restriction
+  -- is enforced by script (scripts/rocket-silo.lua) and the item keeps placing a normal silo.
+  rocket_silo_dummy.hidden = true
+else
+  rocket_silo_item.place_result = "ff-rocket-silo-dummy"
+end
 
-data:extend{
+legacy.extend{
   rocket_silo_dummy,
   {
     type = "resource-category",
@@ -79,7 +89,6 @@ data:extend{
     tree_removal_probability = 1,
     tree_removal_max_distance = 32 * 32,
     cliff_removal_probability = 1,
-    remove_decoratives = "true",  -- Doesn't work, so done in script instead
     minable =
     {
       mining_time = 1,

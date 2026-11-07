@@ -1,3 +1,4 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 local vanilla_tip_names = {
   "introduction",
   "show-info",
@@ -78,6 +79,7 @@ local vanilla_category_names = {
 
 for _, tip_name in pairs(vanilla_tip_names) do
   local tip = data.raw["tips-and-tricks-item"][tip_name]
+  if not tip then goto continue end  -- tip list changed in 2.x
   local indent = tip.indent or 0
   indent = indent + 1
   local dependencies = tip.dependencies or {}
@@ -88,16 +90,17 @@ for _, tip_name in pairs(vanilla_tip_names) do
   tip.dependencies = dependencies
   tip.order = order
   tip.starting_status = "unlocked"
+  ::continue::
 end
 
 for _, category_name in pairs(vanilla_category_names) do
   local category = data.raw["tips-and-tricks-item-category"][category_name]
-  local order = category.order or ""
-  order = "zzz-[vanilla]-" .. order
-  category.order = order
+  if category then
+    category.order = "zzz-[vanilla]-" .. (category.order or "")
+  end
 end
 
-data:extend({
+legacy.extend({
   {
     type = "tips-and-tricks-item",
     name = "ff-vanilla",
@@ -107,7 +110,7 @@ data:extend({
   }
 })
 
-data:extend{
+legacy.extend{
   {
     type = "tips-and-tricks-item-category",
     name = "freight-forwarding",
@@ -217,8 +220,10 @@ data:extend{
 
 -- Convert cargo ships tip to fit in with the rest
 local ships_tip = data.raw["tips-and-tricks-item"]["cargo-ships"]
-ships_tip.category = "freight-forwarding"
-ships_tip.tag = "[entity=cargo_ship]"
-ships_tip.indent = 1
-ships_tip.order = "e"
-ships_tip.is_title = false
+if ships_tip then
+  ships_tip.category = "freight-forwarding"
+  ships_tip.tag = "[entity=cargo_ship]"
+  ships_tip.indent = 1
+  ships_tip.order = "e"
+  ships_tip.is_title = false
+end

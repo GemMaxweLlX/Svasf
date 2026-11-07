@@ -7,9 +7,12 @@ local function recover_burnt_result(event)
     if burner then
       local burning = burner.currently_burning
       if burning then
-        local burnt_result = burning.burnt_result
+        -- 2.x: currently_burning is {name = LuaItemPrototype, quality = LuaQualityPrototype}
+        local item = burning.name or burning
+        if type(item) == "string" then item = prototypes.item[item] end
+        local burnt_result = item and item.burnt_result
         if burnt_result then
-          event.buffer.insert{name=burnt_result.name,count=1}
+          buffer.insert{name = burnt_result.name, count = 1}
         end
       end
     end

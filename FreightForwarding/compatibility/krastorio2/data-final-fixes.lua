@@ -1,7 +1,7 @@
 if not mods["Krastorio2"] then return end
 
 local util = require "__FreightForwarding__.prototypes.data-util"
-local bzutil = require "__bzlead__.data-util"
+local bzutil = require "__FreightForwarding__.prototypes.data-util"
 
 -- Adjust lead requirements for k2 ammos, moved to piercing- types
 if settings.startup["ff-k2-no-lead-ammo"].value then
@@ -15,14 +15,14 @@ else
     if name:match('rock') and rock.minable then
       local results = {}
       if rock.minable.result then
-        results = {{ rock.minable.result, rock.minable.count or 1 }}
+        results = {{ type = "item", name = rock.minable.result, amount = rock.minable.count or 1 }}
         rock.minable.result = nil
         rock.minable.count = nil
       end
       if rock.minable.results then
         results = rock.minable.results
       end
-      results[#results+1] = { name = 'lead-ore', amount_min = 12, amount_max = 28 }
+      results[#results+1] = { type = "item", name = 'lead-ore', amount_min = 12, amount_max = 28 }
       rock.minable.results = results
     end
   end

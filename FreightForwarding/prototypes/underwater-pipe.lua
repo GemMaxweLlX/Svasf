@@ -1,3 +1,4 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 -- Adapted from https://mods.factorio.com/mod/underwater-pipes
 
 local hit_effects = require "__base__.prototypes.entity.hit-effects"
@@ -39,22 +40,22 @@ end
 local pipe = table.deepcopy(data.raw.pipe.pipe)
 pipe.name = "ff-underwater-pipe"
 pipe.minable = {mining_time = 0.1, result = "ff-underwater-pipe"}
-pipe.collision_mask = {}  -- Replacement ground-tile layer added in data-final-fixes
+pipe.collision_mask = { layers = {} }  -- Replacement ground-tile layer added in data-final-fixes
 pipe.icons = {
-  {icon="__base__/graphics/terrain/water/water-o.png", icon_size=32},
+  {icon="__base__/graphics/icons/fluid/water.png", icon_size=64},
   {icon=pipe.icon, icon_size=pipe.icon_size, tint=transparent},
 }
 pipe.icon = nil
 pipe.icon_size = nil
 pipe.pictures = underwater_hint(pipe.pictures, transparent, depth)
 
-data:extend{
+legacy.extend{
   pipe,
   {
     type = "item",
     name = "ff-underwater-pipe",
     icons = {
-      {icon="__base__/graphics/terrain/water/water-o.png", icon_size=32},
+      {icon="__base__/graphics/icons/fluid/water.png", icon_size=64},
       {icon="__base__/graphics/icons/pipe.png", icon_size=64, tint=transparent},
     },
     subgroup = "energy-pipe-distribution",
@@ -76,9 +77,4 @@ data:extend{
   },
 }
 
-table.insert(data.raw["technology"]["tank_ship"].effects, 2,
-  {
-    type = "unlock-recipe",
-    recipe = "ff-underwater-pipe"
-  }
-)
+require("__FreightForwarding__.prototypes.data-util").add_unlock("tank_ship", "ff-underwater-pipe", 2)

@@ -5,7 +5,7 @@ function startsWith(inputstr, start)
 end
 
 local util = require "__FreightForwarding__.prototypes.data-util"
-local bzutil = require "__bzlead__.data-util"
+local bzutil = require "__FreightForwarding__.prototypes.data-util"
 local restack = util.set_stack_size
 
 restack("tritium-breeder-fuel-cell", 20)  -- Was 50

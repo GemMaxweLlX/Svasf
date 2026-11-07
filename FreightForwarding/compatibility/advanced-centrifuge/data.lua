@@ -1,3 +1,4 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 if not mods["advanced-centrifuge"] then return end
 
 -- vanilla recipe
@@ -13,7 +14,7 @@ local function k2_byproducts(index)
   if mods["Krastorio2"] then return byproducts[index] else return nil end
 end
 
-data:extend({
+legacy.extend({
   {
     type = "recipe-category",
     name = "advanced-centrifuging"

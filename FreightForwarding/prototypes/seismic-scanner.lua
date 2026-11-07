@@ -1,8 +1,9 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 local hit_effects = require "__base__.prototypes.entity.hit-effects"
 local sounds = require "__base__.prototypes.entity.sounds"
 local shift = {x=-0, y=-0.5}
 
-data:extend{
+legacy.extend{
   {
     type = "technology",
     name = "ff-seismic-scanner",
@@ -204,6 +205,7 @@ data:extend{
     },
     radius_minimap_visualisation_color = { r = 0.059, g = 0.092, b = 0.235, a = 0.275 },
     rotation_speed = 0.01,
+    connects_to_other_radars = false,
     water_reflection =
     {
       pictures =

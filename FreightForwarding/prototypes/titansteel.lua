@@ -1,7 +1,8 @@
+local legacy = require "__FreightForwarding__.prototypes.legacy"
 local util = require "__FreightForwarding__.prototypes.data-util"
-local bzutil = require "__bzlead__.data-util"
+local bzutil = require "__FreightForwarding__.prototypes.data-util"
 
-data:extend{
+legacy.extend{
   {
     type = "recipe-category",
     name = "ff-lava-smelting",  -- Big lava pool
