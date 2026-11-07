@@ -12,6 +12,8 @@ Date: 7 November 2026
     - Rocket control units no longer exist: rockets parts need 5 charged battery packs instead (not with Space Age)
     - With Space Age: rocket silos can be built anywhere on other planets; on Nauvis they still need a rocket silo hole. Satellite/space science and the interstellar communicator endgame are disabled (Space Age has its own victory)
     - Mini Trains, Spidertron Patrols, Lex's Aircraft, Hovercrafts, Canal Builder and Beautiful Bridge Railway are now optional dependencies
+    - Intermodal Containers is optional for now: its latest release (2.1.3) only supports Factorio 2.0
+    - Requires Cargo Ships Oil Rig (oil rigs were split out of Cargo Ships in 2.1)
     - Freight Forwarding main menu simulations are disabled until they are re-recorded in 2.x
   Modding:
     - Prototypes are defined through prototypes/legacy.lua, which converts the 1.1 format (recipes, flags, hr_version, emissions, fluid boxes, collision masks, graphics sets) to 2.x

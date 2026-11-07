@@ -65,6 +65,15 @@
 * Синтаксис всех `.lua` — `luac5.2 -p`.
 * `tools/mock-data-stage/`: прогон data-стадии на заглушках и разбор всех noise-выражений.
 
+### С настоящими зависимостями (присланы пользователем)
+Cargo Ships 2.1.8, BZ Lead 2.0.29, BZ Titanium 2.0.27 (вместо `cargo-ships-graphics` и `Robot256Lib` — заглушки):
+загрузка прототипов **без ошибок**, все обращения к Cargo Ships и BZ нашлись.
+
+* **Intermodal Containers 2.1.3 под 2.1 не работает** (помечен 2.0, и даже с исправленной версией падает на
+  `category` → `categories`). Поэтому сейчас он **необязательный**: мод запускается без контейнеров, интеграция
+  включится сама, когда выйдет версия под 2.1.
+* В Cargo Ships 2.1 нефтяная вышка вынесена в отдельный мод **cargo-ships-oil-rig** — теперь это обязательная зависимость.
+
 ## Что ещё НЕ проверено
 1. **Мод целиком со всеми зависимостями.** Версии под 2.1 есть у Cargo Ships, BZ Lead, BZ Titanium, Mini Trains,
    Spidertron Patrols, Lex's Aircraft, Hovercrafts. **Intermodal Containers и Canal Builder есть только под 2.0**,

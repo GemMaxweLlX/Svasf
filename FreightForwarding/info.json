@@ -8,11 +8,12 @@
   "factorio_version": "2.1",
   "dependencies": [
     "base >= 2.1.0",
-    "IntermodalContainers",
     "cargo-ships",
     "bzlead",
     "bztitanium",
+    "cargo-ships-oil-rig",
     "? space-age",
+    "? IntermodalContainers",
     "? Mini_Trains",
     "? SpidertronPatrols",
     "? lex-aircraft",
