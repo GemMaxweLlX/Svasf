@@ -18,18 +18,18 @@ local tile_tests = {
   {"ff-lava-pool-resource", false, true, true, true},
   {"ff-rocket-silo-hole", false, true, true, true},
   {"straight-rail", false, true, true, true},
-  {"straight-water-way", true, false, false, false},
+  {"straight-waterway", true, false, false, false},
   {"bbr-straight-rail-iron", false, false, false, true},
   {"indep-boat", true, false, false, false},
 }
 
 local entity_tests = {
-  {"character", {"straight-water-way", "ff-underwater-pipe"}, false},
+  {"character", {"straight-waterway", "ff-underwater-pipe"}, false},
   {"character", {"ship-loading-pump", "ff-offshore-storage-tank", "assembling-machine-1", "ic-containerization-machine-1"}, true},
-  {"indep-boat", {"straight-water-way", "ff-underwater-pipe", "buoy", "chain_buoy", "port"}, false},
+  {"indep-boat", {"straight-waterway", "ff-underwater-pipe", "buoy", "chain_buoy", "port"}, false},
   {"indep-boat", {"ff-seamount", "ff-offshore-storage-tank", "oil_rig", "ship-loading-pump"}, true},
-  {"straight-water-way", {"ff-underwater-pipe"}, false},
-  {"straight-water-way", {"ff-offshore-storage-tank", "ship-loading-pump"}, true},
+  {"straight-waterway", {"ff-underwater-pipe"}, false},
+  {"straight-waterway", {"ff-offshore-storage-tank", "ship-loading-pump"}, true},
   {"ship-loading-pump", {"ff-underwater-pipe", "ff-offshore-storage-tank"}, true},
   {"ff-underwater-pipe", {"hcraft-entity"}, false},
   {"ff-underwater-pipe", {"oil_rig", "ff-offshore-storage-tank"}, true},

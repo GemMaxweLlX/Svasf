@@ -30,6 +30,10 @@ Date: 7 November 2026
       nutrients, bioflux, bacteria, science, fish, charged battery packs) which spoil 5 times slower inside
     - Light containers (Vulcanus): any containerized item, a full one always weighs 250 kg - 4 per rocket
     - Cryo containers (Aquilo): spoilable items spoil 20 times slower, 250 kg when full
+    - Interplanetary freight science pack, assembled on Aquilo from transport science, titansteel, a charged battery
+      pack, a refrigerated container and lithium; needed by all technologies that use cryogenic science
+    - Fast cargo ships (Vulcanus, 1.5x speed) and heavy cargo ships (Aquilo, double hold), registered through
+      Cargo Ships' ship definition API
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
   Quality of life:
