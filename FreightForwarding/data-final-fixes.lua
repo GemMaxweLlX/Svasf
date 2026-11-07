@@ -8,8 +8,13 @@ local water_object_layer = C.layer("ff_water_object")
 local substitute_player_layer = C.layer("ff_substitute_player")
 local underwater_pipe_layer = C.layer("ff_underwater_pipe")
 
--- Seamounts: only on deep water
-data.raw["resource"]["ff-seamount"].collision_mask = C.mask{ "resource", non_deep_water_layer, "ground_tile" }
+-- Seamounts: only on deep water.
+-- Water tiles have the "resource" layer in 2.x; Cargo Ships Oil Rig instead puts its offshore oil on a
+-- "water_resource" layer (present on land and non-deep water). Use it too, so seamounts and offshore oil
+-- don't overlap. Without that mod, a separate layer is used and seamounts only avoid land and shallow water.
+local seamount_resource_layer = data.raw["collision-layer"]["water_resource"] and "water_resource" or "ff_seamount"
+C.layer(seamount_resource_layer)
+data.raw["resource"]["ff-seamount"].collision_mask = C.mask{ seamount_resource_layer, non_deep_water_layer, "ground_tile" }
 
 -- Nothing that needs to be connected/underground can be built on the dredging platform
 C.add_layer(data.raw.tile["ff-dredging-platform"], platform_layer)

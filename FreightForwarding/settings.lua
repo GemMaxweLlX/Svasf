@@ -46,6 +46,8 @@ force_setting("double", "ic-belts-per-machine", 1)
 force_setting("double", "ic-container-loss-chance", 0.01)
 
 -- Force offshore oil, no inland oil
+-- (2.1: oil rigs are in cargo-ships-oil-rig; deep_oil / no_oil_on_land / oil_richness no longer exist,
+--  inland oil is removed from Nauvis in prototypes/planet-nauvis.lua)
 force_setting("bool", "deep_oil", true)
 force_setting("bool", "no_oil_on_land", true)
 force_setting("bool", "no_shallow_oil", true)

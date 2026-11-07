@@ -19,19 +19,28 @@ if mgs.autoplace_controls then
   end
 end
 
-local settings = mgs.autoplace_settings
+local autoplace_settings = mgs.autoplace_settings
 -- Only add to lists that already exist: a missing list means "everything" and must stay missing.
-if settings and settings.entity and settings.entity.settings then
+if autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings then
   for _, name in pairs(ff_entities) do
     if data.raw.resource[name] then
-      settings.entity.settings[name] = settings.entity.settings[name] or {}
+      autoplace_settings.entity.settings[name] = autoplace_settings.entity.settings[name] or {}
     end
   end
 end
-if settings and settings.tile and settings.tile.settings then
+if autoplace_settings and autoplace_settings.tile and autoplace_settings.tile.settings then
   for _, name in pairs(ff_tiles) do
     if data.raw.tile[name] then
-      settings.tile.settings[name] = settings.tile.settings[name] or {}
+      autoplace_settings.tile.settings[name] = autoplace_settings.tile.settings[name] or {}
     end
   end
+end
+
+-- No inland oil on Nauvis: oil comes from offshore oil (Cargo Ships Oil Rig) only.
+-- (1.x did this through Cargo Ships' "no_oil_on_land" setting, which no longer exists.)
+if mgs.autoplace_controls then
+  mgs.autoplace_controls["crude-oil"] = nil
+end
+if autoplace_settings and autoplace_settings.entity and autoplace_settings.entity.settings then
+  autoplace_settings.entity.settings["crude-oil"] = nil
 end

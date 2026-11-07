@@ -33,6 +33,7 @@ presets["x-default"] = {
 local excluded_controls = {
   ["ff-seamount"] = true,
   ["ff-rocket-silo-hole"] = true,
+  ["crude-oil"] = true,  -- no inland oil (prototypes/planet-nauvis.lua)
 }
 
 local nauvis = data.raw.planet and data.raw.planet["nauvis"]
