@@ -12,6 +12,10 @@ Date: 7 November 2026
     - The normal rocket silo, landing pad and starter pack are unlocked by "Heavy-lift rockets", available in three
       versions using the science of Vulcanus, Fulgora or Gleba: researching one completes the others. The normal silo
       can be built anywhere
+    - Each of these planets has its own rocket silo recipe from local materials (tungsten / superconductors and
+      holmium / carbon fiber), craftable only on that planet
+    - Heavy rocket silo (2000 kg) unlocked with cryogenic science and titansteel: its rocket parts use titansteel rocket
+      frames, smelted only in Nauvis lava pools. Normal silos can be upgraded to it
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
   Changes:
