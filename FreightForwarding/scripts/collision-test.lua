@@ -18,7 +18,7 @@ local tile_tests = {
   {"ff-lava-pool-resource", false, true, true, true},
   {"ff-rocket-silo-hole", false, true, true, true},
   {"straight-rail", false, true, true, true},
-  {"straight-waterway", true, false, false, false},
+  -- straight-waterway: Cargo Ships 2.1 limits it to water with tile_buildability_rules, not with collision masks
   {"bbr-straight-rail-iron", false, false, false, true},
   {"indep-boat", true, false, false, false},
 }
