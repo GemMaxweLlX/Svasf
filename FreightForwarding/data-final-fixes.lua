@@ -50,6 +50,9 @@ for _, water_pump in pairs(water_pumps) do
 end
 C.add_layer(data.raw.pipe["ff-underwater-pipe"], water_object_layer)
 C.add_layer(data.raw["radar"]["ff-sonar-buoy"], water_object_layer)
+if data.raw["radar"]["ff-sonar-buoy-2"] then
+  data.raw["radar"]["ff-sonar-buoy-2"].collision_mask = table.deepcopy(data.raw["radar"]["ff-sonar-buoy"].collision_mask)
+end
 if data.raw["mining-drill"]["oil_rig"] then
   C.add_layer(data.raw["mining-drill"]["oil_rig"], water_object_layer)
 end

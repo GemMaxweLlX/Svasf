@@ -14,6 +14,13 @@ data:extend{
     order = "b",
   },
   {
+    type = "bool-setting",
+    name = "ff-map-tags",
+    setting_type = "runtime-global",
+    default_value = true,
+    order = "d",
+  },
+  {
     -- 2.x: also apply the FF island terrain to Nauvis' defaults, not only to the "Freight Forwarding" preset
     type = "bool-setting",
     name = "ff-island-terrain-by-default",

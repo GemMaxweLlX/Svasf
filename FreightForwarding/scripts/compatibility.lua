@@ -2,6 +2,7 @@ local better_victory = require "compatibility.better-victory-screen.control"
 local disco_science  = require "compatibility.disco-science.control"
 local milestones     = require "compatibility.milestones.control"
 local picker_dollies = require "compatibility.picker-dollies.control"
+local map_tags       = require "scripts.map-tags"
 
 ---@type ScriptLib
 local Compatibility = {}
@@ -20,6 +21,7 @@ Compatibility.preload_remote_interface = function()
   for _, mod in pairs({
     better_victory,
     milestones,
+    map_tags,
   }) do
     if mod.remote_interface_fragment then
       for name, func in pairs(mod.remote_interface_fragment()) do

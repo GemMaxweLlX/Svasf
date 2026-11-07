@@ -2,6 +2,8 @@ local EntityUtil = require("scripts/entity-util")
 local util = require("scripts/chunk-util")
 local entity_name = "ff-seismic-scanner"
 local scanner_range = 80
+-- Range in chunks per scanner (Mk2 from Aquilo, Space Age)
+local scanner_ranges = { ["ff-seismic-scanner"] = 80, ["ff-seismic-scanner-2"] = 160 }
 local min_tiles_from_water = 16
 
 ---@class SeismicScannerData
@@ -17,6 +19,7 @@ local function get_scanner_data(scanner)
     local chunk_position = util.to_chunk_position(scanner.position)
     storage.scanner_data[unit_number] = { explored_chunks = {}, to_be_explored_chunks = { [util.position_to_str(chunk_position)] = true } }
   end
+  storage.scanner_data[unit_number].range = storage.scanner_data[unit_number].range or scanner_ranges[scanner.name]
   return storage.scanner_data[unit_number]
 end
 
@@ -25,7 +28,7 @@ local function on_sector_scanned(event)
   -- Raised when radar does scan, but the scanner prototype has a very small radius
   -- so that the actual chunk scan is done by the following script
   local scanner = event.radar
-  if scanner.name ~= entity_name then return end
+  if not scanner_ranges[scanner.name] then return end
 
   local surface = scanner.surface
   local force = scanner.force
@@ -51,7 +54,7 @@ local function on_sector_scanned(event)
       if util.is_chunk_land(chunk, surface) then
         -- Add neighbouring chunks to to_be_explored_chunks
         for _, neighbouring_chunk in pairs(util.neighbouring_chunks(chunk)) do
-          if util.is_chunk_in_range(neighbouring_chunk, scanner_chunk_position, scanner_range) then
+          if util.is_chunk_in_range(neighbouring_chunk, scanner_chunk_position, (scanner_data.range or scanner_range)) then
             local neighbouring_chunk_str = util.position_to_str(neighbouring_chunk)
             if not scanner_data.explored_chunks[neighbouring_chunk_str] then
               scanner_data.to_be_explored_chunks[neighbouring_chunk_str] = true
@@ -73,7 +76,7 @@ end
 local function on_scanner_built(event)
   -- Disable scanner if within 16 tiles of water
   local scanner = event.entity
-  if scanner.name ~= entity_name then return end
+  if not scanner_ranges[scanner.name] then return end
 
   EntityUtil.clear_backer_name(scanner)
   local surface = scanner.surface

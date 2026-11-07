@@ -27,6 +27,13 @@ Date: 7 November 2026
       nutrients, bioflux, bacteria, science, fish, charged battery packs) which spoil 5 times slower inside
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
+  Quality of life:
+    - Fuel depot: trains and ships stopped within 10 tiles refuel from it and drop their burnt fuel into it
+    - Map tags for rocket silo holes, cobalt vents and big lava pools when they are charted (setting; remote
+      interface add_map_tags to tag an existing map)
+    - The dredger can be mined and moved: the seamount/vent and the original tiles are restored
+    - Space Age: containerization machine tier 4 (Fulgora), dredging productivity 1-3 (Vulcanus), fast charging
+      station (Fulgora), seismic scanner and sonar buoy Mk2 with twice the range (Aquilo)
   Changes:
     - Map generation rewritten for the 2.x string noise expressions (island elevation, resource placement, enemy spread, water tiles). The generated world follows the same formulas as 1.x
     - The "Freight Forwarding" map preset now uses the "water" autoplace control (Scale / Coverage) instead of the removed terrain segmentation / water settings

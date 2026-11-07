@@ -27,5 +27,7 @@ handler.add_libraries {
   require "scripts.life-ring",
   require "scripts.compatibility",
   require "scripts.collision-test",
-  require "scripts.warning"
+  require "scripts.warning",
+  require "scripts.fuel-depot",
+  require "scripts.map-tags",
 }
