@@ -1,0 +1,324 @@
+---------------------------------------------------------------------------------------------------
+Version: 2.1.3
+Date: 9 June 2026
+  Compatibility:
+    - Fixed compatibility with Krastorio2 and Bob's Logistics
+---------------------------------------------------------------------------------------------------
+Version: 2.1.2
+Date: 11 November 2024
+  Bugfixes:
+    - Fixed item_sounds error on load with 2.0.16
+    - Fixed error on load with mods that don't set icon_size
+---------------------------------------------------------------------------------------------------
+Version: 2.1.1
+Date: 30 October 2024
+  Bugfixes:
+    - Fixed crash on load with Plutonium Energy mod
+---------------------------------------------------------------------------------------------------
+Version: 2.1.0
+Date: 17 October 2024
+  Features:
+    - Factorio 2.0 & Space Age compatibility
+    - Added 3x4 machine size option (graphics for this would be appreciated if anyone fancies making some)
+---------------------------------------------------------------------------------------------------
+Version: 2.0.9
+Date: 30 October 2024
+  Bugfixes:
+    - Fixed crash on load with Plutonium Energy mod 
+---------------------------------------------------------------------------------------------------
+Version: 2.0.8
+Date: 6 June 2024
+  Changes:
+    - Added French locale 
+  Bugfixes:
+    - Fixed error with KingJo's vehicle mods
+---------------------------------------------------------------------------------------------------
+Version: 2.0.7
+Date: 3 November 2023
+  Bugfixes:
+    - Fixed error on load with many mods
+---------------------------------------------------------------------------------------------------
+Version: 2.0.6
+Date: 3 November 2023
+  Changes:
+    - Slightly reduced default size of items when on belts
+    - Moved containerised items from "Load containers" group to "Containers" group
+  Bugfixes:
+    - Fixed oversized icons setting not apply to empty containers
+---------------------------------------------------------------------------------------------------
+Version: 2.0.5
+Date: 4 October 2023
+  Features:
+    - Added mod setting to disable oversized icons on belts
+    - Added mod setting to change number of module slots in containerization machines
+  Compatibility:
+    - Added 3 new tiers of containerization machines when Advanced Belts is enabled
+    - Fixed being unable to use Space Exploration efficiency modules in containerization machines
+    - Fixed incorrect container loading recipes with BZ Carbon and BZ Natural Gas
+    - Fixed crash on load with BZ Titanium and Endgame Combat
+---------------------------------------------------------------------------------------------------
+Version: 2.0.4
+Date: 12 July 2023
+  Compatibility:
+    - Fixed crash on load with Seperated And Infinite Inserter Capacity Research
+    - Fixed incorrect container icon scaling for some modded items
+    - [Pyanodons] Fixed incorrect simple circuit board and coal loading recipes
+---------------------------------------------------------------------------------------------------
+Version: 2.0.3
+Date: 22 June 2023
+  Compatibility:
+    - Fixed incorrect container loading recipes with BZ Aluminum
+---------------------------------------------------------------------------------------------------
+Version: 2.0.2
+Date: 17 June 2023
+  Compatibility:
+    - [Krastorio 2] Added radioactivity damage to containerized uranium items
+    - Fixed crash on load with Belt Sorters
+    - Fixed crash on load with Red alert 2 Nuclear-silo
+---------------------------------------------------------------------------------------------------
+Version: 2.0.1
+Date: 14 April 2023
+  Features:
+    - Added tier 4-5 of containerization machines to match Krastorio2's tier 4-5 belts
+    - Added compatibility with Bob's Logistics:
+      - Tier 1 machine now requires lower tier inserter
+      - Added tier 4-5 of containerization machines to match Bob's tier 4-5 belts
+    - Now supported by Artisanal Reskins: Compatibility by Kirazy
+    - Renamed machines from "Container loader" to "Containerization machine"
+---------------------------------------------------------------------------------------------------
+Version: 2.0.0
+Date: 3 April 2023
+  Info:
+    - Forked from "DeadlockCrating"
+  Changes:
+    - Uses steel containers instead of wooden crates
+    - Improved container and recipe graphics
+    - Added many configuration settings
+    - Machines are now 4x4 by default
+    - Containers are only returned 99.5% of the time by default
+    - Automatically detects items from any mod, rather than needing specific compatibility implemented
+---------------------------------------------------------------------------------------------------
+Version: 1.7.0
+Date: 13. 12. 2020
+  Changes:
+    - Updated for 1.1
+---------------------------------------------------------------------------------------------------
+Version: 1.6.1
+Date: 26. 07. 2020
+  Bugfixes:
+    - Use icons property instead of icon when both are present and fix icon scaling, courtesy of kirazy on GitHub
+---------------------------------------------------------------------------------------------------
+Version: 1.6.0
+Date: 23. 04. 2019
+  Changes:
+    - Updated for 0.18
+---------------------------------------------------------------------------------------------------
+Version: 1.5.1
+Date: 28. 06. 2019
+  Changes:
+    - Added Italian locale, thanks to Linver.
+    - Removed Regroup as an optional dependency.
+---------------------------------------------------------------------------------------------------
+Version: 1.5.0
+Date: 08. 06. 2019
+  Changes:
+    - Default icon size for machines and crates is now 64, and crate item icons can now support custom mipmaps.
+    - It now takes the same time to craft any tier of crating machine (3 seconds).
+    - Crating machine recipe selection GUI no longer refers to "assembling".
+  API:
+    - The DCM API was updated. See README.md or public.lua for details, but briefly:
+    - NEW: deadlock_crating.add_tier(). This adds (or replaces) a tier of machines and tech.
+    - NEW: deadlock_crating.add_crate(). This is the same as the former create() call, but icon size is no longer required.
+    - NEW: deadlock_crating.destroy_crate(). This deletes the crated version of an item and all recipe/tech references to it.
+    - NEW: deadlock_crating.destroy_vanilla_crates(). This deletes all the default vanilla item crates and all references to them.
+    - DEPRECATED: deadlock_crating.create(). Consider using deadlock_crating.add_crate() instead.
+    - DEPRECATED: deadlock_crating.remove(). Consider using deadlock_crating.destroy_crate() instead.
+    - DEPRECATED: deadlock_crating.reset(). Consider using deadlock_crating.destroy_vanilla_crates() instead.
+    - Crate creation now accepts a nil technology reference, but you will need to handle the recipe unlocks yourself.
+    - Removed references to crafting tab subgroups which haven't been used for more than a year.
+---------------------------------------------------------------------------------------------------
+Version: 1.4.10
+Date: 02. 06. 2019
+  Changes:
+    - Prevent errors when other mods use a Crating tech prefix with a non-numeric suffix
+---------------------------------------------------------------------------------------------------
+Version: 1.4.9
+Date: 02. 05. 2019
+  Changes:
+    - Update for character name changes in 0.17.35
+---------------------------------------------------------------------------------------------------
+Version: 1.4.8
+Date: 26. 04. 2019
+  Changes:
+    - Prevent creating invalid recipes with greater than 65,535 ingredients when items have insanely large stack sizes
+---------------------------------------------------------------------------------------------------
+Version: 1.4.7
+Date: 18. 04. 2019
+  Changes:
+    - Load API and most other prototype loading in earlier phases than final-fixes
+---------------------------------------------------------------------------------------------------
+Version: 1.4.6
+Date: 13. 04. 2019
+  Changes:
+    - Change to using new emissions_per_minute parameter for pollution values
+---------------------------------------------------------------------------------------------------
+Version: 1.4.5
+Date: 12. 04. 2019
+  Changes:
+    - Build entity table from scratch instead of copying from assembling machines
+---------------------------------------------------------------------------------------------------
+Version: 1.4.4
+Date: 10. 04. 2019
+  Bugfixes:
+    - Updated crating machine render order to fix occasional flickering issues
+---------------------------------------------------------------------------------------------------
+Version: 1.4.3
+Date: 26. 03. 2019
+  Bugfixes:
+    - Tier colour mask wasn't rendered properly, now fixed.
+---------------------------------------------------------------------------------------------------
+Version: 1.4.2
+Date: 25. 03. 2019
+  Bugfixes:
+    - Fixed a pollution issue. Crating machines now equal the pollution of assemblers of the same tier.
+  Changes:
+    - Rebalanced energy usage.
+---------------------------------------------------------------------------------------------------
+Version: 1.4.1
+Date: 21. 03. 2019
+  Changes:
+    - Brand new unique crate machine graphics!
+    - Adjusted crafting times to match 0.17 belt speeds, so that each tier compresses its respective belt again.
+    - Updated crate icons to match new wooden chests.
+---------------------------------------------------------------------------------------------------
+Version: 1.4.0
+Date: 02. 03. 2019
+  Changes:
+    - Updated for 0.17
+---------------------------------------------------------------------------------------------------
+Version: 1.3.0
+Date: 10. 05. 2018
+  Meta:
+    - This is the final version for Factorio 0.16.
+  Bugfixes:
+    - Corrected a "senior moment" which was causing crated items to have an incorrect stack size.
+---------------------------------------------------------------------------------------------------
+Version: 1.2.2
+Date: 04. 04. 2018
+  Changes:
+    - Removed logging options. Modders: if you need these, you can edit the value in shared.lua.
+---------------------------------------------------------------------------------------------------
+Version: 1.2.1
+Date: 30. 03. 2018
+  Changes:
+    - Crating/uncrating activities are no longer included in production statistics.
+    - This can't be a retroactive change so you will still see crate production stats in the past.
+---------------------------------------------------------------------------------------------------
+Version: 1.2.0
+Date: 28. 03. 2018
+  Changes:
+    - Made the internal structure of the mod properly modular, reducing variable/function scope.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.5
+Date: 24. 03. 2018
+  Changes:
+    - Players can now pack and unpack crates by hand, due to new support in the game for avoiding circular recipes.
+    - Simplified the crate inventory tab to try and minimise space used. Machines are now found on the Production tab.
+    - Removed an unnecessary layer from crate icons to lessen the rendering effort needed for crates on belts.
+  Inter-mod support:
+    - Items from other mods with icon sizes of 64 and 128 are now supported. See modding readme.
+    - Added a verbose logging option to mod settings so you can see what DCM is doing with your itamz.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.4
+Date: 13. 03. 2018
+  Bugfixes:
+    - Fixed a potentially breaking change in 0.16.29 to do with the new fuel emission multiplier.
+    - To prevent this kind of thing happening again, crate items are now generated "from scratch" instead of copying base item properties.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.3
+Date: 04. 03. 2018
+  Inter-mod support:
+    - Added two new functions for modders.
+    - deadlock_crating.remove(string) will search DCM's native technologies for any recipe unlocks with a matching substring and remove them.
+    - deadlock_crating.reset() will clear all crating recipes from all DCM technologies, leaving only the machine unlocks.
+    - See the modding readme for more details.
+  Bugfixes:
+    - Addressed a global variable pollution issue.
+    - If external mods use .create() to add to one of the native DCM technologies, the recipe now appears in the correct subgroup in the crafting tab.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.2
+Date: 17. 02. 2018
+  Inter-mod support:
+    - If a technology already specifies unlock effects for a stacked item, those effects are replaced instead of duplicated.
+    - Items from other mods which only specify layered icons are now handled automatically.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.1
+Date: 11. 02. 2018
+  Bugfixes:
+    - Fixed broken localisation references.
+---------------------------------------------------------------------------------------------------
+Version: 1.1.0
+Date: 03. 02. 2018
+  Inter-mod support:
+    - An easy way for modders to make their items crateable has been provided. See the readme pdf inside the zip.
+  Changes:
+    - Research costs realigned with vanilla technologies.
+    - Research tiers (i.e. which resources are in which tier) now match Deadlock's Stacking Beltboxes.
+  Bugfixes:
+    - Research tiers always shown correctly on the technology list.
+---------------------------------------------------------------------------------------------------
+Version: 1.0.1
+Date: 31. 01. 2018
+  Changes:
+    - ReStack added as an optional dependency because it insists on making very late changes to vanilla items.
+---------------------------------------------------------------------------------------------------
+Version: 1.0.0
+Date: 29. 01. 2018
+  Changes:
+    - Stable version. No further big changes to make.
+    - Research costs lowered.
+---------------------------------------------------------------------------------------------------
+Version: 0.2.1
+Date: 26. 01. 2018
+  Changes:
+    - Power requirements rebalanced, based on doing the maths for equivalent throughput.
+    - The bad news: it takes more power than before to crate up a big blue bus with Tier 3 machines, and the overhead drain is more.
+    - The good news: you need relatively less power than before to crate up yellow and red buses with Tier 1 and 2 crating machines.
+    - If power becomes a problem mid-game, a reminder: smart power switches are a thing.
+---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 26. 01. 2018
+  Changes:
+    - The machine is now a more overt upgrade of a regular assembler, with three tiers of machine, so that crating overheads can be scaled to local needs. T1 can handle a compressed yellow belt, T2 red, T3 blue.
+    - Recipes, crafting times, energy use, and research costs rebalanced to reflect this.
+    - Tier 3 crates are no longer steel chests, it was too expensive. All crates are now wooden.
+    - Icons updated.
+---------------------------------------------------------------------------------------------------
+Version: 0.1.3
+Date: 25. 01. 2018
+  Changes:
+    - Crafting tab re-organised, based on the research tiers. Packing machine moved out of vanilla tab.
+    - Item, recipe, and research icons updated.
+    - Iron sticks removed from crating. Who wants to shift a million sticks around?
+    - Research tier 3 now slightly cheaper.
+---------------------------------------------------------------------------------------------------
+Version: 0.1.2
+Date: 24. 01. 2018
+  Changes:
+    - Solid fuel, uranium-235 and uranium-238 can now be packed into crates.
+    - Recipes were moved to their own crafting tab (placeholder icon) and grouped in pairs.
+    - Icons, names and descriptions were improved.
+  Bugfixes:
+    - The packing machine returns the correct item when deconstructed.
+    - Crates containing fuel-type items can't be burned as fuel.
+---------------------------------------------------------------------------------------------------
+Version: 0.1.1
+Date: 24. 01. 2018
+  Bugfixes:
+    - The machine's entity icon was not the same as the item icon.
+    - The machine drains power when idle at the intended 50% ratio.
+---------------------------------------------------------------------------------------------------
+Version: 0.1.0
+Date: 24. 01. 2018
+  Changes:
+    - Initial release.
