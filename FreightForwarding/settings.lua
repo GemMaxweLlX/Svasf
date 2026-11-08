@@ -111,6 +111,14 @@ data:extend{
     order = "e-h",
   },
   {
+    -- FF + Space Age exclusive: key technologies need a container delivered to a research post first
+    type = "bool-setting",
+    name = "ff-delivery-permits",
+    setting_type = "startup",
+    default_value = true,
+    order = "e-0",
+  },
+  {
     type = "int-setting",
     name = "ff-freight-contract-size",
     setting_type = "startup",

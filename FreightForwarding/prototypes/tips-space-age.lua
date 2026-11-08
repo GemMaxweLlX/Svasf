@@ -16,6 +16,7 @@ local TIPS = {
   {"ff-sa-spoilage-sensor", "[item=ff-spoilage-sensor]", "ff-spoilage-sensor"},
   {"ff-sa-hot-titansteel", "[item=ff-hot-titansteel-plate]", "ff-hot-titansteel-plate"},
   {"ff-sa-freight-contract", "[item=ff-freight-consignment]", "ff-freight-consignment"},
+  {"ff-sa-permits", "[entity=ff-research-post]", nil},
 }
 
 local tips = {}
@@ -32,6 +33,11 @@ for i, tip in pairs(TIPS) do
       order = "s-" .. string.format("%02d", i),
       starting_status = "unlocked",
     }
+  end
+end
+if not settings.startup["ff-delivery-permits"].value then
+  for i = #tips, 1, -1 do
+    if tips[i].name == "ff-sa-permits" then table.remove(tips, i) end
   end
 end
 data:extend(tips)
