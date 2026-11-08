@@ -1,6 +1,7 @@
 -- Sea infrastructure (all games except classic mode). Runs in data-updates.
 --   * port crane: a big bulk inserter with long reach for loading ships from the quay (and back)
 --   * cable terminal: a pole on the shore whose wires reach far across the sea, but only to other terminals
+--   * cable landing + subsea cable: a cable laid along the seabed between two landings, any distance (takes time)
 --   * offshore wind turbine: power on water; output follows the wind (scripts/sea-power.lua)
 --   * tidal generator: power on shallow water; output follows the tide (scripts/sea-power.lua)
 -- Collision masks of the turbine and the tidal generator are set in data-final-fixes (like the offshore tank).
@@ -121,6 +122,60 @@ if big_pole and data.raw.item["big-electric-pole"] then
     {type = "item", name = "plastic-bar", amount = 20},
   })
   if r then add({terminal, item_for("ff-cable-terminal", data.raw.item["big-electric-pole"], tint, "-ff"), r}, "ff-cable-terminal") end
+end
+
+---------------------------------------------------------------------------------------------------
+-- Subsea cable: cable landings on two shores, connected by a cable laid along the seabed (scripts/subsea-cable.lua).
+-- The cable is an item, one per tile of distance; laying takes time. Then it is a normal copper wire.
+
+local medium_pole = data.raw["electric-pole"]["medium-electric-pole"]
+if medium_pole and data.raw.item["medium-electric-pole"] then
+  local tint = {r = 0.35, g = 0.85, b = 0.75, a = 1}
+  local landing = table.deepcopy(medium_pole)
+  landing.name = "ff-cable-landing"
+  landing.localised_name = {"entity-name.ff-cable-landing"}
+  landing.localised_description = {"entity-description.ff-cable-landing"}
+  landing.icons = tinted(medium_pole, tint)
+  landing.icon = nil
+  landing.minable = {mining_time = 0.5, result = "ff-cable-landing"}
+  landing.maximum_wire_distance = 9
+  landing.supply_area_distance = 2
+  landing.next_upgrade = nil
+  landing.fast_replaceable_group = nil
+  landing.surface_conditions = PLANET
+  tint_sprites(landing.pictures, tint)
+  local cable_icon = data.raw.item["copper-cable"]
+  local landing_recipe = recipe("ff-cable-landing", {
+    {type = "item", name = "medium-electric-pole", amount = 2},
+    {type = "item", name = "steel-plate", amount = 10},
+    {type = "item", name = "concrete", amount = 20},
+  })
+  if landing_recipe and cable_icon and data.raw.item["lead-plate"] and data.raw.item["plastic-bar"] then
+    add({landing, item_for("ff-cable-landing", data.raw.item["medium-electric-pole"], tint, "-ff-b"), landing_recipe}, "ff-cable-landing")
+    add({
+      {
+        type = "item",
+        name = "ff-subsea-cable",
+        icons = tinted(cable_icon, {r = 0.5, g = 0.6, b = 0.7, a = 1}),
+        subgroup = cable_icon.subgroup,
+        order = (cable_icon.order or "") .. "-ff",
+        stack_size = 200,
+        weight = 5000,
+      },
+      {
+        type = "recipe",
+        name = "ff-subsea-cable",
+        enabled = false,
+        energy_required = 1,
+        ingredients = {
+          {type = "item", name = "copper-cable", amount = 4},
+          {type = "item", name = "lead-plate", amount = 1},
+          {type = "item", name = "plastic-bar", amount = 1},
+        },
+        results = {{type = "item", name = "ff-subsea-cable", amount = 2}},
+      },
+    }, "ff-subsea-cable")
+  end
 end
 
 ---------------------------------------------------------------------------------------------------

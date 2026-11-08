@@ -83,6 +83,8 @@ Date: 7 November 2026
     - Sea infrastructure (all games except classic mode): port crane (long-reach bulk inserter), cable terminal
       (64-tile wires between terminals), offshore wind turbine (up to 1 MW with the wind), tidal generator (up to
       600 kW with the tide)
+    - Subsea cable: cable landings on two shores; open one, choose the other landing and lay the cable (1 subsea
+      cable per tile, 2 tiles per second, up to 1000 tiles). When laid it is a normal copper wire
     - Ship scripts (lava, wetlands, icebreaker, storms) find ships through the train manager instead of searching
       whole surfaces
     - Translations of the new texts: Ukrainian, French, German, Japanese

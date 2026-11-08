@@ -54,7 +54,7 @@ titanium from other islands, titansteel smelted in faraway lava pools, rocket si
   fly. Choose contracts, meet deadlines, build reputation, take special orders; every contract pays with a bonus.
 
 ### For every game
-Port cranes, cable terminals across the sea, offshore wind turbines and tidal generators, a spoilage sensor for trains,
+Port cranes, cable terminals and subsea cables laid between shores, offshore wind turbines and tidal generators, a spoilage sensor for trains,
 a fuel depot, map tags, freight statistics.
 
 ### Required

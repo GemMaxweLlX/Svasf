@@ -34,4 +34,5 @@ handler.add_libraries {
   require "scripts.spoilage-sensor",
   require "scripts.freight-contract",
   require "scripts.sea-power",
+  require "scripts.subsea-cable",
 }
