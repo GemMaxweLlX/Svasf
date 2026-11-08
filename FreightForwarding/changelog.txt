@@ -76,6 +76,17 @@ Date: 7 November 2026
       every 10 minutes until fulfilled. Timers are shown in the freight panel
     - Lore for the contracts: the Long Caravan, interstellar haulers that take cargo on the fly at the solar system
       edge (descriptions, tips, messages, victory screen)
+    - Contract reputation: +1 for a contract on time (+2 for a special order), -1 when late; rare ships (flagship,
+      forge ship, observatory ship) from reputation 3, bigger contracts with a bad reputation
+    - Special orders: specific goods in light or cryo containers instead of consignments, double reward
+    - Fulgora: lightning storms at night slow ships to half speed and can strike moving ships away from lightning rods
+    - Sea infrastructure (all games except classic mode): port crane (long-reach bulk inserter), cable terminal
+      (64-tile wires between terminals), offshore wind turbine (up to 1 MW with the wind), tidal generator (up to
+      600 kW with the tide)
+    - Ship scripts (lava, wetlands, icebreaker, storms) find ships through the train manager instead of searching
+      whole surfaces
+    - Translations of the new texts: Ukrainian, French, German, Japanese
+    - Message for saves from Freight Forwarding 1.x
     - Two panels on the left, toggled by shortcut bar buttons: containers (freight statistics per planet: packed,
       unpacked, damaged; refreshed every 10 seconds) and contracts (offers, active contract, timers, rewards). The
       contracts button becomes available with the contract technology, which also opens the panel once
