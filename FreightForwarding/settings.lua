@@ -105,6 +105,15 @@ data:extend{
     default_value = false,
     order = "e-h",
   },
+  {
+    type = "int-setting",
+    name = "ff-freight-contract-size",
+    setting_type = "startup",
+    default_value = 100,
+    minimum_value = 1,
+    maximum_value = 10000,
+    order = "e-i",
+  },
 }
 
 local function force_setting(setting_type, setting_name, value)

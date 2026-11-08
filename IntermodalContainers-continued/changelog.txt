@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.1.5
+Date: 8 November 2026
+  Bugfixes:
+    - The recipe consistency check no longer logs other mods' packing recipes as broken
+---------------------------------------------------------------------------------------------------
 Version: 2.1.4
 Date: 7 November 2026
   Changes:

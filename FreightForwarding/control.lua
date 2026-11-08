@@ -34,4 +34,5 @@ handler.add_libraries {
   require "scripts.icebreaker",
   require "scripts.spoilage-sensor",
   require "scripts.swamp-barges",
+  require "scripts.freight-contract",
 }

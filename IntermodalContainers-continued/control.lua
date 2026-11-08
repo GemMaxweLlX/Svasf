@@ -18,7 +18,7 @@ local function consistency_test()
       if expected_name ~= actual_name then
         log("Intermodal Containers: Loading recipe " .. recipe.name .. " has unexpected ingredient " .. actual_name .. " (expected " .. expected_name .. ")")
       end
-    else
+    elseif recipe_name:sub(1, 10) == "ic-unload-" then  -- other mods' packing recipes are not checked
       local expected_name = recipe.name:sub(11, -1)
       local actual_product = recipe.products[1]
       if actual_product.name == "ic-container" then

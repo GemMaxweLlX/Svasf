@@ -161,3 +161,6 @@ end
 require "__FreightForwarding__.prototypes.container-tiers"
 require "__FreightForwarding__.prototypes.freight-science-final"
 require "__FreightForwarding__.prototypes.lava-waterways"
+require "__FreightForwarding__.prototypes.container-damage"
+require "__FreightForwarding__.prototypes.container-groups"
+require "__FreightForwarding__.prototypes.tier-badges"
