@@ -54,6 +54,9 @@ Date: 7 November 2026
       60-140 scrap per dredging cycle, no productivity modules in dredgers, ships at 40% speed in Gleba wetlands,
       heavy cargo ship 0.7x speed, wagon Mk2 1.5x capacity, no transport science in technologies that need another
       planet's science
+    - Spoiled refrigerated/cryo containers now hold what their contents spoil into, in the same amount (e.g. 500
+      yumako -> 500 spoilage, bacteria -> ore), and give back the same kind of container (a cryo container used
+      to come back as a refrigerated one, with a fixed 100 spoilage)
     - FF buildings can't be built on space platforms; the underwater pipe doesn't need heating on Aquilo
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel

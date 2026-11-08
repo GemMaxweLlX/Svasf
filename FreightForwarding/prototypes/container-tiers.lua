@@ -9,6 +9,7 @@
 if not mods["space-age"] or settings.startup["ff-classic-mode"].value then return end
 if not (data.raw.item["ic-container"] and data.raw["recipe-category"]["packing"]) then return end
 
+local spoiled_containers = require("__FreightForwarding__.prototypes.spoiled-containers")
 local kg = 1000
 local CONTAINER_WEIGHT = settings.startup["ff-light-container-weight"].value * kg
 local VULCANUS = {{property = "pressure", min = 4000, max = 4000}}
@@ -85,7 +86,7 @@ local function make_family(family)
         stack_size = 1,
         weight = CONTAINER_WEIGHT,
         spoil_ticks = family.spoil_factor and item.spoil_ticks and item.spoil_ticks * family.spoil_factor or nil,
-        spoil_result = family.spoil_factor and family.spoiled or nil,
+        spoil_result = family.spoil_factor and family.spoiled(item, amount, effects) or nil,
       },
       {
         type = "recipe",
@@ -222,7 +223,14 @@ if data.raw.item["ff-reefer-container"] and data.raw.item["lithium-plate"] and d
     surface_conditions = AQUILO,
     contents = contents,
     spoil_factor = 20,
-    spoiled = "ff-reefer-spoilage",
+    spoiled = function(item, amount, unlocks)
+      return spoiled_containers.make{
+        prefix = "ff-cryo-", empty = "ff-cryo-container", item = item, amount = amount,
+        icons_for = function(content_icons) return container_icons({r = 0.6, g = 1, b = 1, a = 1}, content_icons) end,
+        item_icons = item_icons, weight = CONTAINER_WEIGHT,
+        subgroup = "ff-cryo-containers", unload_subgroup = "ff-cryo-unload", unlocks = unlocks,
+      }
+    end,
   }
   data:extend{{
     type = "technology",

@@ -2,15 +2,17 @@
 --
 -- Intermodal Containers skips spoilable items. Reefers carry them instead: a filled reefer spoils 5 times slower
 -- than its contents would. Freshness is kept when loading/unloading (normal recipe spoil inheritance).
--- If a filled reefer does spoil, it turns into a reefer full of spoilage, which unloads into spoilage + an
--- empty reefer.
+-- If a filled reefer does spoil, it turns into a reefer full of what its contents spoil into (spoilage, or ore
+-- for bacteria), which unloads into that + an empty reefer (prototypes/spoiled-containers.lua).
 -- Empty reefers can only be made on Gleba. Runs in data-updates.
 
 -- Classic mode keeps the original Freight Forwarding (prototypes/... see settings.lua)
 if not mods["space-age"] or settings.startup["ff-classic-mode"].value then return end
 if not (data.raw.item["ic-container"] and data.raw["recipe-category"]["packing"]) then return end
 
+local spoiled_containers = require("__FreightForwarding__.prototypes.spoiled-containers")
 local SPOIL_SLOWDOWN = 5
+local kg = 1000
 local STACKS_PER_REEFER = 10
 local GLEBA = {{property = "pressure", min = 2000, max = 2000}}
 local reefer_tint = {r = 0.55, g = 0.85, b = 1, a = 1}
@@ -163,7 +165,11 @@ for _, item in pairs(cargo) do
       -- otherwise derived from the loading recipe: container + contents
       ingredient_to_weight_coefficient = 1,
       spoil_ticks = item.spoil_ticks * SPOIL_SLOWDOWN,
-      spoil_result = "ff-reefer-spoilage",
+      spoil_result = spoiled_containers.make{
+        prefix = "ff-reefer-", empty = "ff-reefer-container", item = item, amount = amount,
+        icons_for = reefer_icons, item_icons = item_icons, weight = 1000 * kg,
+        subgroup = "ff-reefer-containers", unload_subgroup = "ff-reefer-unload", unlocks = unlocks,
+      },
     },
     {
       type = "recipe",
