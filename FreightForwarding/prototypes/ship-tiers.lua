@@ -2,6 +2,7 @@
 -- "cargo-ships.ship-definition"), so Cargo Ships places and couples them like its own ships.
 --   * fast cargo ship (Vulcanus): 1.5x speed
 --   * heavy cargo ship (Aquilo): 2x hold, a bit slower
+--   * icebreaker (Aquilo): breaks the ice around it into brash ice, so waterways can be extended (scripts/icebreaker.lua)
 --   * lava barge (Vulcanus): heat-shielded, the only ship that doesn't burn on lava (scripts/lava-barges.lua,
 --     waterways on lava: prototypes/lava-waterways.lua)
 -- Runs in data-updates (after FF's inventory-sizes.lua has set the cargo ship hold).
@@ -175,4 +176,27 @@ if data.raw.technology["metallurgic-science-pack"] and data.raw.item["tungsten-p
       table.insert(prototype.resistances, {type = "fire", percent = 100})
     end
   end
+end
+
+if data.raw.technology["cryogenic-science-pack"] and data.raw.tile["brash-ice"] and data.raw.item["lithium-plate"] then
+  make_ship{
+    name = "ff-icebreaker",
+    order = "-d",
+    tint = {r = 0.8, g = 0.95, b = 1, a = 1},
+    speed = 0.7,
+    power = 2,
+    hold = 0.25,
+    ingredients = {
+      {type = "item", name = "cargo_ship", amount = 1},
+      {type = "item", name = "lithium-plate", amount = 50},
+      {type = "item", name = "tungsten-carbide", amount = 50},
+    },
+    prerequisites = {"cargo_ships", "cryogenic-science-pack"},
+    unit = {
+      count = 400,
+      ingredients = science("automation-science-pack", "logistic-science-pack", "chemical-science-pack",
+        "space-science-pack", "cryogenic-science-pack"),
+      time = 60,
+    },
+  }
 end

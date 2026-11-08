@@ -37,6 +37,11 @@ Date: 7 November 2026
     - Lava barges (Vulcanus): waterways can be built on lava (rails and rail supports still can't); other ships burn
       on lava
     - Train tiers: locomotive Mk2 (Fulgora) and Mk3 (Aquilo), cargo and fluid wagon Mk2 with double capacity (Vulcanus)
+    - Icebreaker (Aquilo): turns the ice around it into brash ice, so waterways can be built further
+    - Spoilage sensor: a combinator next to a train stop that outputs the spoilage of the stopped train's cargo
+      (most spoiled stack and average, in percent) for circuit wait conditions
+    - Container depots (with Intermodal Containers): a packing storage chest and an unpacking passive provider chest
+      for logistic robots
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
   Quality of life:

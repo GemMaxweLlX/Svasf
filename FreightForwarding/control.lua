@@ -31,4 +31,7 @@ handler.add_libraries {
   require "scripts.fuel-depot",
   require "scripts.map-tags",
   require "scripts.lava-barges",
+  require "scripts.icebreaker",
+  require "scripts.spoilage-sensor",
+  require "scripts.container-depots",
 }
