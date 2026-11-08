@@ -1,5 +1,9 @@
 -- Interstellar freight contracts (Space Age) and the freight panel (all games with Intermodal Containers).
 --
+-- Lore: the Long Caravan, interstellar haulers on a route centuries long, can't afford to brake; at the solar system
+-- edge they take cargo on the fly. Consignments (and their light containers) leave with it for good. The caravan pays
+-- with navigation data, hence the logistics bonus.
+--
 -- Contracts: every 10 seconds, freight consignments in the hub of a space platform at the solar system edge (or the
 -- shattered planet beyond it) are taken in. The first fulfilled contract wins the game (Space Age's own victory for
 -- just reaching the edge is turned off). After that, contracts go on: each one is bigger than the last and every
@@ -184,11 +188,16 @@ local function check()
       if location and LOCATIONS[location.name] and hub and hub.valid then
         local inventory = hub.get_inventory(defines.inventory.hub_main)
         local available = inventory and inventory.get_item_count(ITEM) or 0
+        local picked_up = 0
         while available > 0 do
           local goal = contract_size(state.number)
           local taken = inventory.remove{name = ITEM, count = math.min(available, goal - state.delivered)}
           if taken == 0 then break end
           available = available - taken
+          picked_up = picked_up + taken
+          if state.delivered + taken < goal then
+            force.print({"ff-contract.pickup", picked_up, state.delivered + taken, goal})
+          end
           state.delivered = state.delivered + taken
           state.total = (state.total or 0) + taken
           changed = true
@@ -254,7 +263,10 @@ FreightContract.events = {
     if event.setting == "ff-show-freight-panel" and event.player_index then update_panel(game.get_player(event.player_index)) end
   end,
   [defines.events.on_research_finished] = function(event)
-    if event.research.name == "ff-interstellar-freight-contract" then update_all_panels(event.research.force) end
+    if event.research.name == "ff-interstellar-freight-contract" then
+      event.research.force.print({"ff-contract.signal"})
+      update_all_panels(event.research.force)
+    end
   end,
 }
 

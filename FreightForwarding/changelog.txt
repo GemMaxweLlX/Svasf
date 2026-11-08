@@ -69,6 +69,8 @@ Date: 7 November 2026
       own victory (just reaching the edge) is replaced by it
     - Endless contracts: after the first one, each contract is 50% (of the first) bigger; every fulfilled contract
       gives +10% robot speed and +10% train and ship braking force
+    - Lore for the contracts: the Long Caravan, interstellar haulers that take cargo on the fly at the solar system
+      edge (descriptions, tips, messages, victory screen)
     - Freight panel (top left, can be hidden in the per-player settings): contract progress and freight statistics
       per planet (containers packed, unpacked, damaged)
     - FF buildings can't be built on space platforms; the underwater pipe doesn't need heating on Aquilo
