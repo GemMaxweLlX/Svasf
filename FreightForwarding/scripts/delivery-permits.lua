@@ -3,7 +3,7 @@
 --     of its planet (once the planet has a surface), with a map tag and a chat message
 --   * the post is found damaged: repair materials (per planet) have to be delivered into it first; then it is restored
 --     and takes the delivery
---   * when the repaired post holds the required containers, they are used up, a small rocket takes off from the post
+--   * when the repaired post holds the required containers, they are used up, a cargo pod takes off from the post
 --     and the permit is granted; 5 minutes later the post blows itself up
 -- Saves where a key technology is already researched get its permit right away.
 
@@ -97,13 +97,18 @@ local function spill_contents(post)
   inventory.clear()
 end
 
---- A small rocket takes off from the post: a sprite rising into the sky with a smoke trail
+--- The records leave in a cargo pod (the one space platform hubs send down), rising from the post with its
+--- thrusters burning, its shadow sliding away on the ground
 local function launch_rocket(post)
-  local sprite = rendering.draw_sprite{sprite = "item/rocket", surface = post.surface, target = post.position,
-                                       orientation = 0.875, x_scale = 1.5, y_scale = 1.5, render_layer = "air-object"}
+  local surface, x, y = post.surface, post.position.x, post.position.y
+  local pod = rendering.draw_sprite{sprite = "ff-cargo-pod", surface = surface, target = {x, y - 1}, render_layer = "air-object"}
+  local flame = rendering.draw_animation{animation = "ff-cargo-pod-thruster", surface = surface, target = {x, y - 1},
+                                         render_layer = "air-object", animation_speed = 1}
+  local shadow = rendering.draw_sprite{sprite = "ff-cargo-pod-shadow", surface = surface, target = {x, y}}
   storage.ff_permit_rockets = storage.ff_permit_rockets or {}
-  table.insert(storage.ff_permit_rockets, {sprite = sprite, surface = post.surface, x = post.position.x, y = post.position.y, t = 0})
-  post.surface.create_entity{name = "explosion", position = post.position}
+  table.insert(storage.ff_permit_rockets, {pod = pod, flame = flame, shadow = shadow, surface = surface, x = x, y = y, t = 0})
+  surface.create_entity{name = "explosion", position = post.position}
+  surface.play_sound{path = "ff-cargo-pod-launch", position = post.position}
 end
 
 local function animate_rockets()
@@ -114,12 +119,20 @@ local function animate_rockets()
     rocket.t = rocket.t + 1
     local rise = 0.002 * rocket.t * rocket.t  -- accelerating upwards
     local position = {rocket.x, rocket.y - 1 - rise}
-    if rocket.sprite.valid then rocket.sprite.target = position end
-    if rocket.surface.valid and rocket.t % 3 == 0 then
-      rocket.surface.create_trivial_smoke{name = "smoke-fast", position = {rocket.x, rocket.y - 0.5 - rise}}
+    for _, object in pairs{rocket.pod, rocket.flame} do
+      if object and object.valid then object.target = position end
+    end
+    if rocket.shadow and rocket.shadow.valid then  -- the shadow slides away and fades as the pod climbs
+      rocket.shadow.target = {rocket.x + rise * 0.6, rocket.y + rise * 0.3}
+      rocket.shadow.color = {1, 1, 1, math.max(0, 1 - rocket.t / ROCKET_TICKS)}
+    end
+    if rocket.surface.valid and rocket.t % 3 == 0 and rocket.t < ROCKET_TICKS * 0.6 then
+      rocket.surface.create_trivial_smoke{name = "smoke-fast", position = {rocket.x, rocket.y - rise}}
     end
     if rocket.t >= ROCKET_TICKS or not rocket.surface.valid then
-      if rocket.sprite.valid then rocket.sprite.destroy() end
+      for _, object in pairs{rocket.pod, rocket.flame, rocket.shadow, rocket.sprite} do
+        if object and object.valid then object.destroy() end
+      end
       table.remove(rockets, i)
     end
   end

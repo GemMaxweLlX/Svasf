@@ -154,4 +154,39 @@ if #registry > 0 and chest then
   end
   scale(post.picture)
   data:extend{post, {type = "mod-data", name = "ff-delivery-permits", data = {permits = registry}}}
+
+  -- The records leave in a cargo pod, like the ones space platform hubs send down: the game's own pod graphics
+  local util = require("util")
+  local POD = "__base__/graphics/entity/cargo-pod/"
+  local sounds = {}
+  for i = 1, 5 do sounds[i] = {filename = "__base__/sound/procession/cargo-pod-thruster-burst-" .. i .. ".ogg", volume = 0.7} end
+  data:extend{
+    {
+      type = "sprite",
+      name = "ff-cargo-pod",
+      layers = {
+        util.sprite_load(POD .. "pod-static-detached", {priority = "medium", scale = 0.5}),
+        util.sprite_load(POD .. "pod-static-emission", {priority = "medium", scale = 0.5, blend_mode = "additive", draw_as_glow = true}),
+      },
+    },
+    {
+      type = "sprite",
+      name = "ff-cargo-pod-shadow",
+      layers = {util.sprite_load(POD .. "pod-static-shadow", {priority = "medium", scale = 0.5, draw_as_shadow = true})},
+    },
+    {
+      type = "animation",
+      name = "ff-cargo-pod-thruster",
+      layers = {util.sprite_load(POD .. "pod-thruster-loop", {
+        animation_speed = 0.5, scale = 0.25, frame_count = 10, draw_as_glow = true, blend_mode = "additive",
+        shift = util.by_pixel(0, 64), priority = "medium"})},
+    },
+    {
+      type = "sound",
+      name = "ff-cargo-pod-launch",
+      category = "game-effect",
+      variations = sounds,
+      audible_distance_modifier = 2,
+    },
+  }
 end
