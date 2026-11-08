@@ -124,6 +124,16 @@ Date: 7 November 2026
     - FF buildings can't be built on space platforms; the underwater pipe doesn't need heating on Aquilo
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
+  New features:
+    - Tank containers (extended mode): 2000 units of any barrellable fluid in a container, filled and emptied in a
+      chemical plant; ships, trains and rockets carry them like any container
+    - Subsea pipeline: pipeline landings facing each other across the water, joined by a pipeline laid along the
+      seabed (up to 255 tiles, pipeline segments, 2 tiles per second). Duct landings built on Fluid Must Flow's duct
+      to ground carry huge flows. Fluid Must Flow is now a required dependency
+    - Cargo insurance: insurance offices receive part of the cargo of destroyed cargo wagons, ships, boats and
+      spidertrons (map setting, 50% by default)
+    - "Archipelago" scenario and map preset: a small starting island among many small islands, with a chain of goals
+      and rewards from cargo ships to the rocket silo
   Quality of life:
     - Fuel depot: trains and ships stopped within 10 tiles refuel from it and drop their burnt fuel into it
     - Map tags for rocket silo holes, cobalt vents and big lava pools when they are charted (setting; remote

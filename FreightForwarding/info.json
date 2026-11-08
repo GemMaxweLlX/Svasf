@@ -22,7 +22,7 @@
     "? LogisticTrainNetwork",
     "? alien-biomes",
     "? Hovercrafts",
-    "? FluidMustFlow",
+    "FluidMustFlow >= 1.5.1",
     "? CanalBuilderMAV",
     "? beautiful_bridge_railway_Cargoships",
     "? FreightForwardingPack",
