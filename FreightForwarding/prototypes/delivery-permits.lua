@@ -29,6 +29,11 @@ local REPAIR = {
   fulgora  = {{"steel-plate", 40}, {"electronic-circuit", 20}, {"scrap", 50}},
   gleba    = {{"steel-plate", 40}, {"electronic-circuit", 20}, {"stone-brick", 50}},
   aquilo   = {{"steel-plate", 40}, {"electronic-circuit", 20}, {"ice", 50}},
+  -- planets from other mods
+  cerys    = {{"steel-plate", 40}, {"electronic-circuit", 20}, {"methane-ice", 50}},
+  moshine  = {{"steel-plate", 40}, {"electronic-circuit", 20}, {"sand", 50}},
+  maraxsis = {{"steel-plate", 40}, {"electronic-circuit", 20}, {"maraxsis-coral", 50}},
+  muluna   = {{"steel-plate", 40}, {"electronic-circuit", 20}, {"anorthite-chunk", 50}},
 }
 
 local function repair_for(planet)
@@ -42,7 +47,102 @@ end
 local DISCOVERY = {
   vulcanus = "planet-discovery-vulcanus", fulgora = "planet-discovery-fulgora",
   gleba = "planet-discovery-gleba", aquilo = "planet-discovery-aquilo",
+  cerys = "moon-discovery-cerys", moshine = "planet-discovery-moshine",
+  maraxsis = "planet-discovery-maraxsis", muluna = "planet-discovery-muluna",
 }
+
+---------------------------------------------------------------------------------------------------
+-- Planets from other mods: an expedition permit (the planet's discovery needs supplies delivered to a post on the
+-- planet it is reached from) and a survey permit (the planet's first technology using its own science needs a
+-- delivery to a post on the planet itself, repaired with its local material). Only planets whose discovery is
+-- researched with science (not a trigger) get the expedition permit.
+
+--- Number of technologies a technology depends on (all ancestors)
+local depth_cache = {}
+local function depth(name)
+  if depth_cache[name] then return depth_cache[name] end
+  depth_cache[name] = 0  -- guards against cycles
+  local seen, stack, count = {}, {name}, 0
+  while #stack > 0 do
+    local current = table.remove(stack)
+    local tech = data.raw.technology[current]
+    for _, prerequisite in pairs(tech and tech.prerequisites or {}) do
+      if not seen[prerequisite] then
+        seen[prerequisite] = true
+        count = count + 1
+        stack[#stack + 1] = prerequisite
+      end
+    end
+  end
+  depth_cache[name] = count
+  return count
+end
+
+--- Technologies on the way to the solar system edge: a survey permit must not block the endgame
+local critical = {}
+do
+  local stack = {"stellar-discovery-solar-system-edge"}
+  while #stack > 0 do
+    local tech = data.raw.technology[table.remove(stack)]
+    for _, prerequisite in pairs(tech and tech.prerequisites or {}) do
+      if not critical[prerequisite] then
+        critical[prerequisite] = true
+        stack[#stack + 1] = prerequisite
+      end
+    end
+  end
+end
+
+--- The earliest technology (fewest ancestors, then cheapest) needing this science pack that is researched with
+--- science (not a trigger), is not an infinite one and is not on the way to the solar system edge
+local function first_technology_with(pack)
+  local best, best_key
+  for name, tech in pairs(data.raw.technology) do
+    if tech.unit and tech.unit.ingredients and not name:find("^ff%-") and not tech.unit.count_formula
+        and not critical[name] then
+      local uses = false
+      for _, ingredient in pairs(tech.unit.ingredients) do
+        if (ingredient.name or ingredient[1]) == pack then uses = true end
+      end
+      if uses then
+        local key = {depth(name), (tech.unit.count or 0) * #tech.unit.ingredients, name}
+        if not best_key or key[1] < best_key[1] or (key[1] == best_key[1] and (key[2] < best_key[2]
+            or (key[2] == best_key[2] and key[3] < best_key[3]))) then
+          best, best_key = name, key
+        end
+      end
+    end
+  end
+  return best
+end
+
+local MOD_PLANETS = {
+  {planet = "cerys", from = "fulgora",
+   expedition = {item = "ic-container-lead-plate", count = 2},           -- shielding against the radiation
+   pack = "cerysian-science-pack", survey = {item = "ic-container-holmium-plate", count = 1}},
+  {planet = "moshine", from = "vulcanus",
+   expedition = {item = "ic-container-ff-titansteel-plate", count = 1}}, -- a hull for 98 °C and acid rain
+  {planet = "maraxsis", from = "gleba",
+   expedition = {item = "ic-container-tungsten-carbide", count = 2},      -- pressure hulls for the deep
+   pack = "hydraulic-science-pack", survey = {item = "ic-container-ff-titansteel-plate", count = 1}},
+  {planet = "muluna", pack = "interstellar-science-pack",
+   survey = {item = "ic-container-titanium-plate", count = 2}},         -- Nauvis titanium for the moon base
+}
+for _, entry in pairs(MOD_PLANETS) do
+  if data.raw.planet[entry.planet] then
+    local discovery = data.raw.technology[DISCOVERY[entry.planet]]
+    if entry.expedition and discovery and discovery.unit and not discovery.research_trigger then
+      PERMITS[#PERMITS + 1] = {tech = DISCOVERY[entry.planet], item = entry.expedition.item, count = entry.expedition.count,
+                               planet = entry.from, min = 80, max = 500}
+    end
+    local survey_tech = entry.pack and data.raw.item[entry.pack] or entry.pack and data.raw.tool[entry.pack]
+    survey_tech = survey_tech and first_technology_with(entry.pack)
+    if survey_tech and entry.survey then
+      PERMITS[#PERMITS + 1] = {tech = survey_tech, item = entry.survey.item, count = entry.survey.count,
+                               planet = entry.planet, min = 60, max = 400}
+    end
+  end
+end
 
 --- Technology that unlocks the loading recipe of a filled container (so the permit comes after it)
 local function loading_tech(item)

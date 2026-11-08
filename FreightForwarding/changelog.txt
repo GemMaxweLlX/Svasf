@@ -89,6 +89,11 @@ Date: 7 November 2026
     - Planet mods: Maraxsis, Muluna, Moshine and Cerys work. Transport and freight science are only added to a
       technology if some lab accepts all its science packs with them (Cerys' braking force research couldn't be
       researched); in extended mode any science that isn't Nauvis' counts as another planet's
+    - Content for planets from other mods (extended mode): expedition permits for discovering Cerys, Moshine and
+      Maraxsis (deliveries to a post on Fulgora, Vulcanus, Gleba), survey permits for the first technology of Cerys,
+      Maraxsis and Muluna science (deliveries to a post on the planet itself, repaired with its local material),
+      special orders for their goods
+    - Spoiled refrigerated/cryo containers are no longer packed into Intermodal Containers' containers
     - Delivery permits (exclusive to FF + Space Age, startup setting): 11 key technologies first need a permit,
       which can't be researched in labs. When it becomes available, a research post appears at a random place on land
       near the explored area of the given planet; delivering the containers it asks for (used up) grants the permit.

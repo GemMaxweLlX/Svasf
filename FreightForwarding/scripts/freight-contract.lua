@@ -63,6 +63,9 @@ local SPECIAL_ORDERS = {
   {"ff-light-tungsten-carbide", 60}, {"ff-light-holmium-plate", 60}, {"ff-light-superconductor", 40},
   {"ff-light-carbon-fiber", 60}, {"ff-light-lithium-plate", 60}, {"ff-light-quantum-processor", 10},
   {"ff-cryo-bioflux", 30}, {"ff-cryo-agricultural-science-pack", 20},
+  -- planets from other mods (offered only if the mod is there)
+  {"ff-light-cerys-nuclear-scrap", 60}, {"ff-light-neodymium", 60}, {"ff-light-maraxsis-glass-panes", 40},
+  {"ff-cryo-maraxsis-tropical-fish", 20}, {"ff-light-aluminum-plate", 60}, {"ff-light-muluna-lunar-regolith", 60},
 }
 
 ---------------------------------------------------------------------------------------------------
