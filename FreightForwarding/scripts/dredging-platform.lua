@@ -11,6 +11,13 @@ local DREDGERS = {
 }
 local IS_DREDGER = {}
 for _, name in pairs(DREDGERS) do IS_DREDGER[name] = true end
+-- Half the width of the square platform: 18x18, Mk2 24x24, Mk3 30x30
+local PLATFORM_HALF = {["ff-dredger"] = 9, ["ff-dredger-mk2"] = 12, ["ff-dredger-mk3"] = 15}
+-- The platform is not laid where it would cut a waterway/railway or strand a ship/train
+local KEEP_CLEAR = {
+  "straight-rail", "half-diagonal-rail", "curved-rail-a", "curved-rail-b", "legacy-straight-rail", "legacy-curved-rail",
+  "rail-signal", "rail-chain-signal", "train-stop", "locomotive", "cargo-wagon", "fluid-wagon", "artillery-wagon",
+}
 
 local function add_square(x, y, tiles)
   for i = 0, 1 do
@@ -20,18 +27,19 @@ local function add_square(x, y, tiles)
   end
 end
 
-local function platform_tiles(position)
+local function platform_tiles(position, half)
+  half = half or 9
   local x = position.x
   local y = position.y
   local tiles = {}
-  for i = -9, 8 do
-    for j = -9, 8 do
+  for i = -half, half - 1 do
+    for j = -half, half - 1 do
       table.insert(tiles, {name = "ff-dredging-platform", position = {x + i, y + j}})
     end
   end
   -- Add 'piers'
-  for _, i in pairs({-9, -1, 7}) do
-    for _, j in pairs({-11, 9}) do
+  for _, i in pairs({-half, -1, half - 2}) do
+    for _, j in pairs({-half - 2, half}) do
       add_square(x + i, y + j, tiles)
       add_square(x + j, y + i, tiles)
     end
@@ -86,13 +94,18 @@ local function on_dredger_created(event)
   }
   radar.destructible = false
 
-  local tiles = platform_tiles(position)
+  local tiles = {}
   -- Remember what was there, so that it can be restored when the dredger is removed
   local original = {}
-  for _, tile in pairs(tiles) do
-    local t = surface.get_tile(tile.position[1], tile.position[2])
-    if t.name ~= "ff-dredging-platform" then
-      original[#original + 1] = {name = t.name, position = tile.position}
+  for _, tile in pairs(platform_tiles(position, PLATFORM_HALF[dredger_name])) do
+    local tx, ty = tile.position[1], tile.position[2]
+    local clear = surface.count_entities_filtered{area = {{tx, ty}, {tx + 1, ty + 1}}, type = KEEP_CLEAR, limit = 1} == 0
+    if clear then
+      tiles[#tiles + 1] = tile
+      local t = surface.get_tile(tx, ty)
+      if t.name ~= "ff-dredging-platform" then
+        original[#original + 1] = {name = t.name, position = tile.position}
+      end
     end
   end
   storage.dredgers = storage.dredgers or {}
@@ -122,7 +135,7 @@ local function on_dredger_removed(event)
     local fallback = surface.name == "vulcanus" and "lava" or "deepwater"
     if not prototypes.tile[fallback] then fallback = "deepwater" end
     tiles = {}
-    for _, tile in pairs(platform_tiles(position)) do
+    for _, tile in pairs(platform_tiles(position, PLATFORM_HALF[entity.name])) do
       tiles[#tiles + 1] = {name = fallback, position = tile.position}
     end
   end
