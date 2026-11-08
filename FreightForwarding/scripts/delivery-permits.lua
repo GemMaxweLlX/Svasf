@@ -1,7 +1,8 @@
 -- FF + Space Age exclusive: delivery permits (prototypes/delivery-permits.lua). Every 10 seconds:
 --   * a permit whose prerequisites are researched gets a research post: a random place on land near the explored area
 --     of its planet (once the planet has a surface), with a map tag and a chat message
---   * the post is found damaged: it has to be repaired (repair packs) before it takes the delivery
+--   * the post is found damaged: repair materials (per planet) have to be delivered into it first; then it is restored
+--     and takes the delivery
 --   * when the repaired post holds the required containers, they are used up, a small rocket takes off from the post
 --     and the permit is granted; 5 minutes later the post blows itself up
 -- Saves where a key technology is already researched get its permit right away.
@@ -66,7 +67,7 @@ local function gps(entity)
   return string.format("[gps=%d,%d,%s]", math.floor(entity.position.x), math.floor(entity.position.y), entity.surface.name)
 end
 
-local SPAWN_HEALTH = 0.15                -- a post is found damaged and has to be repaired first
+local SPAWN_HEALTH = 0.15                -- a post is found damaged; repair materials restore it
 local SELF_DESTRUCT = 5 * 60 * 60       -- 5 minutes after the delivery the post blows itself up
 local ROCKET_TICKS = 150
 
@@ -140,12 +141,21 @@ local function tick_posts()
       local post = record and record.post
       if post and post.valid then
         if record.stage == "damaged" then
-          local percent = math.floor(post.health / post.max_health * 100)
-          if post.health >= post.max_health - 0.5 then
+          -- repair: the materials have to be delivered into the post, then it is restored
+          local inventory = post.get_inventory(defines.inventory.chest)
+          local progress, complete = {""}, true
+          for _, need in pairs(permit.repair or {}) do
+            local have = math.min(inventory.get_item_count(need.item), need.count)
+            if have < need.count then complete = false end
+            progress[#progress + 1] = string.format("[item=%s] %d/%d  ", need.item, have, need.count)
+          end
+          if complete then
+            for _, need in pairs(permit.repair or {}) do inventory.remove{name = need.item, count = need.count} end
+            post.health = post.max_health
             record.stage = "ready"
             force.print({"ff-permit.repaired", {"technology-name." .. permit.tech}, permit.count, permit.item, gps(post)})
           else
-            set_label(record, {"ff-permit.needs-repair", percent}, {1, 0.45, 0.3})
+            set_label(record, {"ff-permit.needs-repair", progress}, {1, 0.45, 0.3})
           end
         end
         if record.stage == "ready" then
@@ -213,7 +223,11 @@ local function update()
                 record.stage = "damaged"
                 record.tag = force.add_chart_tag(surface, {position = position, icon = {type = "item", name = permit.item},
                                                            text = "× " .. permit.count})  -- tags take plain text
-                set_label(record, {"ff-permit.needs-repair", math.floor(SPAWN_HEALTH * 100)}, {1, 0.45, 0.3})
+                local progress = {""}
+                for _, need in pairs(permit.repair or {}) do
+                  progress[#progress + 1] = string.format("[item=%s] 0/%d  ", need.item, need.count)
+                end
+                set_label(record, {"ff-permit.needs-repair", progress}, {1, 0.45, 0.3})
                 force.print({"ff-permit.post", {"technology-name." .. permit.tech}, permit.count, permit.item, gps(post)})
               end
             end

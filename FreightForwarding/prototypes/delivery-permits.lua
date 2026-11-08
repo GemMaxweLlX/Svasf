@@ -22,6 +22,23 @@ local PERMITS = {
   {tech = "ff-interstellar-freight-contract", item = "ff-light-superconductor",      count = 2, planet = "aquilo",   min = 60,  max = 400},
 }
 
+-- What a damaged research post needs delivered before it is restored: common goods plus something local
+local REPAIR = {
+  nauvis   = {{"steel-plate", 40}, {"electronic-circuit", 20}, {"stone-brick", 50}},
+  vulcanus = {{"steel-plate", 40}, {"electronic-circuit", 20}, {"calcite", 50}},
+  fulgora  = {{"steel-plate", 40}, {"electronic-circuit", 20}, {"scrap", 50}},
+  gleba    = {{"steel-plate", 40}, {"electronic-circuit", 20}, {"stone-brick", 50}},
+  aquilo   = {{"steel-plate", 40}, {"electronic-circuit", 20}, {"ice", 50}},
+}
+
+local function repair_for(planet)
+  local list = {}
+  for _, entry in pairs(REPAIR[planet] or REPAIR.nauvis) do
+    if data.raw.item[entry[1]] then list[#list + 1] = {item = entry[1], count = entry[2]} end
+  end
+  return list
+end
+
 local DISCOVERY = {
   vulcanus = "planet-discovery-vulcanus", fulgora = "planet-discovery-fulgora",
   gleba = "planet-discovery-gleba", aquilo = "planet-discovery-aquilo",
@@ -98,7 +115,8 @@ for _, permit in pairs(PERMITS) do
     main.prerequisites = main.prerequisites or {}
     table.insert(main.prerequisites, name)
     registry[#registry + 1] = {permit = name, tech = permit.tech, item = permit.item, count = permit.count,
-                               planet = permit.planet, min = permit.min, max = permit.max}
+                               planet = permit.planet, min = permit.min, max = permit.max,
+                               repair = repair_for(permit.planet)}
   end
 end
 
