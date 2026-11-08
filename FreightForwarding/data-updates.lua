@@ -20,6 +20,7 @@ require "__FreightForwarding__.prototypes.tips-space-age"
 require "__FreightForwarding__.prototypes.sea-infrastructure"
 require "__FreightForwarding__.prototypes.subsea-pipeline"
 require "__FreightForwarding__.prototypes.tank-containers"
+require "__FreightForwarding__.prototypes.cargo-insurance"
 require "__FreightForwarding__.prototypes.shortcuts"
 require "__FreightForwarding__.prototypes.rocket-tiers"
 
