@@ -1,7 +1,9 @@
 -- FF + Space Age exclusive: delivery permits (prototypes/delivery-permits.lua). Every 10 seconds:
 --   * a permit whose prerequisites are researched gets a research post: a random place on land near the explored area
 --     of its planet (once the planet has a surface), with a map tag and a chat message
---   * when the post holds the required containers, they are used up and the permit is granted; the post goes away
+--   * the post is found damaged: it has to be repaired (repair packs) before it takes the delivery
+--   * when the repaired post holds the required containers, they are used up, a small rocket takes off from the post
+--     and the permit is granted; 5 minutes later the post blows itself up
 -- Saves where a key technology is already researched get its permit right away.
 
 local POST = "ff-research-post"
@@ -64,10 +66,117 @@ local function gps(entity)
   return string.format("[gps=%d,%d,%s]", math.floor(entity.position.x), math.floor(entity.position.y), entity.surface.name)
 end
 
+local SPAWN_HEALTH = 0.15                -- a post is found damaged and has to be repaired first
+local SELF_DESTRUCT = 5 * 60 * 60       -- 5 minutes after the delivery the post blows itself up
+local ROCKET_TICKS = 150
+
 local function remove_post(record)
   if record.tag and record.tag.valid then record.tag.destroy() end
+  if record.label and record.label.valid then record.label.destroy() end
   if record.post and record.post.valid then record.post.destroy() end
-  record.post, record.tag = nil, nil
+  record.post, record.tag, record.label, record.stage, record.explode_at = nil, nil, nil, nil, nil
+end
+
+local function set_label(record, text, color)
+  if not (record.post and record.post.valid) then return end
+  if record.label and record.label.valid then
+    record.label.text = text
+    record.label.color = color
+  else
+    record.label = rendering.draw_text{text = text, surface = record.post.surface, target = {entity = record.post, offset = {0, -2.2}},
+                                       color = color, scale = 1.4, alignment = "center", use_rich_text = true}
+  end
+end
+
+local function spill_contents(post)
+  local inventory = post.get_inventory(defines.inventory.chest)
+  for _, stack in pairs(inventory.get_contents()) do
+    post.surface.spill_item_stack{position = post.position, stack = {name = stack.name, count = stack.count, quality = stack.quality}}
+  end
+  inventory.clear()
+end
+
+--- A small rocket takes off from the post: a sprite rising into the sky with a smoke trail
+local function launch_rocket(post)
+  local sprite = rendering.draw_sprite{sprite = "item/rocket", surface = post.surface, target = post.position,
+                                       orientation = 0.875, x_scale = 1.5, y_scale = 1.5, render_layer = "air-object"}
+  storage.ff_permit_rockets = storage.ff_permit_rockets or {}
+  table.insert(storage.ff_permit_rockets, {sprite = sprite, surface = post.surface, x = post.position.x, y = post.position.y, t = 0})
+  post.surface.create_entity{name = "explosion", position = post.position}
+end
+
+local function animate_rockets()
+  local rockets = storage.ff_permit_rockets
+  if not rockets or #rockets == 0 then return end
+  for i = #rockets, 1, -1 do
+    local rocket = rockets[i]
+    rocket.t = rocket.t + 1
+    local rise = 0.002 * rocket.t * rocket.t  -- accelerating upwards
+    local position = {rocket.x, rocket.y - 1 - rise}
+    if rocket.sprite.valid then rocket.sprite.target = position end
+    if rocket.surface.valid and rocket.t % 3 == 0 then
+      rocket.surface.create_trivial_smoke{name = "smoke-fast", position = {rocket.x, rocket.y - 0.5 - rise}}
+    end
+    if rocket.t >= ROCKET_TICKS or not rocket.surface.valid then
+      if rocket.sprite.valid then rocket.sprite.destroy() end
+      table.remove(rockets, i)
+    end
+  end
+end
+
+local function format_time(ticks)
+  local seconds = math.max(0, math.ceil(ticks / 60))
+  return string.format("%d:%02d", math.floor(seconds / 60), seconds % 60)
+end
+
+--- Every second: repair state, delivery, rocket and self-destruct countdown of the posts
+local function tick_posts()
+  local list = permits()
+  if #list == 0 or not storage.ff_permits then return end
+  for force_index, records in pairs(storage.ff_permits) do
+    local force = game.forces[force_index]
+    for _, permit in pairs(list) do
+      local record = records[permit.permit]
+      local post = record and record.post
+      if post and post.valid then
+        if record.stage == "damaged" then
+          local percent = math.floor(post.health / post.max_health * 100)
+          if post.health >= post.max_health - 0.5 then
+            record.stage = "ready"
+            force.print({"ff-permit.repaired", {"technology-name." .. permit.tech}, permit.count, permit.item, gps(post)})
+          else
+            set_label(record, {"ff-permit.needs-repair", percent}, {1, 0.45, 0.3})
+          end
+        end
+        if record.stage == "ready" then
+          set_label(record, {"ff-permit.ready", permit.count, permit.item}, {0.4, 1, 0.6})
+          local inventory = post.get_inventory(defines.inventory.chest)
+          if inventory.get_item_count(permit.item) >= permit.count then
+            inventory.remove{name = permit.item, count = permit.count}
+            spill_contents(post)  -- whatever else was put in is left on the ground
+            launch_rocket(post)
+            record.stage = "launched"  -- before granting: on_research_finished must not remove this post
+            record.explode_at = game.tick + SELF_DESTRUCT
+            force.technologies[permit.permit].researched = true
+            force.print({"ff-permit.granted", {"technology-name." .. permit.tech}, permit.count, permit.item})
+            post.operable = false
+            if record.tag and record.tag.valid then record.tag.destroy() end
+          end
+        elseif record.stage == "launched" then
+          local left = record.explode_at - game.tick
+          if left <= 0 then
+            spill_contents(post)
+            if record.label and record.label.valid then record.label.destroy() end
+            post.destructible = true
+            post.die()
+            record.post, record.label, record.stage, record.explode_at = nil, nil, nil, nil
+          else
+            set_label(record, {"ff-permit.countdown", format_time(left)}, {1, 0.8, 0.2})
+          end
+        end
+      end
+    end
+  end
 end
 
 local function update()
@@ -84,33 +193,27 @@ local function update()
         if tech and not tech.researched and key_tech and key_tech.researched then
           tech.researched = true  -- older save: the key technology was researched before permits existed
         end
-        if not tech or tech.researched then
+        if record.stage == "launched" then
+          -- counting down to self-destruction (tick_posts)
+        elseif not tech or tech.researched then
           if record.post then remove_post(record) end
         elseif record.post and record.post.valid then
-          local inventory = record.post.get_inventory(defines.inventory.chest)
-          if inventory.get_item_count(permit.item) >= permit.count then
-            inventory.remove{name = permit.item, count = permit.count}
-            local spill = inventory.get_contents()
-            local surface, position = record.post.surface, record.post.position
-            remove_post(record)
-            for _, stack in pairs(spill) do  -- whatever else was put in is left on the ground
-              surface.spill_item_stack{position = position, stack = {name = stack.name, count = stack.count, quality = stack.quality}}
-            end
-            tech.researched = true
-            force.print({"ff-permit.granted", {"technology-name." .. permit.tech}, permit.count, permit.item})
-          end
+          -- waiting for repair / delivery (tick_posts)
         elseif ready(force, permit) then
           local planet = game.planets[permit.planet]
           local surface = planet and planet.surface
           if surface then
+            if record.post or record.tag then remove_post(record) end  -- the old post was destroyed: a new one
             local position = find_spot(force, surface, permit)
             if position then
               local post = surface.create_entity{name = POST, position = position, force = force}
               if post then
-                post.destructible = false
+                post.health = post.max_health * SPAWN_HEALTH
                 record.post = post
+                record.stage = "damaged"
                 record.tag = force.add_chart_tag(surface, {position = position, icon = {type = "item", name = permit.item},
                                                            text = "× " .. permit.count})  -- tags take plain text
+                set_label(record, {"ff-permit.needs-repair", math.floor(SPAWN_HEALTH * 100)}, {1, 0.45, 0.3})
                 force.print({"ff-permit.post", {"technology-name." .. permit.tech}, permit.count, permit.item, gps(post)})
               end
             end
@@ -128,15 +231,19 @@ DeliveryPermits.on_nth_tick = {
   [600] = function()
     if script.active_mods["space-age"] then update() end
   end,
+  [60] = function()
+    if script.active_mods["space-age"] then tick_posts() end
+  end,
 }
 
 DeliveryPermits.events = {
+  [defines.events.on_tick] = animate_rockets,
   [defines.events.on_research_finished] = function(event)
     -- a permit can't be researched in labs; if it is finished another way (cheats, editor), drop its post
     local name = event.research.name
     if name:sub(1, 10) == "ff-permit-" then
       local record = state(event.research.force)[name]
-      if record then remove_post(record) end
+      if record and record.stage ~= "launched" then remove_post(record) end
     end
   end,
 }
@@ -144,6 +251,7 @@ DeliveryPermits.events = {
 DeliveryPermits.add_remote_interface = function()
   remote.add_interface("ff-delivery-permits", {
     update = update,
+    tick_posts = tick_posts,
     post = function(force_index, permit)
       local record = state(game.forces[force_index or 1])[permit]
       return record and record.post

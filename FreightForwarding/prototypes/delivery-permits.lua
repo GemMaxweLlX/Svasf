@@ -114,6 +114,9 @@ if #registry > 0 and chest then
   post.icon = nil
   post.minable = nil
   post.inventory_size = 8
+  post.max_health = 1000            -- found damaged, to be repaired with repair packs (scripts/delivery-permits.lua)
+  post.dying_explosion = data.raw.explosion["big-explosion"] and "big-explosion" or post.dying_explosion
+  post.corpse = data.raw.corpse["big-remnants"] and "big-remnants" or post.corpse
   post.flags = {"placeable-neutral", "not-blueprintable", "not-deconstructable", "not-upgradable", "not-flammable"}
   post.collision_box = {{-0.9, -0.9}, {0.9, 0.9}}
   post.selection_box = {{-1, -1}, {1, 1}}

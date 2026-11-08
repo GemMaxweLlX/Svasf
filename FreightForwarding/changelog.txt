@@ -79,7 +79,9 @@ Date: 7 November 2026
     - Delivery permits (exclusive to FF + Space Age, startup setting): 11 key technologies first need a permit,
       which can't be researched in labs. When it becomes available, a research post appears at a random place on land
       near the explored area of the given planet; delivering the containers it asks for (used up) grants the permit.
-      Saves where the key technology is already researched get the permit automatically
+      Saves where the key technology is already researched get the permit automatically. The research post is found
+      damaged and has to be repaired first; after the delivery a small rocket takes off with the records, and 5
+      minutes later the post blows itself up
     - Contract reputation: +1 for a contract on time (+2 for a special order), -1 when late; rare ships (flagship,
       forge ship, observatory ship) from reputation 3, bigger contracts with a bad reputation
     - Special orders: specific goods in light or cryo containers instead of consignments, double reward
