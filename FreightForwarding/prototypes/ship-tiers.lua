@@ -2,6 +2,8 @@
 -- "cargo-ships.ship-definition"), so Cargo Ships places and couples them like its own ships.
 --   * fast cargo ship (Vulcanus): 1.5x speed
 --   * heavy cargo ship (Aquilo): 2x hold, a bit slower
+--   * lava barge (Vulcanus): heat-shielded, the only ship that doesn't burn on lava (scripts/lava-barges.lua,
+--     waterways on lava: prototypes/lava-waterways.lua)
 -- Runs in data-updates (after FF's inventory-sizes.lua has set the cargo ship hold).
 
 if not mods["space-age"] or settings.startup["ff-classic-mode"].value then return end
@@ -142,4 +144,35 @@ if data.raw.technology["cryogenic-science-pack"] and data.raw.item["lithium-plat
       time = 60,
     },
   }
+end
+
+if data.raw.technology["metallurgic-science-pack"] and data.raw.item["tungsten-plate"] then
+  make_ship{
+    name = "ff-lava-barge",
+    order = "-c",
+    tint = {r = 1, g = 0.5, b = 0.25, a = 1},
+    speed = 0.9,
+    power = 1.2,
+    hold = 1,
+    ingredients = {
+      {type = "item", name = "cargo_ship", amount = 1},
+      {type = "item", name = "tungsten-plate", amount = 100},
+      {type = "item", name = "refined-concrete", amount = 50},
+    },
+    prerequisites = {"cargo_ships", "metallurgic-science-pack"},
+    unit = {
+      count = 300,
+      ingredients = science("automation-science-pack", "logistic-science-pack", "chemical-science-pack",
+        "space-science-pack", "metallurgic-science-pack"),
+      time = 60,
+    },
+  }
+  -- Heat shield
+  for _, name in pairs{"ff-lava-barge", "ff-lava-barge-engine"} do
+    local prototype = data.raw["cargo-wagon"][name] or data.raw["locomotive"][name]
+    if prototype then
+      prototype.resistances = prototype.resistances or {}
+      table.insert(prototype.resistances, {type = "fire", percent = 100})
+    end
+  end
 end

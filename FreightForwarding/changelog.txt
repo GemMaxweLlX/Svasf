@@ -34,6 +34,9 @@ Date: 7 November 2026
       pack, a refrigerated container and lithium; needed by all technologies that use cryogenic science
     - Fast cargo ships (Vulcanus, 1.5x speed) and heavy cargo ships (Aquilo, double hold), registered through
       Cargo Ships' ship definition API
+    - Lava barges (Vulcanus): waterways can be built on lava (rails and rail supports still can't); other ships burn
+      on lava
+    - Train tiers: locomotive Mk2 (Fulgora) and Mk3 (Aquilo), cargo and fluid wagon Mk2 with double capacity (Vulcanus)
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
   Quality of life:

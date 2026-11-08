@@ -30,4 +30,5 @@ handler.add_libraries {
   require "scripts.warning",
   require "scripts.fuel-depot",
   require "scripts.map-tags",
+  require "scripts.lava-barges",
 }
