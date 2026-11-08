@@ -23,6 +23,13 @@ data:extend{
   },
   {
     type = "bool-setting",
+    name = "ff-show-freight-panel",
+    setting_type = "runtime-per-user",
+    default_value = true,
+    order = "d-b",
+  },
+  {
+    type = "bool-setting",
     name = "ff-map-tags",
     setting_type = "runtime-global",
     default_value = true,
