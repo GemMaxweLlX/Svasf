@@ -63,6 +63,9 @@ local SPECIAL_ORDERS = {
   {"ff-light-tungsten-carbide", 60}, {"ff-light-holmium-plate", 60}, {"ff-light-superconductor", 40},
   {"ff-light-carbon-fiber", 60}, {"ff-light-lithium-plate", 60}, {"ff-light-quantum-processor", 10},
   {"ff-cryo-bioflux", 30}, {"ff-cryo-agricultural-science-pack", 20},
+  -- planets from other mods (offered only if the mod is there)
+  {"ff-light-cerys-nuclear-scrap", 60}, {"ff-light-neodymium", 60}, {"ff-light-maraxsis-glass-panes", 40},
+  {"ff-cryo-maraxsis-tropical-fish", 20}, {"ff-light-aluminum-plate", 60}, {"ff-light-muluna-lunar-regolith", 60},
 }
 
 ---------------------------------------------------------------------------------------------------
@@ -403,7 +406,17 @@ local function check()
     force.print({"ff-contract.fulfilled-type", state.number, {"ff-contract-name." .. type_name}, reward_text(type_name, multiplier)})
     force.print({on_time and "ff-contract.reputation-up" or "ff-contract.reputation-down", math.abs(change), state.reputation})
     if state.reputation >= REP_RARE and state.reputation - change < REP_RARE then force.print({"ff-contract.rare-unlocked"}) end
-    if state.number == 1 then victory(force) end
+    if state.number == 1 then
+      -- With Krastorio 2 Spaced Out the goal is K2's intergalactic transceiver: the first contract grants the
+      -- alliance it needs instead of winning
+      local alliance = force.technologies["ff-caravan-alliance"]
+      if alliance then
+        alliance.researched = true
+        force.print({"ff-contract.alliance"})
+      else
+        victory(force)
+      end
+    end
     state.number = state.number + 1
     state.delivered = 0
     state.active = nil

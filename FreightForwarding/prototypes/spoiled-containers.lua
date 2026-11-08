@@ -31,6 +31,7 @@ function M.make(params)
       order = "b[" .. item.name .. "]",
       stack_size = 1,
       weight = params.weight,
+      ic_create_container = false,  -- no container in a container
     },
     {
       type = "recipe",

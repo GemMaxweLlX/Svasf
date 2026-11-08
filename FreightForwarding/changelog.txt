@@ -76,6 +76,33 @@ Date: 7 November 2026
       every 10 minutes until fulfilled. Timers are shown in the freight panel
     - Lore for the contracts: the Long Caravan, interstellar haulers that take cargo on the fly at the solar system
       edge (descriptions, tips, messages, victory screen)
+    - Krastorio 2 (2.1): compatibility ported to K2 2.x names (transport tech card, matter, battery packs, K2
+      resources on distant islands, stack sizes, fuels)
+    - Krastorio 2 Spaced Out: supported in classic and extended mode. Extended mode compromise: FF lithium battery
+      packs are built from K2 lithium-sulfur batteries, no cobalt from matter, no transport science in technologies
+      with K2's late tech cards, and the first freight contract grants an alliance needed by K2's intergalactic
+      transceiver (the goal) instead of winning
+    - Compatibility checked with Alien Biomes, Project Cybersyn (trains only: it doesn't register Cargo Ships ports),
+      Logistic Train Network (ships too), AAI Containers, Factory Planner, Helmod, Rate Calculator, Recipe Book,
+      Milestones (new Space Age milestones), Better Victory Screen (container and contract statistics), Aircraft
+      (moved to late game), Hovercrafts, AAI Vehicles: Ironclad and Mini Trains
+    - Planet mods: Maraxsis, Muluna, Moshine and Cerys work. Transport and freight science are only added to a
+      technology if some lab accepts all its science packs with them (Cerys' braking force research couldn't be
+      researched); in extended mode any science that isn't Nauvis' counts as another planet's
+    - Content for planets from other mods (extended mode): expedition permits for discovering Cerys, Moshine and
+      Maraxsis (deliveries to a post on Fulgora, Vulcanus, Gleba), survey permits for the first technology of Cerys,
+      Maraxsis and Muluna science (deliveries to a post on the planet itself, repaired with its local material),
+      special orders for their goods
+    - Spoiled refrigerated/cryo containers are no longer packed into Intermodal Containers' containers
+    - AAI Industry: checked (also with Krastorio 2 and Krastorio 2 Spaced Out); load order fixed through an
+      optional dependency
+    - Delivery permits (exclusive to FF + Space Age, startup setting): 11 key technologies first need a permit,
+      which can't be researched in labs. When it becomes available, a research post appears at a random place on land
+      near the explored area of the given planet; delivering the containers it asks for (used up) grants the permit.
+      Saves where the key technology is already researched get the permit automatically. The research post is found
+      damaged and is restored by delivering repair materials into it (steel, circuits and a local material per
+      planet); after the delivery the records leave in a cargo pod (the one space platform hubs send down), and 5
+      minutes later the post blows itself up
     - Contract reputation: +1 for a contract on time (+2 for a special order), -1 when late; rare ships (flagship,
       forge ship, observatory ship) from reputation 3, bigger contracts with a bad reputation
     - Special orders: specific goods in light or cryo containers instead of consignments, double reward

@@ -106,18 +106,25 @@ C.add_layer(data.raw.pipe["ff-underwater-pipe"], underwater_pipe_layer)
 -- Science
 -- Space Age: technologies that need another planet's science don't need transport science (the interplanetary
 -- freight science covers the late ones), unless the setting asks for it
-local PLANET_SCIENCE = {"metallurgic-science-pack", "electromagnetic-science-pack", "agricultural-science-pack",
-                        "cryogenic-science-pack", "promethium-science-pack"}
+-- Any science that isn't Nauvis' counts as another planet's: Space Age planets, planets from other mods (Cerys,
+-- Muluna, Maraxsis...) and K2's late tech cards
+local NAUVIS_SCIENCE = {
+  ["automation-science-pack"] = true, ["logistic-science-pack"] = true, ["military-science-pack"] = true,
+  ["chemical-science-pack"] = true, ["production-science-pack"] = true, ["utility-science-pack"] = true,
+  ["space-science-pack"] = true, ["ff-transport-science-pack"] = true, ["kr-basic-tech-card"] = true,
+}
 local skip_planet_techs = mods["space-age"] and not settings.startup["ff-classic-mode"].value
                           and not settings.startup["ff-transport-science-planet-techs"].value
 local function needs_planet_science(tech_name)
-  for _, pack in pairs(PLANET_SCIENCE) do
-    if util.contains_research_ingredient(tech_name, pack) then return true end
+  for _, pack in pairs(util.research_packs(tech_name)) do
+    if not NAUVIS_SCIENCE[pack] then return true end
   end
   return false
 end
 for _, tech in pairs(data.raw.technology) do
-  if tech.unit and tech.unit.ingredients and not (skip_planet_techs and needs_planet_science(tech.name)) then
+  if tech.unit and tech.unit.ingredients and not (skip_planet_techs and needs_planet_science(tech.name))
+      -- never make a technology impossible: some lab has to accept transport science with its other packs
+      and util.lab_accepts(util.research_packs(tech.name, "ff-transport-science-pack")) then
     local ingredients = tech.unit.ingredients
     if util.contains_research_ingredient(tech.name, "chemical-science-pack")
         and not util.contains_research_ingredient(tech.name, "ff-transport-science-pack") then
@@ -172,4 +179,6 @@ require "__FreightForwarding__.prototypes.freight-science-final"
 require "__FreightForwarding__.prototypes.lava-waterways"
 require "__FreightForwarding__.prototypes.container-damage"
 require "__FreightForwarding__.prototypes.container-groups"
+require "__FreightForwarding__.prototypes.delivery-permits"
 require "__FreightForwarding__.prototypes.tier-badges"
+require "__FreightForwarding__.compatibility.krastorio2.space-age"

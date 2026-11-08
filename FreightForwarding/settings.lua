@@ -26,6 +26,8 @@ data:extend{
   {type = "int-setting", name = "ff-contract-refresh", setting_type = "runtime-global", default_value = 45, minimum_value = 1, maximum_value = 1440, order = "f-b"},
   {type = "int-setting", name = "ff-contract-deadline", setting_type = "runtime-global", default_value = 180, minimum_value = 5, maximum_value = 10000, order = "f-c"},
   {type = "int-setting", name = "ff-contract-penalty", setting_type = "runtime-global", default_value = 5, minimum_value = 0, maximum_value = 100, order = "f-d"},
+  -- Cargo insurance: percent of a destroyed vehicle's cargo paid out into the nearest insurance office
+  {type = "int-setting", name = "ff-insurance-payout", setting_type = "runtime-global", default_value = 50, minimum_value = 0, maximum_value = 100, order = "f-e"},
   {
     type = "bool-setting",
     name = "ff-map-tags",
@@ -109,6 +111,14 @@ data:extend{
     setting_type = "startup",
     default_value = false,
     order = "e-h",
+  },
+  {
+    -- FF + Space Age exclusive: key technologies need a container delivered to a research post first
+    type = "bool-setting",
+    name = "ff-delivery-permits",
+    setting_type = "startup",
+    default_value = true,
+    order = "e-0",
   },
   {
     type = "int-setting",
