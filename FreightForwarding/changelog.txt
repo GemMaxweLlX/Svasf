@@ -94,6 +94,8 @@ Date: 7 November 2026
       Maraxsis and Muluna science (deliveries to a post on the planet itself, repaired with its local material),
       special orders for their goods
     - Spoiled refrigerated/cryo containers are no longer packed into Intermodal Containers' containers
+    - AAI Industry: checked (also with Krastorio 2 and Krastorio 2 Spaced Out); load order fixed through an
+      optional dependency
     - Delivery permits (exclusive to FF + Space Age, startup setting): 11 key technologies first need a permit,
       which can't be researched in labs. When it becomes available, a research post appears at a random place on land
       near the explored area of the given planet; delivering the containers it asks for (used up) grants the permit.
