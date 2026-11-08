@@ -21,7 +21,8 @@ mark_ancestors("ff-freight-science-pack")
 for name, technology in pairs(data.raw.technology) do
   if not ancestors[name] and technology.unit
       and util.contains_research_ingredient(name, "cryogenic-science-pack")
-      and not util.contains_research_ingredient(name, "ff-freight-science-pack") then
+      and not util.contains_research_ingredient(name, "ff-freight-science-pack")
+      and util.lab_accepts(util.research_packs(name, "ff-freight-science-pack")) then
     table.insert(technology.unit.ingredients, {"ff-freight-science-pack", 1})
     util.add_prerequisite(name, "ff-freight-science-pack")
   end

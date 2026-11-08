@@ -86,6 +86,9 @@ Date: 7 November 2026
       Logistic Train Network (ships too), AAI Containers, Factory Planner, Helmod, Rate Calculator, Recipe Book,
       Milestones (new Space Age milestones), Better Victory Screen (container and contract statistics), Aircraft
       (moved to late game), Hovercrafts, AAI Vehicles: Ironclad and Mini Trains
+    - Planet mods: Maraxsis, Muluna, Moshine and Cerys work. Transport and freight science are only added to a
+      technology if some lab accepts all its science packs with them (Cerys' braking force research couldn't be
+      researched); in extended mode any science that isn't Nauvis' counts as another planet's
     - Delivery permits (exclusive to FF + Space Age, startup setting): 11 key technologies first need a permit,
       which can't be researched in labs. When it becomes available, a research post appears at a random place on land
       near the explored area of the given planet; delivering the containers it asks for (used up) grants the permit.

@@ -279,4 +279,29 @@ function data_util.set_item_subgroup_order(subgroup_name, order)
   item_subgroup.order = order
 end
 
+--- True if some lab accepts all these science packs (names), so a technology using them can be researched
+function data_util.lab_accepts(packs)
+  for _, lab in pairs(data.raw.lab) do
+    local inputs = {}
+    for _, input in pairs(lab.inputs or {}) do inputs[input] = true end
+    local all = true
+    for _, pack in pairs(packs) do
+      if not inputs[pack] then all = false break end
+    end
+    if all then return true end
+  end
+  return false
+end
+
+--- Science packs of a technology plus extra ones, as names
+function data_util.research_packs(tech_name, ...)
+  local technology = data.raw.technology[tech_name]
+  local packs = {}
+  for _, ingredient in pairs(technology and technology.unit and technology.unit.ingredients or {}) do
+    packs[#packs + 1] = ingredient.name or ingredient[1]
+  end
+  for _, extra in pairs{...} do packs[#packs + 1] = extra end
+  return packs
+end
+
 return data_util
