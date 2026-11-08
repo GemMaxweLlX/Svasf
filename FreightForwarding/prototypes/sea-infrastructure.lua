@@ -127,6 +127,7 @@ end
 ---------------------------------------------------------------------------------------------------
 -- Subsea cable: cable landings on two shores, connected by a cable laid along the seabed (scripts/subsea-cable.lua).
 -- The cable is an item, one per tile of distance; laying takes time. Then it is a normal copper wire.
+-- With Space Age: landings only on Nauvis and Gleba, each with its own cable made only there (subsea / swamp cable).
 
 local medium_pole = data.raw["electric-pole"]["medium-electric-pole"]
 if medium_pole and data.raw.item["medium-electric-pole"] then
@@ -142,7 +143,8 @@ if medium_pole and data.raw.item["medium-electric-pole"] then
   landing.supply_area_distance = 2
   landing.next_upgrade = nil
   landing.fast_replaceable_group = nil
-  landing.surface_conditions = PLANET
+  -- Only on Nauvis (pressure 1000) and Gleba (pressure 2000)
+  landing.surface_conditions = mods["space-age"] and {{property = "pressure", min = 1000, max = 2000}} or nil
   tint_sprites(landing.pictures, tint)
   local cable_icon = data.raw.item["copper-cable"]
   local landing_recipe = recipe("ff-cable-landing", {
@@ -173,8 +175,36 @@ if medium_pole and data.raw.item["medium-electric-pole"] then
           {type = "item", name = "plastic-bar", amount = 1},
         },
         results = {{type = "item", name = "ff-subsea-cable", amount = 2}},
+        surface_conditions = NAUVIS,
       },
     }, "ff-subsea-cable")
+    -- Gleba lays its own cable, made only there
+    if mods["space-age"] and data.raw.item["carbon-fiber"] and data.raw.item["spoilage"] then
+      add({
+        {
+          type = "item",
+          name = "ff-swamp-cable",
+          icons = tinted(cable_icon, {r = 0.55, g = 0.8, b = 0.4, a = 1}),
+          subgroup = cable_icon.subgroup,
+          order = (cable_icon.order or "") .. "-ff-b",
+          stack_size = 200,
+          weight = 5000,
+        },
+        {
+          type = "recipe",
+          name = "ff-swamp-cable",
+          enabled = false,
+          energy_required = 1,
+          ingredients = {
+            {type = "item", name = "copper-cable", amount = 4},
+            {type = "item", name = "carbon-fiber", amount = 1},
+            {type = "item", name = "spoilage", amount = 2},
+          },
+          results = {{type = "item", name = "ff-swamp-cable", amount = 2}},
+          surface_conditions = {{property = "pressure", min = 2000, max = 2000}},
+        },
+      }, "ff-swamp-cable")
+    end
   end
 end
 

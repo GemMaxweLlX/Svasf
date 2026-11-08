@@ -1,11 +1,17 @@
 -- Subsea cable. A cable landing is both ends at once: build one on each shore, open one of them and choose where the
--- cable goes. The window shows, for every other landing on the surface, the distance, the subsea cable needed (one per
--- tile, taken from the player's inventory) and the laying time. While it is being laid a line grows towards the other
+-- cable goes. The window shows, for every other landing on the surface, the distance, the cable needed (one per
+-- tile, taken from the player's inventory; each planet lays its own cable, see CABLES) and the laying time. While it is being laid a line grows towards the other
 -- landing; when done, the landings are joined by a normal copper wire, which carries power both ways.
 -- Removing a landing cuts the cable (the cable on the seabed is lost).
 
 local LANDING = "ff-cable-landing"
-local CABLE = "ff-subsea-cable"
+-- Cable laid on each planet (Space Age: landings only on Nauvis and Gleba); other surfaces use the subsea cable
+local CABLES = {gleba = "ff-swamp-cable"}
+local function cable_for(surface)
+  local name = CABLES[surface.name]
+  if name and prototypes.item[name] then return name end
+  return "ff-subsea-cable"
+end
 local MAX_DISTANCE = 1000      -- tiles
 local TICKS_PER_TILE = 30      -- laying speed: 2 tiles per second
 
@@ -55,8 +61,9 @@ local function open_window(player, landing)
                                       caption = {"ff-cable.title"}}
   frame.location = {x = 40, y = 120}
   local inner = frame.add{type = "frame", style = "inside_shallow_frame_with_padding", direction = "vertical"}
-  local have = player.get_item_count(CABLE)
-  inner.add{type = "label", caption = {"ff-cable.have", have}}
+  local cable_item = cable_for(landing.surface)
+  local have = player.get_item_count(cable_item)
+  inner.add{type = "label", caption = {"ff-cable.have", have, cable_item}}
   local job = busy(landing)
   if job then
     local other = job.a == landing and job.b or job.a
@@ -103,16 +110,17 @@ end
 local function start(player, landing, other)
   if not (landing.valid and other.valid) or busy(landing) or busy(other) or linked(landing, other) then return end
   local need = cable_needed(landing, other)
-  if player.get_item_count(CABLE) < need then
-    player.print({"ff-cable.not-enough", need, player.get_item_count(CABLE)})
+  local cable_item = cable_for(landing.surface)
+  if player.get_item_count(cable_item) < need then
+    player.print({"ff-cable.not-enough", need, player.get_item_count(cable_item), cable_item})
     return
   end
-  player.remove_item{name = CABLE, count = need}
+  player.remove_item{name = cable_item, count = need}
   local line = rendering.draw_line{color = {0.3, 0.9, 0.8, 0.8}, width = 3, from = landing, to = landing,
                                    surface = landing.surface, dash_length = 1, gap_length = 0.5}
   data().jobs[#data().jobs + 1] = {a = landing, b = other, start = game.tick,
                                    finish = game.tick + laying_ticks(landing, other), line = line}
-  player.print({"ff-cable.started", math.floor(distance(landing, other)), need, format_time(laying_ticks(landing, other))})
+  player.print({"ff-cable.started", math.floor(distance(landing, other)), need, format_time(laying_ticks(landing, other)), cable_item})
 end
 
 local function update()
@@ -186,7 +194,7 @@ SubseaCable.add_remote_interface = function()
     lay = function(a, b)
       local line = rendering.draw_line{color = {0.3, 0.9, 0.8, 0.8}, width = 3, from = a, to = a, surface = a.surface}
       data().jobs[#data().jobs + 1] = {a = a, b = b, start = game.tick, finish = game.tick + laying_ticks(a, b), line = line}
-      return cable_needed(a, b), laying_ticks(a, b)
+      return cable_needed(a, b), laying_ticks(a, b), cable_for(a.surface)
     end,
     jobs = function() return #data().jobs end,
   })
