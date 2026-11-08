@@ -3,6 +3,14 @@
 -- platform. Mining the dredger gives the platform back and restores the seamount/vent and the original tiles.
 
 local RESOURCES = {"ff-seamount", "ff-cobalt-vent", "ff-scrap-seamount"}
+-- placer (mining drill placed by the item) -> dredger (assembling machine); Mk2/Mk3 are bigger (prototypes/dredger-tiers.lua)
+local DREDGERS = {
+  ["ff-dredging-platform"] = "ff-dredger",
+  ["ff-dredging-platform-mk2"] = "ff-dredger-mk2",
+  ["ff-dredging-platform-mk3"] = "ff-dredger-mk3",
+}
+local IS_DREDGER = {}
+for _, name in pairs(DREDGERS) do IS_DREDGER[name] = true end
 
 local function add_square(x, y, tiles)
   for i = 0, 1 do
@@ -38,6 +46,7 @@ local function on_dredger_created(event)
   local force = dredger.force
   local surface = dredger.surface
   local position = dredger.position
+  local dredger_name = DREDGERS[dredger.name] or "ff-dredger"
   local quality = dredger.quality  -- a quality dredger works faster (crafting speed)
   dredger.destroy()
 
@@ -53,7 +62,7 @@ local function on_dredger_created(event)
   end
 
   local created = surface.create_entity{
-    name = "ff-dredger",
+    name = dredger_name,
     position = position,
     force = force,
     quality = quality,
@@ -94,7 +103,7 @@ end
 
 local function on_dredger_removed(event)
   local entity = event.entity
-  if not (entity and entity.valid and entity.name == "ff-dredger") then return end
+  if not (entity and entity.valid and IS_DREDGER[entity.name]) then return end
   local surface = entity.surface
   local position = entity.position
   storage.dredgers = storage.dredgers or {}

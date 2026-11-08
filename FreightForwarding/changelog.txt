@@ -48,6 +48,7 @@ Date: 7 November 2026
     - Hot titansteel spoils into deformed plates after 2 minutes; the foundry melts those back into steel and
       titanium
     - Dredgers keep their quality (faster with higher quality)
+    - Dredger Mk2 (Vulcanus: 6x6, speed 2, 2 module slots) and Mk3 (Aquilo: 8x8, speed 3, 4 module slots)
     - FF buildings can't be built on space platforms; the underwater pipe doesn't need heating on Aquilo
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
