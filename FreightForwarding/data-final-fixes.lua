@@ -69,6 +69,15 @@ local offshore_tank_collision = C.get_mask(water_pumps[1])
 offshore_tank_collision.layers["ground_tile"] = true
 offshore_tank_collision.layers["object"] = true
 data.raw["storage-tank"]["ff-offshore-storage-tank"].collision_mask = offshore_tank_collision
+-- Offshore wind turbine: like the offshore tank (only on water); tidal generator: also not on deep water
+if data.raw["electric-energy-interface"]["ff-offshore-wind-turbine"] then
+  data.raw["electric-energy-interface"]["ff-offshore-wind-turbine"].collision_mask = table.deepcopy(offshore_tank_collision)
+end
+if data.raw["electric-energy-interface"]["ff-tidal-generator"] then
+  local tidal_collision = table.deepcopy(offshore_tank_collision)
+  tidal_collision.layers["ff_deep_water"] = true
+  data.raw["electric-energy-interface"]["ff-tidal-generator"].collision_mask = tidal_collision
+end
 
 -- Players can swim (player layer removed from water in prototypes/water.lua),
 -- but vehicles and units still have to collide with water

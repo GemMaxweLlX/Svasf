@@ -39,8 +39,31 @@ local CONTRACT_TYPES = {
   workshop = {size = 0.75, values = {20}, apply = function(force)
     force.manual_crafting_speed_modifier = force.manual_crafting_speed_modifier + 0.2
   end},
+  -- rare ships: offered only with a good reputation
+  flagship = {size = 2, values = {20, 2}, rare = true, apply = function(force)
+    force.worker_robots_speed_modifier = force.worker_robots_speed_modifier + 0.2
+    force.worker_robots_storage_bonus = force.worker_robots_storage_bonus + 2
+  end},
+  forge = {size = 2, values = {10}, rare = true, apply = function(force)
+    force.mining_drill_productivity_bonus = force.mining_drill_productivity_bonus + 0.1
+  end},
+  observatory = {size = 2, values = {25}, rare = true, apply = function(force)
+    force.laboratory_speed_modifier = force.laboratory_speed_modifier + 0.25
+  end},
 }
-local TYPE_ORDER = {"navigation", "survey", "archive", "cargo", "drones", "workshop"}
+local TYPE_ORDER = {"navigation", "survey", "archive", "cargo", "drones", "workshop", "flagship", "forge", "observatory"}
+
+-- Reputation with the caravan: +1 for a contract fulfilled on time (+2 for a special order), -1 when late.
+-- Rare ships come with reputation REP_RARE or more; a bad reputation makes contracts bigger (+10% per point below 0).
+local REP_RARE = 3
+
+-- Special orders: specific goods in light or cryo containers instead of consignments, double reward.
+local SPECIAL_CHANCE = 0.3
+local SPECIAL_ORDERS = {
+  {"ff-light-tungsten-carbide", 60}, {"ff-light-holmium-plate", 60}, {"ff-light-superconductor", 40},
+  {"ff-light-carbon-fiber", 60}, {"ff-light-lithium-plate", 60}, {"ff-light-quantum-processor", 10},
+  {"ff-cryo-bioflux", 30}, {"ff-cryo-agricultural-science-pack", 20},
+}
 
 ---------------------------------------------------------------------------------------------------
 -- Contract state
@@ -56,9 +79,27 @@ local function contract_size(n, type_name)
   return math.max(1, math.floor(base_size() * (1 + 0.5 * (n - 1)) * factor))
 end
 
-local function reward_text(type_name)
+local function reputation_factor(state)
+  return 1 + 0.1 * math.max(0, -(state.reputation or 0))
+end
+
+--- What an offer asks for: {item, count}
+local function offer_item(offer) return offer.item or "ff-freight-consignment" end
+local function offer_size(state, offer)
+  local count
+  if offer.item then
+    count = math.floor(offer.count * (1 + 0.5 * (state.number - 1)))
+  else
+    count = contract_size(state.number, offer.type)
+  end
+  return math.max(1, math.floor(count * reputation_factor(state)))
+end
+
+local function reward_text(type_name, multiplier)
   local t = CONTRACT_TYPES[type_name]
-  return {"ff-contract-reward." .. type_name, table.unpack(t.values)}
+  local values = {}
+  for i, v in pairs(t.values) do values[i] = v * (multiplier or 1) end
+  return {"ff-contract-reward." .. type_name, table.unpack(values)}
 end
 
 local function total_text(type_name, count)
@@ -86,24 +127,37 @@ local function draw_offers(state)
   local rng = storage.ff_contract_rng
   local pool = {}
   for _, name in pairs(TYPE_ORDER) do pool[#pool + 1] = name end
+  local rare_allowed = (state.reputation or 0) >= REP_RARE
+  for i = #pool, 1, -1 do
+    if CONTRACT_TYPES[pool[i]].rare and not rare_allowed then table.remove(pool, i) end
+  end
+  local specials = {}
+  for _, entry in pairs(SPECIAL_ORDERS) do
+    if prototypes.item[entry[1]] then specials[#specials + 1] = entry end
+  end
   local offers = {}
   local lifetime = setting_ticks("ff-contract-offer-lifetime")
   for _ = 1, math.min(OFFER_COUNT, #pool) do
-    local i = rng(1, #pool)
-    offers[#offers + 1] = {type = table.remove(pool, i), expires = game.tick + math.floor(lifetime * (0.75 + 0.5 * rng()))}
+    local offer = {type = table.remove(pool, rng(1, #pool)), expires = game.tick + math.floor(lifetime * (0.75 + 0.5 * rng()))}
+    if #specials > 0 and not CONTRACT_TYPES[offer.type].rare and rng() < SPECIAL_CHANCE then
+      local special = specials[rng(1, #specials)]
+      offer.item, offer.count, offer.multiplier = special[1], special[2], 2
+    end
+    offers[#offers + 1] = offer
   end
   state.offers = offers
   state.refresh_at = game.tick + setting_ticks("ff-contract-refresh")
 end
 
 --- Time to fulfil a contract: the deadline setting is for a contract of the base size, bigger ones get more time
-local function deadline_for(number, type_name)
-  return math.floor(setting_ticks("ff-contract-deadline") * contract_size(number, type_name) / base_size())
+local function deadline_for(state, offer)
+  local size = offer.item and offer.count * (1 + 0.5 * (state.number - 1)) or offer_size(state, offer)
+  return math.floor(setting_ticks("ff-contract-deadline") * size / base_size())
 end
 
---- Consignments the active contract needs, penalty included
+--- What the active contract needs, penalty included
 local function goal_of(state)
-  return contract_size(state.number, state.active) + (state.penalty or 0)
+  return offer_size(state, state.active_offer) + (state.penalty or 0)
 end
 
 local function get_state(force)
@@ -124,6 +178,7 @@ local function get_state(force)
       if type(offer) == "string" then state.offers[i] = {type = offer, expires = game.tick + setting_ticks("ff-contract-offer-lifetime")} end
     end
   end
+  if state.active and not state.active_offer then state.active_offer = {type = state.active} end
   if state.active and not state.deadline then state.deadline = game.tick + setting_ticks("ff-contract-deadline") end
   if not state.active and not state.offers then draw_offers(state) end
   return state
@@ -234,6 +289,7 @@ local function build_contracts(player)
   if state.active then
     local goal = goal_of(state)
     add_text(frame, {"ff-gui.contract-active", state.number, {"ff-contract-name." .. state.active}, state.delivered, goal})
+    add_text(frame, {"ff-gui.wants", offer_item(state.active_offer)})
     local overdue = game.tick > state.deadline
     local timer = add_text(frame, overdue and {"ff-gui.overdue", format_time(game.tick - state.deadline), state.penalty or 0}
                                           or {"ff-gui.deadline", format_time(state.deadline - game.tick)})
@@ -241,25 +297,29 @@ local function build_contracts(player)
     if overdue then timer.style.font_color = {1, 0.3, 0.2} end
     local bar = frame.add{type = "progressbar", value = math.min(1, state.delivered / goal)}
     bar.style.horizontally_stretchable = true
-    add_text(frame, {"ff-gui.reward", reward_text(state.active)})
+    add_text(frame, {"ff-gui.reward", reward_text(state.active, state.active_offer.multiplier)})
     if state.delivered == 0 then
       frame.add{type = "button", name = "ff_contract_cancel", caption = {"ff-gui.change-contract"}}
     end
   else
     add_text(frame, {"ff-gui.choose-contract", state.number}, "bold_label")
     for i, offer in pairs(state.offers or {}) do
-      local size = contract_size(state.number, offer.type)
-      local button = frame.add{type = "button", name = "ff_contract_offer_" .. i,
-        caption = {"ff-gui.offer", {"ff-contract-name." .. offer.type}, size},
-        tooltip = {"", {"ff-contract-description." .. offer.type}, "\n", {"ff-gui.reward", reward_text(offer.type)},
-                   "\n", {"ff-gui.offer-deadline", format_time(deadline_for(state.number, offer.type))}}}
+      local size = offer_size(state, offer)
+      local name = {"ff-contract-name." .. offer.type}
+      local caption = offer.item and {"ff-gui.offer-special", name, size, offer.item} or {"ff-gui.offer", name, size, offer_item(offer)}
+      local button = frame.add{type = "button", name = "ff_contract_offer_" .. i, caption = caption,
+        tooltip = {"", {"ff-contract-description." .. offer.type}, "\n", {"ff-gui.reward", reward_text(offer.type, offer.multiplier)},
+                   "\n", {"ff-gui.offer-deadline", format_time(deadline_for(state, offer))}}}
       button.style.horizontally_stretchable = true
-      add_text(frame, {"ff-gui.reward", reward_text(offer.type)})
+      if CONTRACT_TYPES[offer.type].rare or offer.item then button.style.font_color = {1, 0.75, 0.2} end
+      add_text(frame, {"ff-gui.reward", reward_text(offer.type, offer.multiplier)})
       add_text(frame, {"ff-gui.offer-expires", format_time(offer.expires - game.tick)}).name = "ff_offer_timer_" .. i
     end
     if #(state.offers or {}) == 0 then add_text(frame, {"ff-gui.no-offers"}) end
     add_text(frame, {"ff-gui.refresh", format_time(state.refresh_at - game.tick)}).name = "ff_refresh_timer"
   end
+  local reputation = state.reputation or 0
+  add_text(frame, {"ff-gui.reputation", reputation, reputation >= REP_RARE and {"ff-gui.rare-open"} or {"ff-gui.rare-closed", REP_RARE}})
   if (state.completed or 0) > 0 then
     add_text(frame, {"ff-gui.completed", state.completed}, "bold_label")
     for _, name in pairs(TYPE_ORDER) do
@@ -331,6 +391,29 @@ end
 
 local function check()
   if not prototypes.item[ITEM] then return end
+  local function finish(force, state)
+    local type_name, offer = state.active, state.active_offer
+    local multiplier = offer.multiplier or 1
+    for _ = 1, multiplier do CONTRACT_TYPES[type_name].apply(force) end
+    state.bonuses[type_name] = (state.bonuses[type_name] or 0) + multiplier
+    state.completed = (state.completed or 0) + 1
+    local on_time = not state.penalty
+    local change = on_time and (offer.item and 2 or 1) or -1
+    state.reputation = (state.reputation or 0) + change
+    force.print({"ff-contract.fulfilled-type", state.number, {"ff-contract-name." .. type_name}, reward_text(type_name, multiplier)})
+    force.print({on_time and "ff-contract.reputation-up" or "ff-contract.reputation-down", math.abs(change), state.reputation})
+    if state.reputation >= REP_RARE and state.reputation - change < REP_RARE then force.print({"ff-contract.rare-unlocked"}) end
+    if state.number == 1 then victory(force) end
+    state.number = state.number + 1
+    state.delivered = 0
+    state.active = nil
+    state.active_offer = nil
+    state.deadline = nil
+    state.penalty = nil
+    state.previous_offers = nil
+    draw_offers(state)
+    force.print({"ff-contract.new-offers", state.number})
+  end
   for _, force in pairs(game.forces) do
     local state = get_state(force)
     local changed = false
@@ -340,31 +423,19 @@ local function check()
       local hub = platform.valid and platform.hub
       if location and LOCATIONS[location.name] and hub and hub.valid then
         local inventory = hub.get_inventory(defines.inventory.hub_main)
-        local available = inventory and inventory.get_item_count(ITEM) or 0
+        local wanted = offer_item(state.active_offer)
+        local available = inventory and inventory.get_item_count(wanted) or 0
         if available > 0 then
           local goal = goal_of(state)
-          local taken = inventory.remove{name = ITEM, count = math.min(available, goal - state.delivered)}
+          local taken = inventory.remove{name = wanted, count = math.min(available, goal - state.delivered)}
           if taken > 0 then
             state.delivered = state.delivered + taken
-            state.total = (state.total or 0) + taken
+            if wanted == ITEM then state.total = (state.total or 0) + taken end
             changed = true
             if state.delivered < goal then
               force.print({"ff-contract.pickup", taken, state.delivered, goal})
             else
-              local type_name = state.active
-              CONTRACT_TYPES[type_name].apply(force)
-              state.bonuses[type_name] = (state.bonuses[type_name] or 0) + 1
-              state.completed = (state.completed or 0) + 1
-              force.print({"ff-contract.fulfilled-type", state.number, {"ff-contract-name." .. type_name}, reward_text(type_name)})
-              if state.number == 1 then victory(force) end
-              state.number = state.number + 1
-              state.delivered = 0
-              state.active = nil
-              state.deadline = nil
-              state.penalty = nil
-              state.previous_offers = nil
-              draw_offers(state)
-              force.print({"ff-contract.new-offers", state.number})
+              finish(force, state)
             end
           end
         end
@@ -377,12 +448,14 @@ end
 local function accept(force, index)
   local state = get_state(force)
   if state.active or not (state.offers and state.offers[index]) then return false end
-  state.active = state.offers[index].type
+  local offer = state.offers[index]
+  state.active = offer.type
+  state.active_offer = offer
   state.previous_offers = state.offers
   state.offers = nil
-  state.deadline = game.tick + deadline_for(state.number, state.active)
+  state.deadline = game.tick + deadline_for(state, offer)
   state.penalty = nil
-  force.print({"ff-contract.accepted", state.number, {"ff-contract-name." .. state.active}, contract_size(state.number, state.active)})
+  force.print({"ff-contract.accepted", state.number, {"ff-contract-name." .. state.active}, offer_size(state, offer), offer_item(offer)})
   update_all_panels(force)
   return true
 end
@@ -391,6 +464,7 @@ local function cancel(force)
   local state = get_state(force)
   if not state.active or state.delivered > 0 then return false end
   state.active = nil
+  state.active_offer = nil
   state.deadline = nil
   state.penalty = nil
   -- back to the offers that were on the table (those not expired since)
@@ -414,7 +488,7 @@ local function tick_timers()
       if state.active then
         if game.tick > state.deadline then
           local periods = math.floor((game.tick - state.deadline) / PENALTY_PERIOD) + 1
-          local penalty = math.ceil(contract_size(state.number, state.active) * settings.global["ff-contract-penalty"].value / 100 * periods)
+          local penalty = math.ceil(offer_size(state, state.active_offer) * settings.global["ff-contract-penalty"].value / 100 * periods)
           if penalty ~= (state.penalty or 0) then
             if not state.penalty then force.print({"ff-contract.overdue", state.number}) end
             state.penalty = penalty
@@ -526,11 +600,16 @@ FreightContract.add_remote_interface = function()
       local force = game.forces[force_index or 1]
       local state = get_state(force)
       local offers = {}
-      for _, offer in pairs(state.offers or {}) do offers[#offers + 1] = offer.type end
+      for _, offer in pairs(state.offers or {}) do offers[#offers + 1] = offer.type .. (offer.item and ("/" .. offer.item) or "") end
       return state.delivered, state.active and goal_of(state) or 0, state.number,
-             state.completed or 0, state.active, offers, state.deadline, state.penalty, state.refresh_at
+             state.completed or 0, state.active, offers, state.deadline, state.penalty, state.refresh_at, state.reputation or 0
     end,
     accept = function(force_index, index) return accept(game.forces[force_index or 1], index) end,
+    set_reputation = function(force_index, value)  -- for testing and scenarios
+      local state = get_state(game.forces[force_index or 1])
+      state.reputation = value
+      draw_offers(state)
+    end,
     cancel = function(force_index) return cancel(game.forces[force_index or 1]) end,
     statistics = function(force_index) return freight_statistics(game.forces[force_index or 1]) end,
   })

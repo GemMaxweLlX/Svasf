@@ -2,9 +2,9 @@
 -- "cargo-ships.ship-definition"), so Cargo Ships places and couples them like its own ships.
 --   * fast cargo ship (Vulcanus): 1.5x speed
 --   * heavy cargo ship (Aquilo): 2x hold, slower (0.7x by default)
---   * swamp barge (Gleba): the only ship that doesn't crawl through wetlands (scripts/swamp-barges.lua)
---   * icebreaker (Aquilo): breaks the ice around it into brash ice, so waterways can be extended (scripts/icebreaker.lua)
---   * lava barge (Vulcanus): heat-shielded, the only ship that doesn't burn on lava (scripts/lava-barges.lua,
+--   * swamp barge (Gleba): the only ship that doesn't crawl through wetlands (scripts/ship-hazards.lua)
+--   * icebreaker (Aquilo): breaks the ice around it into brash ice, so waterways can be extended (scripts/ship-hazards.lua)
+--   * lava barge (Vulcanus): heat-shielded, the only ship that doesn't burn on lava (scripts/ship-hazards.lua,
 --     waterways on lava: prototypes/lava-waterways.lua)
 -- Runs in data-updates (after FF's inventory-sizes.lua has set the cargo ship hold).
 

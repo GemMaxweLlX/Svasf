@@ -30,9 +30,8 @@ handler.add_libraries {
   require "scripts.warning",
   require "scripts.fuel-depot",
   require "scripts.map-tags",
-  require "scripts.lava-barges",
-  require "scripts.icebreaker",
+  require "scripts.ship-hazards",
   require "scripts.spoilage-sensor",
-  require "scripts.swamp-barges",
   require "scripts.freight-contract",
+  require "scripts.sea-power",
 }
