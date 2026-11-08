@@ -68,16 +68,42 @@ local function total_text(type_name, count)
   return {"ff-contract-reward." .. type_name, table.unpack(values)}
 end
 
+-- Timers (runtime map settings, in minutes)
+local MINUTE = 60 * 60
+local function setting_ticks(name) return settings.global[name].value * MINUTE end
+local PENALTY_PERIOD = 10 * MINUTE
+
+local function format_time(ticks)
+  local seconds = math.max(0, math.floor(ticks / 60))
+  local h, m, sec = math.floor(seconds / 3600), math.floor(seconds % 3600 / 60), seconds % 60
+  if h > 0 then return string.format("%d:%02d:%02d", h, m, sec) end
+  return string.format("%d:%02d", m, sec)
+end
+
+--- New offers: OFFER_COUNT different contract types, each with its own expiry (offer lifetime ±25%)
 local function draw_offers(state)
   storage.ff_contract_rng = storage.ff_contract_rng or game.create_random_generator(12345)
+  local rng = storage.ff_contract_rng
   local pool = {}
   for _, name in pairs(TYPE_ORDER) do pool[#pool + 1] = name end
   local offers = {}
+  local lifetime = setting_ticks("ff-contract-offer-lifetime")
   for _ = 1, math.min(OFFER_COUNT, #pool) do
-    local i = storage.ff_contract_rng(1, #pool)
-    offers[#offers + 1] = table.remove(pool, i)
+    local i = rng(1, #pool)
+    offers[#offers + 1] = {type = table.remove(pool, i), expires = game.tick + math.floor(lifetime * (0.75 + 0.5 * rng()))}
   end
   state.offers = offers
+  state.refresh_at = game.tick + setting_ticks("ff-contract-refresh")
+end
+
+--- Time to fulfil a contract: the deadline setting is for a contract of the base size, bigger ones get more time
+local function deadline_for(number, type_name)
+  return math.floor(setting_ticks("ff-contract-deadline") * contract_size(number, type_name) / base_size())
+end
+
+--- Consignments the active contract needs, penalty included
+local function goal_of(state)
+  return contract_size(state.number, state.active) + (state.penalty or 0)
 end
 
 local function get_state(force)
@@ -93,6 +119,12 @@ local function get_state(force)
     state.active = "navigation"
     state.bonuses.navigation = state.bonuses.navigation or (state.completed or 0)
   end
+  if state.offers then  -- offers from before the timers were plain type names
+    for i, offer in pairs(state.offers) do
+      if type(offer) == "string" then state.offers[i] = {type = offer, expires = game.tick + setting_ticks("ff-contract-offer-lifetime")} end
+    end
+  end
+  if state.active and not state.deadline then state.deadline = game.tick + setting_ticks("ff-contract-deadline") end
   if not state.active and not state.offers then draw_offers(state) end
   return state
 end
@@ -174,8 +206,13 @@ local function update_panel(player)
   if prototypes.item[ITEM] and contract_available(force) then
     local state = get_state(force)
     if state.active then
-      local goal = contract_size(state.number, state.active)
+      local goal = goal_of(state)
       add_text(frame, {"ff-gui.contract-active", state.number, {"ff-contract-name." .. state.active}, state.delivered, goal})
+      local overdue = game.tick > state.deadline
+      local timer = add_text(frame, overdue and {"ff-gui.overdue", format_time(game.tick - state.deadline), state.penalty or 0}
+                                            or {"ff-gui.deadline", format_time(state.deadline - game.tick)})
+      timer.name = "ff_deadline_timer"
+      if overdue then timer.style.font_color = {1, 0.3, 0.2} end
       local bar = frame.add{type = "progressbar", value = math.min(1, state.delivered / goal)}
       bar.style.horizontally_stretchable = true
       add_text(frame, {"ff-gui.reward", reward_text(state.active)})
@@ -185,12 +222,17 @@ local function update_panel(player)
     else
       add_text(frame, {"ff-gui.choose-contract", state.number}, "bold_label")
       for i, offer in pairs(state.offers or {}) do
+        local size = contract_size(state.number, offer.type)
         local button = frame.add{type = "button", name = "ff_contract_offer_" .. i,
-          caption = {"ff-gui.offer", {"ff-contract-name." .. offer}, contract_size(state.number, offer)},
-          tooltip = {"", {"ff-contract-description." .. offer}, "\n", {"ff-gui.reward", reward_text(offer)}}}
+          caption = {"ff-gui.offer", {"ff-contract-name." .. offer.type}, size},
+          tooltip = {"", {"ff-contract-description." .. offer.type}, "\n", {"ff-gui.reward", reward_text(offer.type)},
+                     "\n", {"ff-gui.offer-deadline", format_time(deadline_for(state.number, offer.type))}}}
         button.style.horizontally_stretchable = true
-        add_text(frame, {"ff-gui.reward", reward_text(offer)})
+        add_text(frame, {"ff-gui.reward", reward_text(offer.type)})
+        add_text(frame, {"ff-gui.offer-expires", format_time(offer.expires - game.tick)}).name = "ff_offer_timer_" .. i
       end
+      if #(state.offers or {}) == 0 then add_text(frame, {"ff-gui.no-offers"}) end
+      add_text(frame, {"ff-gui.refresh", format_time(state.refresh_at - game.tick)}).name = "ff_refresh_timer"
     end
     if (state.completed or 0) > 0 then
       add_text(frame, {"ff-gui.completed", state.completed}, "bold_label")
@@ -267,7 +309,7 @@ local function check()
         local inventory = hub.get_inventory(defines.inventory.hub_main)
         local available = inventory and inventory.get_item_count(ITEM) or 0
         if available > 0 then
-          local goal = contract_size(state.number, state.active)
+          local goal = goal_of(state)
           local taken = inventory.remove{name = ITEM, count = math.min(available, goal - state.delivered)}
           if taken > 0 then
             state.delivered = state.delivered + taken
@@ -285,6 +327,9 @@ local function check()
               state.number = state.number + 1
               state.delivered = 0
               state.active = nil
+              state.deadline = nil
+              state.penalty = nil
+              state.previous_offers = nil
               draw_offers(state)
               force.print({"ff-contract.new-offers", state.number})
             end
@@ -299,8 +344,11 @@ end
 local function accept(force, index)
   local state = get_state(force)
   if state.active or not (state.offers and state.offers[index]) then return false end
-  state.active = state.offers[index]
+  state.active = state.offers[index].type
+  state.previous_offers = state.offers
   state.offers = nil
+  state.deadline = game.tick + deadline_for(state.number, state.active)
+  state.penalty = nil
   force.print({"ff-contract.accepted", state.number, {"ff-contract-name." .. state.active}, contract_size(state.number, state.active)})
   update_all_panels(force)
   return true
@@ -309,15 +357,75 @@ end
 local function cancel(force)
   local state = get_state(force)
   if not state.active or state.delivered > 0 then return false end
-  local previous = state.active
   state.active = nil
-  draw_offers(state)
-  -- keep the declined contract among the offers, so changing your mind is possible
-  local present = false
-  for _, offer in pairs(state.offers) do if offer == previous then present = true end end
-  if not present then state.offers[1] = previous end
+  state.deadline = nil
+  state.penalty = nil
+  -- back to the offers that were on the table (those not expired since)
+  local offers = {}
+  for _, offer in pairs(state.previous_offers or {}) do
+    if offer.expires > game.tick then offers[#offers + 1] = offer end
+  end
+  state.offers = offers
+  state.previous_offers = nil
   update_all_panels(force)
   return true
+end
+
+--- Once a second: offers expire, offers are refreshed, overdue contracts pile up penalties, timers on the panel
+local function tick_timers()
+  if not prototypes.item[ITEM] then return end
+  for _, force in pairs(game.forces) do
+    if contract_available(force) then
+      local state = get_state(force)
+      local rebuild = false
+      if state.active then
+        if game.tick > state.deadline then
+          local periods = math.floor((game.tick - state.deadline) / PENALTY_PERIOD) + 1
+          local penalty = math.ceil(contract_size(state.number, state.active) * settings.global["ff-contract-penalty"].value / 100 * periods)
+          if penalty ~= (state.penalty or 0) then
+            if not state.penalty then force.print({"ff-contract.overdue", state.number}) end
+            state.penalty = penalty
+            force.print({"ff-contract.penalty", penalty, goal_of(state)})
+            rebuild = true
+          end
+        end
+      else
+        if game.tick >= (state.refresh_at or 0) then
+          draw_offers(state)
+          force.print({"ff-contract.refreshed"})
+          rebuild = true
+        else
+          for i = #state.offers, 1, -1 do
+            if state.offers[i].expires <= game.tick then
+              table.remove(state.offers, i)
+              rebuild = true
+            end
+          end
+        end
+      end
+      if rebuild then
+        update_all_panels(force)
+      else
+        for _, player in pairs(force.players) do
+          local frame = player.gui.top.ff_freight_panel
+          if frame then
+            if frame.ff_refresh_timer then frame.ff_refresh_timer.caption = {"ff-gui.refresh", format_time(state.refresh_at - game.tick)} end
+            for i, offer in pairs(state.offers or {}) do
+              local label = frame["ff_offer_timer_" .. i]
+              if label then label.caption = {"ff-gui.offer-expires", format_time(offer.expires - game.tick)} end
+            end
+            if frame.ff_deadline_timer and state.active then
+              if game.tick > state.deadline then
+                frame.ff_deadline_timer.caption = {"ff-gui.overdue", format_time(game.tick - state.deadline), state.penalty or 0}
+              else
+                frame.ff_deadline_timer.caption = {"ff-gui.deadline", format_time(state.deadline - game.tick)}
+              end
+            end
+          end
+        end
+      end
+    end
+  end
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -371,6 +479,8 @@ FreightContract.events = {
   end,
   [defines.events.on_research_finished] = function(event)
     if event.research.name == "ff-interstellar-freight-contract" then
+      local state = get_state(event.research.force)
+      if not state.active then draw_offers(state) end  -- timers start now
       event.research.force.print({"ff-contract.signal"})
       update_all_panels(event.research.force)
     end
@@ -381,6 +491,9 @@ FreightContract.on_nth_tick = {
   [600] = function()
     if script.active_mods["space-age"] then check() end
   end,
+  [60] = function()
+    if script.active_mods["space-age"] then tick_timers() end
+  end,
 }
 
 FreightContract.add_remote_interface = function()
@@ -388,8 +501,10 @@ FreightContract.add_remote_interface = function()
     progress = function(force_index)
       local force = game.forces[force_index or 1]
       local state = get_state(force)
-      return state.delivered, state.active and contract_size(state.number, state.active) or 0, state.number,
-             state.completed or 0, state.active, state.offers
+      local offers = {}
+      for _, offer in pairs(state.offers or {}) do offers[#offers + 1] = offer.type end
+      return state.delivered, state.active and goal_of(state) or 0, state.number,
+             state.completed or 0, state.active, offers, state.deadline, state.penalty, state.refresh_at
     end,
     accept = function(force_index, index) return accept(game.forces[force_index or 1], index) end,
     cancel = function(force_index) return cancel(game.forces[force_index or 1]) end,

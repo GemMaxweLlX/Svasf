@@ -71,6 +71,9 @@ Date: 7 November 2026
       braking, mining productivity, research speed, inserter capacity, robot cargo, manual crafting). Nothing is
       taken until a contract is accepted; it can be changed until the first delivery. Contracts keep coming and
       grow by 50% of the first each time
+    - Contract timers (map settings): offers expire after 30 minutes (±25%), all offers are refreshed every 45
+      minutes, an accepted contract has 180 minutes per 100 consignments; when overdue, the contract grows by 5%
+      every 10 minutes until fulfilled. Timers are shown in the freight panel
     - Lore for the contracts: the Long Caravan, interstellar haulers that take cargo on the fly at the solar system
       edge (descriptions, tips, messages, victory screen)
     - Freight panel (top left, can be hidden in the per-player settings): contract progress and freight statistics

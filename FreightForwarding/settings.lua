@@ -28,6 +28,11 @@ data:extend{
     default_value = true,
     order = "d-b",
   },
+  -- Interstellar freight contracts (Space Age), in minutes
+  {type = "int-setting", name = "ff-contract-offer-lifetime", setting_type = "runtime-global", default_value = 30, minimum_value = 1, maximum_value = 1440, order = "f-a"},
+  {type = "int-setting", name = "ff-contract-refresh", setting_type = "runtime-global", default_value = 45, minimum_value = 1, maximum_value = 1440, order = "f-b"},
+  {type = "int-setting", name = "ff-contract-deadline", setting_type = "runtime-global", default_value = 180, minimum_value = 5, maximum_value = 10000, order = "f-c"},
+  {type = "int-setting", name = "ff-contract-penalty", setting_type = "runtime-global", default_value = 5, minimum_value = 0, maximum_value = 100, order = "f-d"},
   {
     type = "bool-setting",
     name = "ff-map-tags",
