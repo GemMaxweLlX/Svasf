@@ -108,6 +108,12 @@ C.add_layer(data.raw.pipe["ff-underwater-pipe"], underwater_pipe_layer)
 -- freight science covers the late ones), unless the setting asks for it
 local PLANET_SCIENCE = {"metallurgic-science-pack", "electromagnetic-science-pack", "agricultural-science-pack",
                         "cryogenic-science-pack", "promethium-science-pack"}
+if mods["Krastorio2-spaced-out"] then
+  -- K2's late tech cards count like planet science: no transport science on top of them
+  for _, card in pairs{"kr-advanced-tech-card", "kr-matter-tech-card", "kr-singularity-tech-card"} do
+    table.insert(PLANET_SCIENCE, card)
+  end
+end
 local skip_planet_techs = mods["space-age"] and not settings.startup["ff-classic-mode"].value
                           and not settings.startup["ff-transport-science-planet-techs"].value
 local function needs_planet_science(tech_name)
@@ -174,3 +180,4 @@ require "__FreightForwarding__.prototypes.container-damage"
 require "__FreightForwarding__.prototypes.container-groups"
 require "__FreightForwarding__.prototypes.delivery-permits"
 require "__FreightForwarding__.prototypes.tier-badges"
+require "__FreightForwarding__.compatibility.krastorio2.space-age"

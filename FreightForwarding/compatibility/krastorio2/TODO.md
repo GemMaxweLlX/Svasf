@@ -1,3 +1,9 @@
+## Ported to Krastorio 2 2.1 (FF 2.0.0)
+- [x] all names updated to K2 2.x (`kr-` prefix); stack size changes off through `KR.adjust_stack_sizes`
+- [x] cobalt matter recipes made directly (K2's matter library is internal now)
+- [x] Krastorio 2 Spaced Out: classic mode as above; extended mode compromise in `space-age.lua`
+- [ ] add K2 fuel to spiderlings
+
 ## Update after FF v1.4.2
 - [x] make Transport Science Pack to tech card icons
 - [x] adjust TSP item/tool order

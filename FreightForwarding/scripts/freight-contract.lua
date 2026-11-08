@@ -403,7 +403,17 @@ local function check()
     force.print({"ff-contract.fulfilled-type", state.number, {"ff-contract-name." .. type_name}, reward_text(type_name, multiplier)})
     force.print({on_time and "ff-contract.reputation-up" or "ff-contract.reputation-down", math.abs(change), state.reputation})
     if state.reputation >= REP_RARE and state.reputation - change < REP_RARE then force.print({"ff-contract.rare-unlocked"}) end
-    if state.number == 1 then victory(force) end
+    if state.number == 1 then
+      -- With Krastorio 2 Spaced Out the goal is K2's intergalactic transceiver: the first contract grants the
+      -- alliance it needs instead of winning
+      local alliance = force.technologies["ff-caravan-alliance"]
+      if alliance then
+        alliance.researched = true
+        force.print({"ff-contract.alliance"})
+      else
+        victory(force)
+      end
+    end
     state.number = state.number + 1
     state.delivered = 0
     state.active = nil

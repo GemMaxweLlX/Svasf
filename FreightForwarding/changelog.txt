@@ -76,6 +76,12 @@ Date: 7 November 2026
       every 10 minutes until fulfilled. Timers are shown in the freight panel
     - Lore for the contracts: the Long Caravan, interstellar haulers that take cargo on the fly at the solar system
       edge (descriptions, tips, messages, victory screen)
+    - Krastorio 2 (2.1): compatibility ported to K2 2.x names (transport tech card, matter, battery packs, K2
+      resources on distant islands, stack sizes, fuels)
+    - Krastorio 2 Spaced Out: supported in classic and extended mode. Extended mode compromise: FF lithium battery
+      packs are built from K2 lithium-sulfur batteries, no cobalt from matter, no transport science in technologies
+      with K2's late tech cards, and the first freight contract grants an alliance needed by K2's intergalactic
+      transceiver (the goal) instead of winning
     - Delivery permits (exclusive to FF + Space Age, startup setting): 11 key technologies first need a permit,
       which can't be researched in labs. When it becomes available, a research post appears at a random place on land
       near the explored area of the given planet; delivering the containers it asks for (used up) grants the permit.
