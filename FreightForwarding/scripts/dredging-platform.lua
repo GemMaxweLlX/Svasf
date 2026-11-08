@@ -2,7 +2,7 @@
 -- Vulcanus). It is replaced here by the dredger (assembling machine), a hidden pole and radar, and a concrete
 -- platform. Mining the dredger gives the platform back and restores the seamount/vent and the original tiles.
 
-local RESOURCES = {"ff-seamount", "ff-cobalt-vent"}
+local RESOURCES = {"ff-seamount", "ff-cobalt-vent", "ff-scrap-seamount"}
 
 local function add_square(x, y, tiles)
   for i = 0, 1 do
@@ -38,6 +38,7 @@ local function on_dredger_created(event)
   local force = dredger.force
   local surface = dredger.surface
   local position = dredger.position
+  local quality = dredger.quality  -- a quality dredger works faster (crafting speed)
   dredger.destroy()
 
   local resource_name
@@ -55,6 +56,7 @@ local function on_dredger_created(event)
     name = "ff-dredger",
     position = position,
     force = force,
+    quality = quality,
     create_build_effect_smoke = false,
   }
   created.destructible = false

@@ -290,3 +290,27 @@ if data.raw.technology["cryogenic-science-pack"] and data.raw.item["lithium-plat
     }
   end
 end
+
+---------------------------------------------------------------------------------------------------
+-- Space Age (all modes): FF buildings belong on planets, not on space platforms.
+-- The underwater pipe lies in the ocean, which doesn't freeze: no heating needed on Aquilo.
+
+if mods["space-age"] then
+  local PLANET = {{property = "gravity", min = 0.1}}
+  local buildings = {
+    ["mining-drill"] = {"ff-dredging-platform"},
+    ["assembling-machine"] = {"ff-dredger", "ff-lava-pool", "ff-lava-pool-small"},
+    ["furnace"] = {"ff-lava-pool", "ff-lava-pool-small"},
+    ["radar"] = {"ff-seismic-scanner", "ff-seismic-scanner-2", "ff-sonar-buoy", "ff-sonar-buoy-2"},
+    ["pipe"] = {"ff-underwater-pipe"},
+    ["storage-tank"] = {"ff-offshore-storage-tank"},
+  }
+  for type, names in pairs(buildings) do
+    for _, name in pairs(names) do
+      local prototype = data.raw[type] and data.raw[type][name]
+      if prototype and not prototype.surface_conditions then prototype.surface_conditions = PLANET end
+    end
+  end
+  local underwater_pipe = data.raw.pipe["ff-underwater-pipe"]
+  if underwater_pipe then underwater_pipe.heating_energy = nil end
+end

@@ -40,6 +40,15 @@ Date: 7 November 2026
     - Icebreaker (Aquilo): turns the ice around it into brash ice, so waterways can be built further
     - Spoilage sensor: a combinator next to a train stop that outputs the spoilage of the stopped train's cargo
       (most spoiled stack and average, in percent) for circuit wait conditions
+    - Rail supports can't stand in deep water (like on Fulgora's deep oil ocean): elevated rails only bridge
+      shallow straits, the open ocean still needs ships
+    - Fulgora: scrap seamounts on the deep oil ocean floor, dredged for scrap
+    - Aquilo: fluorine seeps in the ammoniacal ocean, pumped by the oil rig
+    - Gleba: ships crawl through wetlands at a quarter of their speed; swamp barges don't
+    - Hot titansteel spoils into deformed plates after 2 minutes; the foundry melts those back into steel and
+      titanium
+    - Dredgers keep their quality (faster with higher quality)
+    - FF buildings can't be built on space platforms; the underwater pipe doesn't need heating on Aquilo
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
   Quality of life:

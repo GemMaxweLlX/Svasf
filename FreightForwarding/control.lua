@@ -33,4 +33,5 @@ handler.add_libraries {
   require "scripts.lava-barges",
   require "scripts.icebreaker",
   require "scripts.spoilage-sensor",
+  require "scripts.swamp-barges",
 }

@@ -2,6 +2,7 @@
 -- "cargo-ships.ship-definition"), so Cargo Ships places and couples them like its own ships.
 --   * fast cargo ship (Vulcanus): 1.5x speed
 --   * heavy cargo ship (Aquilo): 2x hold, a bit slower
+--   * swamp barge (Gleba): the only ship that doesn't crawl through wetlands (scripts/swamp-barges.lua)
 --   * icebreaker (Aquilo): breaks the ice around it into brash ice, so waterways can be extended (scripts/icebreaker.lua)
 --   * lava barge (Vulcanus): heat-shielded, the only ship that doesn't burn on lava (scripts/lava-barges.lua,
 --     waterways on lava: prototypes/lava-waterways.lua)
@@ -196,6 +197,28 @@ if data.raw.technology["cryogenic-science-pack"] and data.raw.tile["brash-ice"] 
       count = 400,
       ingredients = science("automation-science-pack", "logistic-science-pack", "chemical-science-pack",
         "space-science-pack", "cryogenic-science-pack"),
+      time = 60,
+    },
+  }
+end
+
+if data.raw.technology["agricultural-science-pack"] and data.raw.item["carbon-fiber"] then
+  make_ship{
+    name = "ff-swamp-barge",
+    order = "-e",
+    tint = {r = 0.75, g = 1, b = 0.6, a = 1},
+    speed = 1,
+    power = 1.2,
+    hold = 1,
+    ingredients = {
+      {type = "item", name = "cargo_ship", amount = 1},
+      {type = "item", name = "carbon-fiber", amount = 40},
+    },
+    prerequisites = {"cargo_ships", "agricultural-science-pack"},
+    unit = {
+      count = 300,
+      ingredients = science("automation-science-pack", "logistic-science-pack", "chemical-science-pack",
+        "space-science-pack", "agricultural-science-pack"),
       time = 60,
     },
   }

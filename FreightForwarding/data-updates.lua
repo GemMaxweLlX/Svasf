@@ -13,6 +13,7 @@ require "__FreightForwarding__.prototypes.freight-science"
 require "__FreightForwarding__.prototypes.ship-tiers"
 require "__FreightForwarding__.prototypes.train-tiers"
 require "__FreightForwarding__.prototypes.logistics-qol"
+require "__FreightForwarding__.prototypes.planet-seas"
 require "__FreightForwarding__.prototypes.rocket-tiers"
 
 for _, tile in pairs(data.raw.tile) do
