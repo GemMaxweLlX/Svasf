@@ -3,13 +3,10 @@ if not mods["Krastorio2"] then return end
 local util = require "__FreightForwarding__.prototypes.data-util"
 local bzutil = require "__FreightForwarding__.prototypes.data-util"
 
--- Adjust lead requirements for k2 ammos, moved to piercing- types
+-- Lead: either in armour-piercing ammo, or (setting off) as a drop from rocks
 if settings.startup["ff-k2-no-lead-ammo"].value then
-  bzutil.replace_ingredient("rifle-magazine", "lead-plate", "iron-plate")
-  bzutil.add_ingredient("armor-piercing-rifle-magazine", "lead-plate", 2)
-
-  bzutil.replace_ingredient("anti-material-rifle-magazine", "lead-plate", "iron-plate")
-  bzutil.add_ingredient("armor-piercing-anti-material-rifle-magazine", "lead-plate", 3)
+  -- K2 2.x has no plain rifle magazines any more; keep lead in the piercing rounds only
+  if data.raw.recipe["firearm-magazine"] then bzutil.replace_ingredient("firearm-magazine", "lead-plate", "iron-plate") end
 else
   for name, rock in pairs(data.raw["simple-entity"]) do
     if name:match('rock') and rock.minable then
