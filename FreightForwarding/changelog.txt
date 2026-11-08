@@ -4,13 +4,113 @@ Date: 7 November 2026
   Major Features:
     - Updated to Factorio 2.1
     - Optional Space Age support: Nauvis keeps the Freight Forwarding island terrain and resources, other planets are unaffected
+  Space Age:
+    - Startup setting "Classic mode": Freight Forwarding exactly as in 1.x on Nauvis even with Space Age (lava pools,
+      cobalt and titansteel on Nauvis, one rocket silo type that needs a rocket silo hole on Nauvis, rocket parts with
+      titansteel frames and battery packs); other planets stay as in vanilla Space Age. Everything below is off then
+    - Tiered rockets: the rocket silo technology unlocks the light rocket silo (500 kg lift, 20 rocket parts, cheaper),
+      the light space platform starter pack (500 kg) and the small cargo landing pad (20 slots)
+    - On Nauvis the light rocket silo can only be built exactly on a rocket silo hole (on other planets anywhere); one
+      hole is guaranteed on the second ring of islands (about 2000-2700 tiles from spawn)
+    - The normal rocket silo, landing pad and starter pack are unlocked by "Heavy-lift rockets", available in three
+      versions using the science of Vulcanus, Fulgora or Gleba: researching one completes the others. The normal silo
+      can be built anywhere
+    - Each of these planets has its own rocket silo recipe from local materials (tungsten / superconductors and
+      holmium / carbon fiber), craftable only on that planet
+    - Heavy rocket silo (2000 kg) unlocked with cryogenic science and titansteel: its rocket parts use titansteel rocket
+      frames. Normal silos can be upgraded to it
+    - Lava pools are generated on Vulcanus (500-1200 tiles from the landing site) instead of Nauvis, so titansteel is
+      smelted there. Titansteel processing needs metallurgic science
+    - Cobalt comes from cobalt vents in the lava lakes of Vulcanus, mined with the dredger (cobalt crust can only be
+      dredged on Vulcanus, seabed nodules only on Nauvis). Cobalt processing needs metallurgic science
+    - Batteries are fuel tiers that burn into empty batteries and are charged again on any planet:
+      1. lead-acid battery (4 MJ, anywhere), 2. cobalt-holmium battery pack (10 MJ, made on Fulgora, discharges after
+      1 hour; needs electromagnetic science), 3. lithium battery pack (25 MJ, faster, holds its charge, made on Aquilo)
+    - Refrigerated containers (with Intermodal Containers): made on Gleba, carry spoilable items (Gleba produce,
+      nutrients, bioflux, bacteria, science, fish, charged battery packs) which spoil 5 times slower inside
+    - Light containers (Vulcanus): any containerized item, a full one always weighs 250 kg - 4 per rocket
+    - Cryo containers (Aquilo): spoilable items spoil 20 times slower, 250 kg when full
+    - Interplanetary freight science pack, assembled on Aquilo from transport science, titansteel, a charged battery
+      pack, a refrigerated container and lithium; needed by all technologies that use cryogenic science
+    - Fast cargo ships (Vulcanus, 1.5x speed) and heavy cargo ships (Aquilo, double hold), registered through
+      Cargo Ships' ship definition API
+    - Lava barges (Vulcanus): waterways can be built on lava (rails and rail supports still can't); other ships burn
+      on lava
+    - Train tiers: locomotive Mk2 (Fulgora) and Mk3 (Aquilo), cargo and fluid wagon Mk2 with double capacity (Vulcanus)
+    - Icebreaker (Aquilo): turns the ice around it into brash ice, so waterways can be built further
+    - Spoilage sensor: a combinator next to a train stop that outputs the spoilage of the stopped train's cargo
+      (most spoiled stack and average, in percent) for circuit wait conditions
+    - Rail supports can't stand in deep water (like on Fulgora's deep oil ocean): elevated rails only bridge
+      shallow straits, the open ocean still needs ships
+    - Fulgora: scrap seamounts on the deep oil ocean floor, dredged for scrap
+    - Aquilo: fluorine seeps in the ammoniacal ocean, pumped by the oil rig
+    - Gleba: ships crawl through wetlands at a quarter of their speed; swamp barges don't
+    - Hot titansteel spoils into deformed plates after 2 minutes; the foundry melts those back into steel and
+      titanium
+    - Dredgers keep their quality (faster with higher quality)
+    - Dredger Mk2 (Vulcanus: 6x6, speed 2, 2 module slots) and Mk3 (Aquilo: 8x8, speed 3, 4 module slots)
+      with bigger platforms (24x24 and 30x30); platforms are no longer laid over waterways, rails, ships or trains
+    - Balance (with startup settings): light/cryo containers 400 kg, fluorine seeps 35% yield and half as common,
+      60-140 scrap per dredging cycle, no productivity modules in dredgers, ships at 40% speed in Gleba wetlands,
+      heavy cargo ship 0.7x speed, wagon Mk2 1.5x capacity, no transport science in technologies that need another
+      planet's science
+    - Spoiled refrigerated/cryo containers now hold what their contents spoil into, in the same amount (e.g. 500
+      yumako -> 500 spoilage, bacteria -> ore), and give back the same kind of container (a cryo container used
+      to come back as a refrigerated one, with a fixed 100 spoilage)
+    - Containers wear out: when unloading, 1% are lost and 2% come back damaged (all container kinds). Damaged
+      containers are repaired by hand for a quarter of their materials or recycled (classic mode: 1% loss as in
+      Intermodal Containers)
+    - Recipe tabs: separate packing and unpacking tabs for normal, refrigerated, light and cryo containers; all
+      filled containers in the container tab
+    - Icons of tiered things show the tier number (top right) and the planet where they are made (bottom left)
+    - Tips and tricks for the Space Age features
+    - Interstellar freight contract: pack freight consignments from goods of every planet and deliver them to a
+      space platform at the solar system edge to win (contract size is a startup setting, 100 by default); Space Age's
+      own victory (just reaching the edge) is replaced by it
+    - Contract choice: the caravan offers 3 of 6 contract types, each with its own size and reward (robot speed and
+      braking, mining productivity, research speed, inserter capacity, robot cargo, manual crafting). Nothing is
+      taken until a contract is accepted; it can be changed until the first delivery. Contracts keep coming and
+      grow by 50% of the first each time
+    - Contract timers (map settings): offers expire after 30 minutes (±25%), all offers are refreshed every 45
+      minutes, an accepted contract has 180 minutes per 100 consignments; when overdue, the contract grows by 5%
+      every 10 minutes until fulfilled. Timers are shown in the freight panel
+    - Lore for the contracts: the Long Caravan, interstellar haulers that take cargo on the fly at the solar system
+      edge (descriptions, tips, messages, victory screen)
+    - Contract reputation: +1 for a contract on time (+2 for a special order), -1 when late; rare ships (flagship,
+      forge ship, observatory ship) from reputation 3, bigger contracts with a bad reputation
+    - Special orders: specific goods in light or cryo containers instead of consignments, double reward
+    - Fulgora: lightning storms at night slow ships to half speed and can strike moving ships away from lightning rods
+    - Sea infrastructure (all games except classic mode): port crane (long-reach bulk inserter), cable terminal
+      (64-tile wires between terminals), offshore wind turbine (up to 1 MW with the wind), tidal generator (up to
+      600 kW with the tide)
+    - Subsea cable: cable landings on two shores; open one, choose the other landing and lay the cable (1 subsea
+      cable per tile, 2 tiles per second, up to 1000 tiles). When laid it is a normal copper wire. With Space Age, cable
+      landings can only be built on Nauvis and Gleba, and each lays its own cable, made only there: subsea cable
+      (Nauvis: copper cable, lead, plastic) and swamp cable (Gleba: copper cable, carbon fiber, spoilage)
+    - Ship scripts (lava, wetlands, icebreaker, storms) find ships through the train manager instead of searching
+      whole surfaces
+    - Translations of the new texts: Ukrainian, French, German, Japanese
+    - Message for saves from Freight Forwarding 1.x
+    - Two panels on the left, toggled by shortcut bar buttons: containers (freight statistics per planet: packed,
+      unpacked, damaged; refreshed every 10 seconds) and contracts (offers, active contract, timers, rewards). The
+      contracts button becomes available with the contract technology, which also opens the panel once
+    - FF buildings can't be built on space platforms; the underwater pipe doesn't need heating on Aquilo
+    - Light silos and small landing pads can be upgraded in place (upgrade planner)
+    - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
+  Quality of life:
+    - Fuel depot: trains and ships stopped within 10 tiles refuel from it and drop their burnt fuel into it
+    - Map tags for rocket silo holes, cobalt vents and big lava pools when they are charted (setting; remote
+      interface add_map_tags to tag an existing map)
+    - The dredger can be mined and moved: the seamount/vent and the original tiles are restored
+    - Space Age: containerization machine tier 4 (Fulgora), dredging productivity 1-3 (Vulcanus), fast charging
+      station (Fulgora), seismic scanner and sonar buoy Mk2 with twice the range (Aquilo)
   Changes:
     - Map generation rewritten for the 2.x string noise expressions (island elevation, resource placement, enemy spread, water tiles). The generated world follows the same formulas as 1.x
     - The "Freight Forwarding" map preset now uses the "water" autoplace control (Scale / Coverage) instead of the removed terrain segmentation / water settings
     - Added startup setting "Island terrain by default" (on by default): Nauvis uses the island terrain even with the Default preset
     - Cliffs follow the Freight Forwarding elevation
     - Rocket control units no longer exist: rockets parts need 5 charged battery packs instead (not with Space Age)
-    - With Space Age: rocket silos can be built anywhere on other planets; on Nauvis they still need a rocket silo hole. Satellite/space science and the interstellar communicator endgame are disabled (Space Age has its own victory)
+    - With Space Age: satellite/space science and the interstellar communicator endgame are disabled (Space Age has its own victory)
     - Mini Trains, Spidertron Patrols, Lex's Aircraft, Hovercrafts, Canal Builder and Beautiful Bridge Railway are now optional dependencies
     - Intermodal Containers is optional for now: its latest release (2.1.3) only supports Factorio 2.0
     - Requires Cargo Ships Oil Rig (oil rigs were split out of Cargo Ships in 2.1)

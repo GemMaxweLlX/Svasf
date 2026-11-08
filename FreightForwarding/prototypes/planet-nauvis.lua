@@ -7,8 +7,13 @@ if not (nauvis and nauvis.map_gen_settings) then return end
 
 local mgs = nauvis.map_gen_settings
 
-local ff_controls = { "ff-seamount", "ff-lava-pool", "ff-rocket-silo-hole" }
-local ff_entities = { "ff-seamount", "ff-lava-pool-resource", "ff-rocket-silo-hole" }
+local ff_controls = { "ff-seamount", "ff-rocket-silo-hole" }
+local ff_entities = { "ff-seamount", "ff-rocket-silo-hole" }
+-- With Space Age lava pools are on Vulcanus (prototypes/planet-vulcanus.lua)
+if not mods["space-age"] or settings.startup["ff-classic-mode"].value then
+  table.insert(ff_controls, "ff-lava-pool")
+  table.insert(ff_entities, "ff-lava-pool-resource")
+end
 local ff_tiles = { "water-shallow", "water", "deepwater" }
 
 if mgs.autoplace_controls then

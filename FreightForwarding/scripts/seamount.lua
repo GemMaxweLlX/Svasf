@@ -28,6 +28,9 @@ local function on_seamount_created(event)
   position = {x = x, y = y}
   seamount.teleport{x = x, y = y}
 
+  -- Cobalt vents (lava) keep their surroundings
+  if seamount.name ~= "ff-seamount" then return end
+
   -- Create regular water 'blob' around it
   local radius = 6.5
   local tiles = {}

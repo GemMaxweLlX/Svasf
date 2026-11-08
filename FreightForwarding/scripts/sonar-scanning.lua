@@ -2,6 +2,8 @@ local EntityUtil = require("scripts/entity-util")
 local util = require("scripts/chunk-util")
 local entity_name = "ff-sonar-buoy"
 local scanner_range = 125
+-- Range in chunks per scanner (Mk2 from Aquilo, Space Age)
+local scanner_ranges = { ["ff-sonar-buoy"] = 125, ["ff-sonar-buoy-2"] = 250 }
 
 ---@class ShadowAngle
 ---@field start number
@@ -32,6 +34,7 @@ local function get_scanner_data(scanner)
       current_circle_len = 1,
     }
   end
+  storage.scanner_data[unit_number].range = storage.scanner_data[unit_number].range or scanner_ranges[scanner.name]
   return storage.scanner_data[unit_number]
 end
 
@@ -127,7 +130,7 @@ function run_scan(scanner_data, scanner_chunk_position, scanner_position, surfac
     scanner_data.current_circle_index = scanner_data.current_circle_index + 1
     if scanner_data.current_circle_index > circle_len then
       radius_increases = radius_increases + 1
-      if radius_increases > 1 or scanner_data.current_radius > scanner_range then
+      if radius_increases > 1 or scanner_data.current_radius > (scanner_data.range or scanner_range) then
         -- increased radius twice without finding a chunk to explore
         -- means there are no more chunks to explore
         scanner_data.to_be_explored_chunks = {}
@@ -233,7 +236,7 @@ function run_scan(scanner_data, scanner_chunk_position, scanner_position, surfac
   else
     -- add neighbouring chunks to to_be_explored_chunks
     for _, neighbouring_chunk in pairs(util.neighbouring_chunks(chunk)) do
-      if not util.is_chunk_in_range_circle(neighbouring_chunk, scanner_chunk_position, scanner_range) then
+      if not util.is_chunk_in_range_circle(neighbouring_chunk, scanner_chunk_position, (scanner_data.range or scanner_range)) then
         goto continue
       end
 
@@ -263,7 +266,7 @@ local function on_sector_scanned(event)
   -- Raised when radar does scan, but the scanner prototype has a very small radius
   -- so that the actual chunk scan is done by the following script
   local scanner = event.radar
-  if scanner.name ~= entity_name then return end
+  if not scanner_ranges[scanner.name] then return end
 
   local surface = scanner.surface
   local force = scanner.force --[[@as LuaForce]]
@@ -297,7 +300,7 @@ end
 ---| EventData.on_robot_built_entity
 local function on_scanner_built(event)
   local scanner = event.entity
-  if scanner.name ~= entity_name then return end
+  if not scanner_ranges[scanner.name] then return end
 
   script.register_on_object_destroyed(scanner)
   EntityUtil.clear_backer_name(scanner)

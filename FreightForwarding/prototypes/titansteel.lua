@@ -225,6 +225,12 @@ legacy.extend{
 
 util.allow_productivity("ff-rocket-frame")
 
-bzutil.add_unlock("rocket-silo", "ff-rocket-frame")
-util.add_prerequisite("rocket-silo", "ff-titansteel-processing")
-bzutil.replace_ingredient("rocket-part", "low-density-structure", "ff-rocket-frame")
+if mods["space-age"] and not settings.startup["ff-classic-mode"].value then
+  -- Space Age: titansteel must not block the first rocket. Rocket parts stay vanilla; rocket frames are
+  -- unlocked with titansteel for the heavy (tier 3) rocket silo.
+  bzutil.add_unlock("ff-titansteel-processing", "ff-rocket-frame")
+else
+  bzutil.add_unlock("rocket-silo", "ff-rocket-frame")
+  util.add_prerequisite("rocket-silo", "ff-titansteel-processing")
+  bzutil.replace_ingredient("rocket-part", "low-density-structure", "ff-rocket-frame")
+end

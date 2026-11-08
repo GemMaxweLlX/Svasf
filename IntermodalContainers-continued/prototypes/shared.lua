@@ -129,7 +129,10 @@ function IC.generate_crates(this_item)
     log("ABORT: IC encountered a recipe with insane stack size ("..this_item..")")
     return
   end
-  local weight = data.raw["utility-constants"].default.default_item_weight
+  -- Without an explicit weight on the base item, leave the crate's weight unset so that the game derives it from
+  -- the loading recipe (contents + container). The previous fallback (default item weight, 100 g) made full
+  -- containers almost weightless in Space Age rockets.
+  local weight = nil
   if base_item.weight then
     weight = items_per_crate * base_item.weight
   end
@@ -189,6 +192,8 @@ function IC.generate_crates(this_item)
       localised_name = {"item-name.ic-container-item", tostring(items_per_crate), base_item.localised_name or {"item-name."..this_item}},
       stack_size = IC.CRATE_STACK_SIZE,
       weight = weight,
+      -- Weight derived from the loading recipe: container + contents (needs allow_decomposition on that recipe)
+      ingredient_to_weight_coefficient = 1,
       order = base_item.order,
       subgroup = "ic-" .. (base_item.subgroup or this_item),
       icons = containeritemicons,
@@ -215,7 +220,7 @@ function IC.generate_crates(this_item)
       icons = loadrecipeicons,
       results = {{type="item", name=IC.ITEM_PREFIX .. this_item, amount=1}},
       energy_required = items_per_crate / IC.BELT_SPEED,
-      allow_decomposition = false,
+      allow_decomposition = true,  -- lets the game derive the container weight from this recipe
       allow_intermediates = false,
       allow_as_intermediate = false,
       hide_from_stats = true,
