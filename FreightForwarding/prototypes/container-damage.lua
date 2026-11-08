@@ -15,6 +15,7 @@ local KINDS = {
   {empty = "ff-reefer-container", unload_prefix = "ff-reefer-unload-"},
   {empty = "ff-light-container", unload_prefix = "ff-light-unload-"},
   {empty = "ff-cryo-container", unload_prefix = "ff-cryo-unload-"},
+  {empty = "ff-tank-container", unload_prefix = "ff-tank-unload-"},
 }
 
 local repair_icon = data.raw["repair-tool"]["repair-pack"] and data.raw["repair-tool"]["repair-pack"].icon
