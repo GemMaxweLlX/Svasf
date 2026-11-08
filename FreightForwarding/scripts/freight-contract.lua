@@ -1,8 +1,9 @@
 -- Space Age: the interstellar freight contract. Every 10 seconds, freight consignments in the hub of a space platform
--- at the shattered planet are taken in. When the contract is fulfilled, the force wins (and can keep playing).
+-- at the solar system edge (or the shattered planet beyond it) are taken in. When the contract is fulfilled, the force
+-- wins (and can keep playing). Space Age's own victory (just reaching the edge) is turned off.
 
 local ITEM = "ff-freight-consignment"
-local LOCATIONS = {["shattered-planet"] = true}
+local LOCATIONS = {["solar-system-edge"] = true, ["shattered-planet"] = true}
 
 local function contract_size()
   return settings.startup["ff-freight-contract-size"].value
@@ -30,15 +31,31 @@ local function check()
       end
       if delivered >= goal then
         force.print({"ff-contract.fulfilled"})
-        game.set_win_ending_info{title = {"ff-contract.victory-title"}, message = {"ff-contract.victory-message"}}
-        game.set_game_state{game_finished = true, player_won = true, can_continue = true, victorious_force = force}
+        if remote.interfaces["better-victory-screen"] and remote.interfaces["better-victory-screen"]["trigger_victory"] then
+          remote.call("better-victory-screen", "trigger_victory", force)
+        else
+          game.reset_game_state()
+          game.enable_galaxy_of_fame_button = true
+          game.set_win_ending_info{title = {"ff-contract.victory-title"}, message = {"ff-contract.victory-message"}}
+          game.set_game_state{game_finished = true, player_won = true, can_continue = true, victorious_force = force}
+        end
       end
     end
   end
 end
 
+-- Space Age wins as soon as a platform reaches the solar system edge; with the contract, reaching it is not enough
+local function take_over_victory()
+  if not (script.active_mods["space-age"] and prototypes.item[ITEM]) then return end
+  local iface = remote.interfaces["space_finish_script"]
+  if iface and iface["set_no_victory"] then remote.call("space_finish_script", "set_no_victory", true) end
+end
+
 ---@type ScriptLib
 local FreightContract = {}
+
+FreightContract.on_init = take_over_victory
+FreightContract.on_configuration_changed = take_over_victory
 
 FreightContract.on_nth_tick = {
   [600] = function()

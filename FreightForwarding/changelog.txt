@@ -65,7 +65,8 @@ Date: 7 November 2026
     - Icons of tiered things show the tier number (top right) and the planet where they are made (bottom left)
     - Tips and tricks for the Space Age features
     - Interstellar freight contract: pack freight consignments from goods of every planet and deliver them to a
-      space platform at the shattered planet to win (contract size is a startup setting, 100 by default)
+      space platform at the solar system edge to win (contract size is a startup setting, 100 by default); Space Age's
+      own victory (just reaching the edge) is replaced by it
     - FF buildings can't be built on space platforms; the underwater pipe doesn't need heating on Aquilo
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel

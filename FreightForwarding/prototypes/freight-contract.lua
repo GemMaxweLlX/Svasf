@@ -1,6 +1,6 @@
 -- Space Age: the interstellar freight contract, Freight Forwarding's own victory. Freight consignments are packed
--- from goods of every planet; delivering enough of them to a space platform at the shattered planet (the end of the
--- solar system) wins the game (scripts/freight-contract.lua). Runs in data-updates.
+-- from goods of every planet; delivering enough of them to a space platform at the solar system edge (or beyond)
+-- wins the game (scripts/freight-contract.lua). Runs in data-updates.
 
 if not mods["space-age"] or settings.startup["ff-classic-mode"].value then return end
 
@@ -30,7 +30,7 @@ end
 local science = {}
 for _, pack in pairs{"automation-science-pack", "logistic-science-pack", "chemical-science-pack", "production-science-pack",
                      "utility-science-pack", "space-science-pack", "metallurgic-science-pack", "electromagnetic-science-pack",
-                     "agricultural-science-pack", "cryogenic-science-pack", "promethium-science-pack"} do
+                     "agricultural-science-pack", "cryogenic-science-pack"} do
   if data.raw.tool[pack] then science[#science + 1] = {pack, 1} end
 end
 
@@ -63,8 +63,9 @@ data:extend{
       return t
     end)(),
     effects = {{type = "unlock-recipe", recipe = "ff-freight-consignment"}},
-    prerequisites = {data.raw.technology["promethium-science-pack"] and "promethium-science-pack" or "space-science-pack"},
-    unit = {count = 2000, ingredients = science, time = 60},
+    prerequisites = {data.raw.technology["stellar-discovery-solar-system-edge"] and "stellar-discovery-solar-system-edge"
+                     or "space-science-pack"},
+    unit = {count = 1500, ingredients = science, time = 60},
     order = "z[ff-contract]",
   },
 }
