@@ -1,0 +1,9 @@
+{
+  "name": "ff-selftest",
+  "version": "1.0.0",
+  "title": "Freight Forwarding self-test (for testing only)",
+  "author": "FreightForwarding-continued",
+  "factorio_version": "2.1",
+  "description": "Builds test setups on a new map and writes FFSELFTEST PASS/FAIL lines to factorio-current.log. Do not use in a real game.",
+  "dependencies": ["base >= 2.1", "FreightForwarding", "? space-age"]
+}
