@@ -1,21 +1,46 @@
 -- Interstellar freight contracts (Space Age) and the freight panel (all games with Intermodal Containers).
 --
 -- Lore: the Long Caravan, interstellar haulers on a route centuries long, can't afford to brake; at the solar system
--- edge they take cargo on the fly. Consignments (and their light containers) leave with it for good. The caravan pays
--- with navigation data, hence the logistics bonus.
+-- edge they take cargo on the fly. Consignments (and their light containers) leave with it for good. Each caravan
+-- ship pays with what it carries: navigation data, survey maps, research archives...
 --
 -- Contracts: every 10 seconds, freight consignments in the hub of a space platform at the solar system edge (or the
 -- shattered planet beyond it) are taken in. The first fulfilled contract wins the game (Space Age's own victory for
--- just reaching the edge is turned off). After that, contracts go on: each one is bigger than the last and every
--- fulfilled contract gives a logistics bonus (robot speed, train and ship braking force).
+-- just reaching the edge is turned off). The caravan offers 3 contracts to choose from (CONTRACT_TYPES); each has its
+-- own size and reward. Nothing is taken until one is accepted, and it can be changed until the first delivery.
+-- Contracts get bigger one after another.
 --
 -- Freight panel (top left): progress of the current contract, and a button for freight statistics per planet
 -- (containers packed, unpacked and damaged), read from the force's production statistics.
 
 local ITEM = "ff-freight-consignment"
 local LOCATIONS = {["solar-system-edge"] = true, ["shattered-planet"] = true}
-local BONUS_ROBOT_SPEED = 0.1
-local BONUS_BRAKING = 0.1
+local OFFER_COUNT = 3
+
+-- Contract types: size factor and reward (applied to the force once per fulfilled contract)
+local CONTRACT_TYPES = {
+  navigation = {size = 1, values = {10, 10}, apply = function(force)
+    force.worker_robots_speed_modifier = force.worker_robots_speed_modifier + 0.1
+    force.train_braking_force_bonus = force.train_braking_force_bonus + 0.1
+  end},
+  survey = {size = 1.25, values = {5}, apply = function(force)
+    force.mining_drill_productivity_bonus = force.mining_drill_productivity_bonus + 0.05
+  end},
+  archive = {size = 1, values = {10}, apply = function(force)
+    force.laboratory_speed_modifier = force.laboratory_speed_modifier + 0.1
+  end},
+  cargo = {size = 1.5, values = {1, 1}, apply = function(force)
+    force.bulk_inserter_capacity_bonus = force.bulk_inserter_capacity_bonus + 1
+    force.inserter_stack_size_bonus = force.inserter_stack_size_bonus + 1
+  end},
+  drones = {size = 1.5, values = {1}, apply = function(force)
+    force.worker_robots_storage_bonus = force.worker_robots_storage_bonus + 1
+  end},
+  workshop = {size = 0.75, values = {20}, apply = function(force)
+    force.manual_crafting_speed_modifier = force.manual_crafting_speed_modifier + 0.2
+  end},
+}
+local TYPE_ORDER = {"navigation", "survey", "archive", "cargo", "drones", "workshop"}
 
 ---------------------------------------------------------------------------------------------------
 -- Contract state
@@ -24,9 +49,35 @@ local function base_size()
   return settings.startup["ff-freight-contract-size"].value
 end
 
---- Size of contract number n (1, 2, 3...): the base size, then +50% of it for every contract after the first
-local function contract_size(n)
-  return math.floor(base_size() * (1 + 0.5 * (n - 1)))
+--- Size of contract number n (1, 2, 3...) of a type: the base size, +50% of it for every contract after the first,
+--- times the type's factor
+local function contract_size(n, type_name)
+  local factor = CONTRACT_TYPES[type_name] and CONTRACT_TYPES[type_name].size or 1
+  return math.max(1, math.floor(base_size() * (1 + 0.5 * (n - 1)) * factor))
+end
+
+local function reward_text(type_name)
+  local t = CONTRACT_TYPES[type_name]
+  return {"ff-contract-reward." .. type_name, table.unpack(t.values)}
+end
+
+local function total_text(type_name, count)
+  local t = CONTRACT_TYPES[type_name]
+  local values = {}
+  for i, v in pairs(t.values) do values[i] = v * count end
+  return {"ff-contract-reward." .. type_name, table.unpack(values)}
+end
+
+local function draw_offers(state)
+  storage.ff_contract_rng = storage.ff_contract_rng or game.create_random_generator(12345)
+  local pool = {}
+  for _, name in pairs(TYPE_ORDER) do pool[#pool + 1] = name end
+  local offers = {}
+  for _ = 1, math.min(OFFER_COUNT, #pool) do
+    local i = storage.ff_contract_rng(1, #pool)
+    offers[#offers + 1] = table.remove(pool, i)
+  end
+  state.offers = offers
 end
 
 local function get_state(force)
@@ -36,6 +87,13 @@ local function get_state(force)
     state = {number = 1, delivered = state or 0}
     storage.ff_contract[force.index] = state
   end
+  state.bonuses = state.bonuses or {}
+  if state.delivered > 0 and not state.active then
+    -- contracts from before the choice existed were navigation contracts
+    state.active = "navigation"
+    state.bonuses.navigation = state.bonuses.navigation or (state.completed or 0)
+  end
+  if not state.active and not state.offers then draw_offers(state) end
   return state
 end
 
@@ -100,6 +158,13 @@ local function show_panel(player)
   return (setting == nil or setting.value) and prototypes.item["ic-container"] ~= nil
 end
 
+local function add_text(parent, caption, style)
+  local label = parent.add{type = "label", caption = caption, style = style}
+  label.style.single_line = false
+  label.style.maximal_width = 320
+  return label
+end
+
 local function update_panel(player)
   local top = player.gui.top
   if top.ff_freight_panel then top.ff_freight_panel.destroy() end
@@ -108,13 +173,30 @@ local function update_panel(player)
   local force = player.force
   if prototypes.item[ITEM] and contract_available(force) then
     local state = get_state(force)
-    local goal = contract_size(state.number)
-    frame.add{type = "label", caption = {"ff-gui.contract", state.number, state.delivered, goal}}
-    local bar = frame.add{type = "progressbar", value = math.min(1, state.delivered / goal)}
-    bar.style.horizontally_stretchable = true
+    if state.active then
+      local goal = contract_size(state.number, state.active)
+      add_text(frame, {"ff-gui.contract-active", state.number, {"ff-contract-name." .. state.active}, state.delivered, goal})
+      local bar = frame.add{type = "progressbar", value = math.min(1, state.delivered / goal)}
+      bar.style.horizontally_stretchable = true
+      add_text(frame, {"ff-gui.reward", reward_text(state.active)})
+      if state.delivered == 0 then
+        frame.add{type = "button", name = "ff_contract_cancel", caption = {"ff-gui.change-contract"}}
+      end
+    else
+      add_text(frame, {"ff-gui.choose-contract", state.number}, "bold_label")
+      for i, offer in pairs(state.offers or {}) do
+        local button = frame.add{type = "button", name = "ff_contract_offer_" .. i,
+          caption = {"ff-gui.offer", {"ff-contract-name." .. offer}, contract_size(state.number, offer)},
+          tooltip = {"", {"ff-contract-description." .. offer}, "\n", {"ff-gui.reward", reward_text(offer)}}}
+        button.style.horizontally_stretchable = true
+        add_text(frame, {"ff-gui.reward", reward_text(offer)})
+      end
+    end
     if (state.completed or 0) > 0 then
-      frame.add{type = "label", caption = {"ff-gui.bonus", state.completed,
-        math.floor(state.completed * BONUS_ROBOT_SPEED * 100 + 0.5), math.floor(state.completed * BONUS_BRAKING * 100 + 0.5)}}
+      add_text(frame, {"ff-gui.completed", state.completed}, "bold_label")
+      for _, name in pairs(TYPE_ORDER) do
+        if (state.bonuses[name] or 0) > 0 then add_text(frame, total_text(name, state.bonuses[name])) end
+      end
     end
   end
   frame.add{type = "button", name = "ff_freight_stats_button", caption = {"ff-gui.stats-button"}}
@@ -161,11 +243,6 @@ end
 ---------------------------------------------------------------------------------------------------
 -- Delivery
 
-local function apply_bonus(force)
-  force.worker_robots_speed_modifier = force.worker_robots_speed_modifier + BONUS_ROBOT_SPEED
-  force.train_braking_force_bonus = force.train_braking_force_bonus + BONUS_BRAKING
-end
-
 local function victory(force)
   if remote.interfaces["better-victory-screen"] and remote.interfaces["better-victory-screen"]["trigger_victory"] then
     remote.call("better-victory-screen", "trigger_victory", force)
@@ -183,38 +260,64 @@ local function check()
     local state = get_state(force)
     local changed = false
     for _, platform in pairs(force.platforms) do
+      if not state.active then break end  -- no contract accepted: the caravan doesn't stop by
       local location = platform.valid and platform.space_location
       local hub = platform.valid and platform.hub
       if location and LOCATIONS[location.name] and hub and hub.valid then
         local inventory = hub.get_inventory(defines.inventory.hub_main)
         local available = inventory and inventory.get_item_count(ITEM) or 0
-        local picked_up = 0
-        while available > 0 do
-          local goal = contract_size(state.number)
+        if available > 0 then
+          local goal = contract_size(state.number, state.active)
           local taken = inventory.remove{name = ITEM, count = math.min(available, goal - state.delivered)}
-          if taken == 0 then break end
-          available = available - taken
-          picked_up = picked_up + taken
-          if state.delivered + taken < goal then
-            force.print({"ff-contract.pickup", picked_up, state.delivered + taken, goal})
-          end
-          state.delivered = state.delivered + taken
-          state.total = (state.total or 0) + taken
-          changed = true
-          if state.delivered >= goal then
-            state.completed = (state.completed or 0) + 1
-            force.print({"ff-contract.fulfilled-n", state.number, BONUS_ROBOT_SPEED * 100, BONUS_BRAKING * 100})
-            apply_bonus(force)
-            if state.number == 1 then victory(force) end
-            state.number = state.number + 1
-            state.delivered = 0
-            force.print({"ff-contract.next", state.number, contract_size(state.number)})
+          if taken > 0 then
+            state.delivered = state.delivered + taken
+            state.total = (state.total or 0) + taken
+            changed = true
+            if state.delivered < goal then
+              force.print({"ff-contract.pickup", taken, state.delivered, goal})
+            else
+              local type_name = state.active
+              CONTRACT_TYPES[type_name].apply(force)
+              state.bonuses[type_name] = (state.bonuses[type_name] or 0) + 1
+              state.completed = (state.completed or 0) + 1
+              force.print({"ff-contract.fulfilled-type", state.number, {"ff-contract-name." .. type_name}, reward_text(type_name)})
+              if state.number == 1 then victory(force) end
+              state.number = state.number + 1
+              state.delivered = 0
+              state.active = nil
+              draw_offers(state)
+              force.print({"ff-contract.new-offers", state.number})
+            end
           end
         end
       end
     end
     if changed then update_all_panels(force) end
   end
+end
+
+local function accept(force, index)
+  local state = get_state(force)
+  if state.active or not (state.offers and state.offers[index]) then return false end
+  state.active = state.offers[index]
+  state.offers = nil
+  force.print({"ff-contract.accepted", state.number, {"ff-contract-name." .. state.active}, contract_size(state.number, state.active)})
+  update_all_panels(force)
+  return true
+end
+
+local function cancel(force)
+  local state = get_state(force)
+  if not state.active or state.delivered > 0 then return false end
+  local previous = state.active
+  state.active = nil
+  draw_offers(state)
+  -- keep the declined contract among the offers, so changing your mind is possible
+  local present = false
+  for _, offer in pairs(state.offers) do if offer == previous then present = true end end
+  if not present then state.offers[1] = previous end
+  update_all_panels(force)
+  return true
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -232,6 +335,10 @@ local function on_gui_click(event)
   local player = game.get_player(event.player_index)
   if element.name == "ff_freight_stats_button" or element.name == "ff_freight_stats_close" then
     toggle_stats(player)
+  elseif element.name == "ff_contract_cancel" then
+    cancel(player.force)
+  elseif element.name:sub(1, 18) == "ff_contract_offer_" then
+    accept(player.force, tonumber(element.name:sub(19)))
   end
 end
 
@@ -281,8 +388,11 @@ FreightContract.add_remote_interface = function()
     progress = function(force_index)
       local force = game.forces[force_index or 1]
       local state = get_state(force)
-      return state.delivered, contract_size(state.number), state.number, state.completed or 0
+      return state.delivered, state.active and contract_size(state.number, state.active) or 0, state.number,
+             state.completed or 0, state.active, state.offers
     end,
+    accept = function(force_index, index) return accept(game.forces[force_index or 1], index) end,
+    cancel = function(force_index) return cancel(game.forces[force_index or 1]) end,
     statistics = function(force_index) return freight_statistics(game.forces[force_index or 1]) end,
   })
 end
