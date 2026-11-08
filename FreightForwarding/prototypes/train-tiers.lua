@@ -1,12 +1,13 @@
 -- Space Age: train tiers. Runs in data-updates, after FF's trains.lua (battery-powered locomotives) and
 -- inventory-sizes.lua (smaller wagons).
---   locomotive Mk2 (Fulgora), locomotive Mk3 (Aquilo), cargo wagon Mk2 and fluid wagon Mk2 (Vulcanus)
+--   locomotive Mk2 (Fulgora), locomotive Mk3 (Aquilo), cargo wagon Mk2 and fluid wagon Mk2 (Vulcanus, 1.5x by default)
 
 if not mods["space-age"] or settings.startup["ff-classic-mode"].value then return end
 
 local VULCANUS = {{property = "pressure", min = 4000, max = 4000}}
 local FULGORA = {{property = "magnetic-field", min = 99, max = 99}}
 local AQUILO = {{property = "pressure", min = 300, max = 300}}
+local WAGON_CAPACITY = settings.startup["ff-wagon-mk2-capacity"].value
 
 local function power_kw(power)
   local value, unit = tostring(power):match("^([%d%.]+)(%a+)$")
@@ -103,7 +104,7 @@ if data.raw.technology["metallurgic-science-pack"] then
   make_tier{
     type = "cargo-wagon", base = "cargo-wagon", name = "ff-cargo-wagon-mk2",
     tint = {r = 1, g = 0.8, b = 0.6, a = 1},
-    modify = function(entity, base) entity.inventory_size = base.inventory_size * 2 end,
+    modify = function(entity, base) entity.inventory_size = math.floor(base.inventory_size * WAGON_CAPACITY) end,
     ingredients = {
       {type = "item", name = "cargo-wagon", amount = 1},
       {type = "item", name = "tungsten-plate", amount = 20},
@@ -116,7 +117,7 @@ if data.raw.technology["metallurgic-science-pack"] then
   make_tier{
     type = "fluid-wagon", base = "fluid-wagon", name = "ff-fluid-wagon-mk2",
     tint = {r = 1, g = 0.8, b = 0.6, a = 1},
-    modify = function(entity, base) entity.capacity = (base.capacity or 50000) * 2 end,
+    modify = function(entity, base) entity.capacity = math.floor((base.capacity or 50000) * WAGON_CAPACITY) end,
     ingredients = {
       {type = "item", name = "fluid-wagon", amount = 1},
       {type = "item", name = "tungsten-plate", amount = 20},

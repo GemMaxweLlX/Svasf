@@ -50,6 +50,10 @@ Date: 7 November 2026
     - Dredgers keep their quality (faster with higher quality)
     - Dredger Mk2 (Vulcanus: 6x6, speed 2, 2 module slots) and Mk3 (Aquilo: 8x8, speed 3, 4 module slots)
       with bigger platforms (24x24 and 30x30); platforms are no longer laid over waterways, rails, ships or trains
+    - Balance (with startup settings): light/cryo containers 400 kg, fluorine seeps 35% yield and half as common,
+      60-140 scrap per dredging cycle, no productivity modules in dredgers, ships at 40% speed in Gleba wetlands,
+      heavy cargo ship 0.7x speed, wagon Mk2 1.5x capacity, no transport science in technologies that need another
+      planet's science
     - FF buildings can't be built on space platforms; the underwater pipe doesn't need heating on Aquilo
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel

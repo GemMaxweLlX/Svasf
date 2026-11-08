@@ -2,15 +2,15 @@
 -- has generated its containers (FF loads after it).
 --   1. container (Intermodal Containers)            - Nauvis
 --   2. refrigerated container (reefer-containers.lua) - Gleba, spoilable items, spoil 5x slower
---   3. light container                                - Vulcanus, any containerized item, fixed weight 250 kg
---   4. cryo container                                 - Aquilo, spoilable items, spoil 20x slower, fixed weight 250 kg
--- The fixed weight makes containers worth it for rockets: 4 per rocket, whatever is inside.
+--   3. light container                                - Vulcanus, any containerized item, fixed weight (setting, 400 kg)
+--   4. cryo container                                 - Aquilo, spoilable items, spoil 20x slower, fixed weight (setting, 400 kg)
+-- The fixed weight makes containers worth it for rockets: 2 per rocket by default, whatever is inside.
 
 if not mods["space-age"] or settings.startup["ff-classic-mode"].value then return end
 if not (data.raw.item["ic-container"] and data.raw["recipe-category"]["packing"]) then return end
 
 local kg = 1000
-local CONTAINER_WEIGHT = 250 * kg
+local CONTAINER_WEIGHT = settings.startup["ff-light-container-weight"].value * kg
 local VULCANUS = {{property = "pressure", min = 4000, max = 4000}}
 local AQUILO = {{property = "pressure", min = 300, max = 300}}
 

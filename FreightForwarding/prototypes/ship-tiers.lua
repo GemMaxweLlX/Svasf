@@ -1,7 +1,7 @@
 -- Space Age: ship tiers, registered through Cargo Ships' ship definition API (mod-data
 -- "cargo-ships.ship-definition"), so Cargo Ships places and couples them like its own ships.
 --   * fast cargo ship (Vulcanus): 1.5x speed
---   * heavy cargo ship (Aquilo): 2x hold, a bit slower
+--   * heavy cargo ship (Aquilo): 2x hold, slower (0.7x by default)
 --   * swamp barge (Gleba): the only ship that doesn't crawl through wetlands (scripts/swamp-barges.lua)
 --   * icebreaker (Aquilo): breaks the ice around it into brash ice, so waterways can be extended (scripts/icebreaker.lua)
 --   * lava barge (Vulcanus): heat-shielded, the only ship that doesn't burn on lava (scripts/lava-barges.lua,
@@ -130,7 +130,7 @@ if data.raw.technology["cryogenic-science-pack"] and data.raw.item["lithium-plat
     name = "ff-heavy-cargo-ship",
     order = "-b",
     tint = {r = 0.7, g = 0.8, b = 1, a = 1},
-    speed = 0.85,
+    speed = settings.startup["ff-heavy-ship-speed"].value,
     power = 1.5,
     hold = 2,
     ingredients = {

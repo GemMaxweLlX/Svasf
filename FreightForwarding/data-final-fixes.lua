@@ -95,8 +95,20 @@ end
 C.add_layer(data.raw.pipe["ff-underwater-pipe"], underwater_pipe_layer)
 
 -- Science
+-- Space Age: technologies that need another planet's science don't need transport science (the interplanetary
+-- freight science covers the late ones), unless the setting asks for it
+local PLANET_SCIENCE = {"metallurgic-science-pack", "electromagnetic-science-pack", "agricultural-science-pack",
+                        "cryogenic-science-pack", "promethium-science-pack"}
+local skip_planet_techs = mods["space-age"] and not settings.startup["ff-classic-mode"].value
+                          and not settings.startup["ff-transport-science-planet-techs"].value
+local function needs_planet_science(tech_name)
+  for _, pack in pairs(PLANET_SCIENCE) do
+    if util.contains_research_ingredient(tech_name, pack) then return true end
+  end
+  return false
+end
 for _, tech in pairs(data.raw.technology) do
-  if tech.unit and tech.unit.ingredients then
+  if tech.unit and tech.unit.ingredients and not (skip_planet_techs and needs_planet_science(tech.name)) then
     local ingredients = tech.unit.ingredients
     if util.contains_research_ingredient(tech.name, "chemical-science-pack")
         and not util.contains_research_ingredient(tech.name, "ff-transport-science-pack") then

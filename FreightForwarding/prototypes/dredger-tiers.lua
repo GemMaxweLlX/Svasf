@@ -76,7 +76,9 @@ local function make_tier(p)
   new_dredger.crafting_speed = p.speed
   new_dredger.energy_usage = p.energy
   new_dredger.module_slots = p.modules
-  new_dredger.allowed_effects = {"consumption", "speed", "productivity", "pollution", "quality"}
+  new_dredger.allowed_effects = settings.startup["ff-dredger-productivity-modules"].value
+    and {"consumption", "speed", "productivity", "pollution", "quality"}
+    or {"consumption", "speed", "pollution", "quality"}  -- seamounts never run out: no productivity modules
   new_dredger.minable = {mining_time = 2, result = item_name}
   new_dredger.placeable_by = {item = item_name, count = 1}
   new_dredger.next_upgrade = nil
@@ -157,7 +159,8 @@ if data.raw.technology["cryogenic-science-pack"] and data.raw.item["ff-dredging-
   }
 end
 
--- Productivity modules in the bigger dredgers
+-- Productivity modules in the bigger dredgers (only with the setting)
+if not settings.startup["ff-dredger-productivity-modules"].value then return end
 for _, recipe in pairs(data.raw.recipe) do
   for _, category in pairs(recipe.categories or {recipe.category}) do
     if category == "ff-dredging" then recipe.allow_productivity = true end

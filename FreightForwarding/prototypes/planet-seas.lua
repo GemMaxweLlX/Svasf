@@ -28,6 +28,7 @@ end
 local seamount = data.raw.resource["ff-seamount"]
 local fulgora = data.raw.planet["fulgora"]
 if seamount and fulgora and fulgora.map_gen_settings and data.raw.item["scrap"] then
+  local scrap_amount = settings.startup["ff-scrap-dredging-amount"].value  -- average per cycle
   local scrap_mount = table.deepcopy(seamount)
   scrap_mount.name = "ff-scrap-seamount"
   scrap_mount.localised_name = {"entity-name.ff-scrap-seamount"}
@@ -62,7 +63,7 @@ if seamount and fulgora and fulgora.map_gen_settings and data.raw.item["scrap"] 
       enabled = false,
       energy_required = 50,
       ingredients = {},
-      results = {{type = "item", name = "scrap", amount_min = 100, amount_max = 250}},
+      results = {{type = "item", name = "scrap", amount_min = math.floor(scrap_amount * 0.6), amount_max = math.ceil(scrap_amount * 1.4)}},
       main_product = "scrap",
       always_show_products = true,
       show_amount_in_title = false,
@@ -101,7 +102,7 @@ if offshore_oil and aquilo and aquilo.map_gen_settings and data.raw.fluid["fluor
   seep.minable = table.deepcopy(seep.minable)
   seep.minable.results = {{type = "fluid", name = "fluorine", amount_min = 10, amount_max = 10, independent_probability = 1}}
   seep.autoplace = {control = "ff-fluorine-seep", order = "c", probability_expression = "0",
-                    richness_expression = "400000 + 200 * distance"}
+                    richness_expression = tostring(3000 * settings.startup["ff-fluorine-seep-yield"].value)}  -- % of normal
   data:extend{
     seep,
     {
@@ -116,7 +117,7 @@ if offshore_oil and aquilo and aquilo.map_gen_settings and data.raw.fluid["fluor
       type = "noise-expression",
       name = "ff_aquilo_fluorine_seep_probability",
       -- Collision (water_resource layer) keeps them on the ocean
-      expression = N.num(10 / (64 * 64 ^ 2)) .. " * " .. N.control("ff-fluorine-seep", "frequency") .. " * (distance > 100)",
+      expression = N.num(5 / (64 * 64 ^ 2)) .. " * " .. N.control("ff-fluorine-seep", "frequency") .. " * (distance > 100)",
     },
   }
   add_to_planet(aquilo, "ff-fluorine-seep", "ff-fluorine-seep", "ff_aquilo_fluorine_seep_probability")

@@ -1,7 +1,7 @@
--- Space Age: ships wade through the wetlands of Gleba at a crawl, unless they are swamp barges (flat-bottomed,
+-- Space Age: ships wade through the wetlands of Gleba slowly (40% speed by default), unless they are swamp barges (flat-bottomed,
 -- see prototypes/ship-tiers.lua). Checked 6 times a second on Gleba.
 
-local SPEED_FACTOR = 0.25
+local SPEED_FACTOR = settings.startup["ff-swamp-ship-speed"].value
 local BARGES = {["ff-swamp-barge"] = true, ["ff-swamp-barge-engine"] = true}
 
 local ship_names
