@@ -82,6 +82,10 @@ Date: 7 November 2026
       packs are built from K2 lithium-sulfur batteries, no cobalt from matter, no transport science in technologies
       with K2's late tech cards, and the first freight contract grants an alliance needed by K2's intergalactic
       transceiver (the goal) instead of winning
+    - Compatibility checked with Alien Biomes, Project Cybersyn (trains only: it doesn't register Cargo Ships ports),
+      Logistic Train Network (ships too), AAI Containers, Factory Planner, Helmod, Rate Calculator, Recipe Book,
+      Milestones (new Space Age milestones), Better Victory Screen (container and contract statistics), Aircraft
+      (moved to late game), Hovercrafts, AAI Vehicles: Ironclad and Mini Trains
     - Delivery permits (exclusive to FF + Space Age, startup setting): 11 key technologies first need a permit,
       which can't be researched in labs. When it becomes available, a research post appears at a random place on land
       near the explored area of the given planet; delivering the containers it asks for (used up) grants the permit.

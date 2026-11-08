@@ -4,16 +4,28 @@
 local function better_victory_screen_statistics(winning_force, forces)
   local statistics = { by_force = {} }
   for _, force in pairs(forces) do
-    -- 2.x: production statistics are per surface
-    local containers_created = 0
+    -- 2.x: production statistics are per surface; containers of every kind (filled ones = packed)
+    local containers_created, packed = 0, 0
     for _, surface in pairs(game.surfaces) do
-      containers_created = containers_created + force.get_item_production_statistics(surface).get_input_count("ic-container")
+      local stats = force.get_item_production_statistics(surface)
+      for _, empty in pairs{"ic-container", "ff-reefer-container", "ff-light-container", "ff-cryo-container"} do
+        if prototypes.item[empty] then containers_created = containers_created + stats.get_input_count(empty) end
+      end
+    end
+    local freight = remote.interfaces["ff-freight-contract"] and remote.call("ff-freight-contract", "statistics", force.index) or {}
+    for _, row in pairs(freight) do packed = packed + row.packed end
+    local stats = {
+      ["containers"] = { value = containers_created, order = "p" },
+      ["ff-containers-packed"] = { value = packed, order = "q" },
+    }
+    local contract = storage.ff_contract and storage.ff_contract[force.index]
+    if type(contract) == "table" then
+      stats["ff-contracts"] = { value = contract.completed or 0, order = "r" }
+      stats["ff-consignments"] = { value = contract.total or 0, order = "s" }
     end
     statistics.by_force[force.name] = {
       -- Add it to the existing production category
-      ["production"] = { stats = {
-        ["containers"] = { value = containers_created, order = "p" },
-      } }
+      ["production"] = { stats = stats },
     }
   end
   return statistics

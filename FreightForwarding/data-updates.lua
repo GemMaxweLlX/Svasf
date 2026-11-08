@@ -29,6 +29,7 @@ end
 require "__FreightForwarding__.compatibility.advanced-centrifuge.data-updates"
 require "__FreightForwarding__.compatibility.aai-industry.data-updates"
 require "__FreightForwarding__.compatibility.aai-vehicles-ironclad.data-updates"
+require "__FreightForwarding__.compatibility.aircraft.data-updates"
 require "__FreightForwarding__.compatibility.big-mining-drill.data-updates"
 require "__FreightForwarding__.compatibility.bismuth.data-updates"
 require "__FreightForwarding__.compatibility.bz.data-updates"
