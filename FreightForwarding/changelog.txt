@@ -57,6 +57,8 @@ Date: 7 November 2026
     - Spoiled refrigerated/cryo containers now hold what their contents spoil into, in the same amount (e.g. 500
       yumako -> 500 spoilage, bacteria -> ore), and give back the same kind of container (a cryo container used
       to come back as a refrigerated one, with a fixed 100 spoilage)
+    - Refrigerated, light and cryo containers are sometimes lost when unloading, like Intermodal Containers' own
+      (1%)
     - FF buildings can't be built on space platforms; the underwater pipe doesn't need heating on Aquilo
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel

@@ -11,6 +11,8 @@ if not (data.raw.item["ic-container"] and data.raw["recipe-category"]["packing"]
 
 local spoiled_containers = require("__FreightForwarding__.prototypes.spoiled-containers")
 local kg = 1000
+-- Like Intermodal Containers: a container is sometimes lost when unloading (1% in FF)
+local CONTAINER_RETURN = 1 - settings.startup["ic-container-loss-chance"].value
 local CONTAINER_WEIGHT = settings.startup["ff-light-container-weight"].value * kg
 local VULCANUS = {{property = "pressure", min = 4000, max = 4000}}
 local AQUILO = {{property = "pressure", min = 300, max = 300}}
@@ -119,7 +121,7 @@ local function make_family(family)
         energy_required = energy,
         ingredients = {{type = "item", name = filled, amount = 1}},
         results = {
-          {type = "item", name = family.empty, amount = 1},
+          {type = "item", name = family.empty, amount = 1, independent_probability = CONTAINER_RETURN},
           {type = "item", name = name, amount = amount},
         },
         main_product = name,

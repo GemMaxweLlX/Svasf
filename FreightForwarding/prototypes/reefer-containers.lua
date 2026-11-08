@@ -12,6 +12,8 @@ if not (data.raw.item["ic-container"] and data.raw["recipe-category"]["packing"]
 
 local spoiled_containers = require("__FreightForwarding__.prototypes.spoiled-containers")
 local SPOIL_SLOWDOWN = 5
+-- Like Intermodal Containers: a container is sometimes lost when unloading (1% in FF)
+local CONTAINER_RETURN = 1 - settings.startup["ic-container-loss-chance"].value
 local kg = 1000
 local STACKS_PER_REEFER = 10
 local GLEBA = {{property = "pressure", min = 2000, max = 2000}}
@@ -113,7 +115,7 @@ data:extend{
     energy_required = 2,
     ingredients = {{type = "item", name = "ff-reefer-spoilage", amount = 1}},
     results = {
-      {type = "item", name = "ff-reefer-container", amount = 1},
+      {type = "item", name = "ff-reefer-container", amount = 1, independent_probability = CONTAINER_RETURN},
       {type = "item", name = "spoilage", amount = 100},
     },
     hide_from_player_crafting = true,
@@ -202,7 +204,7 @@ for _, item in pairs(cargo) do
       energy_required = energy,
       ingredients = {{type = "item", name = filled, amount = 1}},
       results = {
-        {type = "item", name = "ff-reefer-container", amount = 1},
+        {type = "item", name = "ff-reefer-container", amount = 1, independent_probability = CONTAINER_RETURN},
         {type = "item", name = name, amount = amount},
       },
       main_product = name,

@@ -15,7 +15,8 @@ function M.make(params)
   local name = params.prefix .. "spoiled-" .. item.name
   if data.raw.item[name] then return name end
 
-  local results = {{type = "item", name = params.empty, amount = 1}}
+  local results = {{type = "item", name = params.empty, amount = 1,
+                    independent_probability = 1 - settings.startup["ic-container-loss-chance"].value}}
   if spoil_item then results[2] = {type = "item", name = spoil_name, amount = params.amount} end
   local content_name = spoil_item and (spoil_item.localised_name or {"item-name." .. spoil_name}) or {"", "-"}
   local icons = params.icons_for(spoil_item and params.item_icons(spoil_item) or nil)
