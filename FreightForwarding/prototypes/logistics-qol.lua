@@ -1,8 +1,6 @@
 -- Logistics quality of life. Runs in data-updates.
 --   * spoilage sensor (Space Age): a combinator next to a train stop that outputs how spoiled the stopped train's
 --     cargo is, for wait conditions (scripts/spoilage-sensor.lua)
---   * packing / unpacking depots (Intermodal Containers): logistic chests that pack loose items into containers,
---     or unpack containers, by themselves (scripts/container-depots.lua)
 
 local util = require("__FreightForwarding__.prototypes.data-util")
 
@@ -75,51 +73,5 @@ if mods["space-age"] then
     }}
     local tech = data.raw.technology["ff-refrigerated-containers"] and "ff-refrigerated-containers" or "agricultural-science-pack"
     util.add_unlock(tech, "ff-spoilage-sensor")
-  end
-end
-
----------------------------------------------------------------------------------------------------
--- Packing and unpacking depots (Intermodal Containers)
-
-if data.raw.item["ic-container"] and data.raw["logistic-container"]["storage-chest"] then
-  local packing_ok = copy_entity("logistic-container", "storage-chest", "ff-packing-depot", {r = 1, g = 0.75, b = 0.4, a = 1})
-  local unpacking_ok = copy_entity("logistic-container", "passive-provider-chest", "ff-unpacking-depot", {r = 0.6, g = 0.8, b = 1, a = 1})
-  local effects = {}
-  for _, name in pairs{"ff-packing-depot", "ff-unpacking-depot"} do
-    if (name == "ff-packing-depot" and packing_ok) or (name == "ff-unpacking-depot" and unpacking_ok) then
-      data:extend{{
-        type = "recipe",
-        name = name,
-        enabled = false,
-        energy_required = 5,
-        ingredients = {
-          {type = "item", name = name == "ff-packing-depot" and "storage-chest" or "passive-provider-chest", amount = 1},
-          {type = "item", name = "ic-containerization-machine-1", amount = 1},
-          {type = "item", name = "advanced-circuit", amount = 10},
-        },
-        results = {{type = "item", name = name, amount = 1}},
-      }}
-      effects[#effects + 1] = {type = "unlock-recipe", recipe = name}
-    end
-  end
-  if #effects > 0 and data.raw.technology["ic-containerization-1"] and data.raw.technology["logistic-robotics"] then
-    data:extend{{
-      type = "technology",
-      name = "ff-container-depots",
-      localised_name = {"technology-name.ff-container-depots"},
-      localised_description = {"technology-description.ff-container-depots"},
-      icons = tinted(data.raw.technology["logistic-robotics"], {r = 1, g = 0.85, b = 0.6, a = 1}),
-      effects = effects,
-      prerequisites = {"ic-containerization-1", "logistic-robotics"},
-      unit = {
-        count = 200,
-        ingredients = {
-          {"automation-science-pack", 1},
-          {"logistic-science-pack", 1},
-          {"chemical-science-pack", 1},
-        },
-        time = 30,
-      },
-    }}
   end
 end
