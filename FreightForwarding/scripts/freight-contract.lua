@@ -10,8 +10,8 @@
 -- own size and reward. Nothing is taken until one is accepted, and it can be changed until the first delivery.
 -- Contracts get bigger one after another.
 --
--- Freight panel (top left): progress of the current contract, and a button for freight statistics per planet
--- (containers packed, unpacked and damaged), read from the force's production statistics.
+-- Panels (left, toggled by shortcut bar buttons): containers (freight statistics per planet: packed, unpacked and
+-- damaged, read from the force's production statistics) and contracts (offers, active contract, timers, rewards).
 
 local ITEM = "ff-freight-consignment"
 local LOCATIONS = {["solar-system-edge"] = true, ["shattered-planet"] = true}
@@ -183,11 +183,21 @@ local function freight_statistics(force)
 end
 
 ---------------------------------------------------------------------------------------------------
--- GUI
+-- GUI: two panels on the left, each toggled by a shortcut bar button
+--   containers panel: freight statistics per planet (refreshed every 10 s)
+--   contracts panel:  offers / active contract with timers, rewards received
 
-local function show_panel(player)
-  local setting = player.mod_settings["ff-show-freight-panel"]
-  return (setting == nil or setting.value) and prototypes.item["ic-container"] ~= nil
+local CONTAINER_SHORTCUT = "ff-container-panel"
+local CONTRACT_SHORTCUT = "ff-contract-panel"
+
+local function panels_of(player)
+  storage.ff_panels = storage.ff_panels or {}
+  local panels = storage.ff_panels[player.index]
+  if not panels then
+    panels = {containers = false, contracts = false}
+    storage.ff_panels[player.index] = panels
+  end
+  return panels
 end
 
 local function add_text(parent, caption, style)
@@ -197,89 +207,112 @@ local function add_text(parent, caption, style)
   return label
 end
 
-local function update_panel(player)
-  local top = player.gui.top
-  if top.ff_freight_panel then top.ff_freight_panel.destroy() end
-  if not show_panel(player) then return end
-  local frame = top.add{type = "frame", name = "ff_freight_panel", direction = "vertical", caption = {"ff-gui.panel-title"}}
-  local force = player.force
-  if prototypes.item[ITEM] and contract_available(force) then
-    local state = get_state(force)
-    if state.active then
-      local goal = goal_of(state)
-      add_text(frame, {"ff-gui.contract-active", state.number, {"ff-contract-name." .. state.active}, state.delivered, goal})
-      local overdue = game.tick > state.deadline
-      local timer = add_text(frame, overdue and {"ff-gui.overdue", format_time(game.tick - state.deadline), state.penalty or 0}
-                                            or {"ff-gui.deadline", format_time(state.deadline - game.tick)})
-      timer.name = "ff_deadline_timer"
-      if overdue then timer.style.font_color = {1, 0.3, 0.2} end
-      local bar = frame.add{type = "progressbar", value = math.min(1, state.delivered / goal)}
-      bar.style.horizontally_stretchable = true
-      add_text(frame, {"ff-gui.reward", reward_text(state.active)})
-      if state.delivered == 0 then
-        frame.add{type = "button", name = "ff_contract_cancel", caption = {"ff-gui.change-contract"}}
-      end
-    else
-      add_text(frame, {"ff-gui.choose-contract", state.number}, "bold_label")
-      for i, offer in pairs(state.offers or {}) do
-        local size = contract_size(state.number, offer.type)
-        local button = frame.add{type = "button", name = "ff_contract_offer_" .. i,
-          caption = {"ff-gui.offer", {"ff-contract-name." .. offer.type}, size},
-          tooltip = {"", {"ff-contract-description." .. offer.type}, "\n", {"ff-gui.reward", reward_text(offer.type)},
-                     "\n", {"ff-gui.offer-deadline", format_time(deadline_for(state.number, offer.type))}}}
-        button.style.horizontally_stretchable = true
-        add_text(frame, {"ff-gui.reward", reward_text(offer.type)})
-        add_text(frame, {"ff-gui.offer-expires", format_time(offer.expires - game.tick)}).name = "ff_offer_timer_" .. i
-      end
-      if #(state.offers or {}) == 0 then add_text(frame, {"ff-gui.no-offers"}) end
-      add_text(frame, {"ff-gui.refresh", format_time(state.refresh_at - game.tick)}).name = "ff_refresh_timer"
+local function build_containers(player)
+  local frame = player.gui.left.add{type = "frame", name = "ff_container_panel", direction = "vertical",
+                                    caption = {"ff-gui.stats-title"}}
+  local inner = frame.add{type = "frame", style = "inside_shallow_frame_with_padding", direction = "vertical"}
+  local grid = inner.add{type = "table", column_count = 4, draw_horizontal_line_after_headers = true}
+  for _, header in pairs{"planet", "packed", "unpacked", "damaged"} do
+    grid.add{type = "label", caption = {"ff-gui.stats-" .. header}, style = "bold_label"}
+  end
+  for _, row in pairs(freight_statistics(player.force)) do
+    grid.add{type = "label", caption = row.name}
+    grid.add{type = "label", caption = tostring(math.floor(row.packed))}
+    grid.add{type = "label", caption = tostring(math.floor(row.unpacked))}
+    grid.add{type = "label", caption = tostring(math.floor(row.damaged))}
+  end
+  local state = prototypes.item[ITEM] and get_state(player.force)
+  if state and state.total then
+    inner.add{type = "label", caption = {"ff-gui.stats-consignments", state.total}}
+  end
+end
+
+local function build_contracts(player)
+  local frame = player.gui.left.add{type = "frame", name = "ff_contract_panel", direction = "vertical",
+                                    caption = {"ff-gui.contracts-title"}}
+  local state = get_state(player.force)
+  if state.active then
+    local goal = goal_of(state)
+    add_text(frame, {"ff-gui.contract-active", state.number, {"ff-contract-name." .. state.active}, state.delivered, goal})
+    local overdue = game.tick > state.deadline
+    local timer = add_text(frame, overdue and {"ff-gui.overdue", format_time(game.tick - state.deadline), state.penalty or 0}
+                                          or {"ff-gui.deadline", format_time(state.deadline - game.tick)})
+    timer.name = "ff_deadline_timer"
+    if overdue then timer.style.font_color = {1, 0.3, 0.2} end
+    local bar = frame.add{type = "progressbar", value = math.min(1, state.delivered / goal)}
+    bar.style.horizontally_stretchable = true
+    add_text(frame, {"ff-gui.reward", reward_text(state.active)})
+    if state.delivered == 0 then
+      frame.add{type = "button", name = "ff_contract_cancel", caption = {"ff-gui.change-contract"}}
     end
-    if (state.completed or 0) > 0 then
-      add_text(frame, {"ff-gui.completed", state.completed}, "bold_label")
-      for _, name in pairs(TYPE_ORDER) do
-        if (state.bonuses[name] or 0) > 0 then add_text(frame, total_text(name, state.bonuses[name])) end
-      end
+  else
+    add_text(frame, {"ff-gui.choose-contract", state.number}, "bold_label")
+    for i, offer in pairs(state.offers or {}) do
+      local size = contract_size(state.number, offer.type)
+      local button = frame.add{type = "button", name = "ff_contract_offer_" .. i,
+        caption = {"ff-gui.offer", {"ff-contract-name." .. offer.type}, size},
+        tooltip = {"", {"ff-contract-description." .. offer.type}, "\n", {"ff-gui.reward", reward_text(offer.type)},
+                   "\n", {"ff-gui.offer-deadline", format_time(deadline_for(state.number, offer.type))}}}
+      button.style.horizontally_stretchable = true
+      add_text(frame, {"ff-gui.reward", reward_text(offer.type)})
+      add_text(frame, {"ff-gui.offer-expires", format_time(offer.expires - game.tick)}).name = "ff_offer_timer_" .. i
+    end
+    if #(state.offers or {}) == 0 then add_text(frame, {"ff-gui.no-offers"}) end
+    add_text(frame, {"ff-gui.refresh", format_time(state.refresh_at - game.tick)}).name = "ff_refresh_timer"
+  end
+  if (state.completed or 0) > 0 then
+    add_text(frame, {"ff-gui.completed", state.completed}, "bold_label")
+    for _, name in pairs(TYPE_ORDER) do
+      if (state.bonuses[name] or 0) > 0 then add_text(frame, total_text(name, state.bonuses[name])) end
     end
   end
-  frame.add{type = "button", name = "ff_freight_stats_button", caption = {"ff-gui.stats-button"}}
+end
+
+local function update_panel(player)
+  if not (player and player.valid) then return end
+  -- panels of older versions
+  if player.gui.top.ff_freight_panel then player.gui.top.ff_freight_panel.destroy() end
+  if player.gui.screen.ff_freight_stats then player.gui.screen.ff_freight_stats.destroy() end
+
+  local left = player.gui.left
+  for _, name in pairs{"ff_container_panel", "ff_contract_panel"} do
+    if left[name] then left[name].destroy() end
+  end
+  local panels = panels_of(player)
+  local can_contract = prototypes.item[ITEM] ~= nil and contract_available(player.force)
+  if panels.containers and prototypes.item["ic-container"] then build_containers(player) end
+  if panels.contracts and can_contract then build_contracts(player) end
+
+  if prototypes.shortcut[CONTAINER_SHORTCUT] then
+    player.set_shortcut_toggled(CONTAINER_SHORTCUT, panels.containers)
+  end
+  if prototypes.shortcut[CONTRACT_SHORTCUT] then
+    player.set_shortcut_available(CONTRACT_SHORTCUT, can_contract)
+    player.set_shortcut_toggled(CONTRACT_SHORTCUT, panels.contracts and can_contract)
+  end
 end
 
 local function update_all_panels(force)
   for _, player in pairs((force and force.players) or game.players) do update_panel(player) end
 end
 
-local function toggle_stats(player)
-  local screen = player.gui.screen
-  if screen.ff_freight_stats then
-    screen.ff_freight_stats.destroy()
+local function refresh_container_panels()
+  for _, player in pairs(game.connected_players) do
+    if player.gui.left.ff_container_panel then update_panel(player) end
+  end
+end
+
+local function on_lua_shortcut(event)
+  local player = game.get_player(event.player_index)
+  local panels = panels_of(player)
+  if event.prototype_name == CONTAINER_SHORTCUT then
+    panels.containers = not panels.containers
+  elseif event.prototype_name == CONTRACT_SHORTCUT then
+    panels.contracts = not panels.contracts
+  else
     return
   end
-  local frame = screen.add{type = "frame", name = "ff_freight_stats", direction = "vertical"}
-  local titlebar = frame.add{type = "flow", direction = "horizontal"}
-  titlebar.drag_target = frame
-  titlebar.add{type = "label", caption = {"ff-gui.stats-title"}, style = "frame_title", ignored_by_interaction = true}
-  local filler = titlebar.add{type = "empty-widget", style = "draggable_space_header", ignored_by_interaction = true}
-  filler.style.horizontally_stretchable = true
-  filler.style.height = 24
-  titlebar.add{type = "sprite-button", name = "ff_freight_stats_close", sprite = "utility/close", style = "frame_action_button"}
-
-  local inner = frame.add{type = "frame", style = "inside_shallow_frame_with_padding", direction = "vertical"}
-  local table = inner.add{type = "table", column_count = 4, draw_horizontal_line_after_headers = true}
-  for _, header in pairs{"planet", "packed", "unpacked", "damaged"} do
-    table.add{type = "label", caption = {"ff-gui.stats-" .. header}, style = "bold_label"}
-  end
-  for _, row in pairs(freight_statistics(player.force)) do
-    table.add{type = "label", caption = row.name}
-    table.add{type = "label", caption = tostring(math.floor(row.packed))}
-    table.add{type = "label", caption = tostring(math.floor(row.unpacked))}
-    table.add{type = "label", caption = tostring(math.floor(row.damaged))}
-  end
-  local state = prototypes.item[ITEM] and get_state(player.force)
-  if state and state.total then
-    inner.add{type = "label", caption = {"ff-gui.stats-consignments", state.total}}
-  end
-  frame.force_auto_center()
-  player.opened = frame
+  update_panel(player)
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -407,7 +440,7 @@ local function tick_timers()
         update_all_panels(force)
       else
         for _, player in pairs(force.players) do
-          local frame = player.gui.top.ff_freight_panel
+          local frame = player.gui.left.ff_contract_panel
           if frame then
             if frame.ff_refresh_timer then frame.ff_refresh_timer.caption = {"ff-gui.refresh", format_time(state.refresh_at - game.tick)} end
             for i, offer in pairs(state.offers or {}) do
@@ -441,18 +474,10 @@ local function on_gui_click(event)
   local element = event.element
   if not (element and element.valid) then return end
   local player = game.get_player(event.player_index)
-  if element.name == "ff_freight_stats_button" or element.name == "ff_freight_stats_close" then
-    toggle_stats(player)
-  elseif element.name == "ff_contract_cancel" then
+  if element.name == "ff_contract_cancel" then
     cancel(player.force)
   elseif element.name:sub(1, 18) == "ff_contract_offer_" then
     accept(player.force, tonumber(element.name:sub(19)))
-  end
-end
-
-local function on_gui_closed(event)
-  if event.element and event.element.valid and event.element.name == "ff_freight_stats" then
-    event.element.destroy()
   end
 end
 
@@ -471,17 +496,15 @@ end
 
 FreightContract.events = {
   [defines.events.on_gui_click] = on_gui_click,
-  [defines.events.on_gui_closed] = on_gui_closed,
+  [defines.events.on_lua_shortcut] = on_lua_shortcut,
   [defines.events.on_player_created] = function(event) update_panel(game.get_player(event.player_index)) end,
   [defines.events.on_player_changed_force] = function(event) update_panel(game.get_player(event.player_index)) end,
-  [defines.events.on_runtime_mod_setting_changed] = function(event)
-    if event.setting == "ff-show-freight-panel" and event.player_index then update_panel(game.get_player(event.player_index)) end
-  end,
   [defines.events.on_research_finished] = function(event)
     if event.research.name == "ff-interstellar-freight-contract" then
       local state = get_state(event.research.force)
       if not state.active then draw_offers(state) end  -- timers start now
       event.research.force.print({"ff-contract.signal"})
+      for _, player in pairs(event.research.force.players) do panels_of(player).contracts = true end  -- open it once
       update_all_panels(event.research.force)
     end
   end,
@@ -490,6 +513,7 @@ FreightContract.events = {
 FreightContract.on_nth_tick = {
   [600] = function()
     if script.active_mods["space-age"] then check() end
+    refresh_container_panels()
   end,
   [60] = function()
     if script.active_mods["space-age"] then tick_timers() end

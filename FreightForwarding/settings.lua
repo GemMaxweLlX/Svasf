@@ -21,13 +21,6 @@ data:extend{
     default_value = false,
     order = "a-b",
   },
-  {
-    type = "bool-setting",
-    name = "ff-show-freight-panel",
-    setting_type = "runtime-per-user",
-    default_value = true,
-    order = "d-b",
-  },
   -- Interstellar freight contracts (Space Age), in minutes
   {type = "int-setting", name = "ff-contract-offer-lifetime", setting_type = "runtime-global", default_value = 30, minimum_value = 1, maximum_value = 1440, order = "f-a"},
   {type = "int-setting", name = "ff-contract-refresh", setting_type = "runtime-global", default_value = 45, minimum_value = 1, maximum_value = 1440, order = "f-b"},

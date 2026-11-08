@@ -76,8 +76,9 @@ Date: 7 November 2026
       every 10 minutes until fulfilled. Timers are shown in the freight panel
     - Lore for the contracts: the Long Caravan, interstellar haulers that take cargo on the fly at the solar system
       edge (descriptions, tips, messages, victory screen)
-    - Freight panel (top left, can be hidden in the per-player settings): contract progress and freight statistics
-      per planet (containers packed, unpacked, damaged)
+    - Two panels on the left, toggled by shortcut bar buttons: containers (freight statistics per planet: packed,
+      unpacked, damaged; refreshed every 10 seconds) and contracts (offers, active contract, timers, rewards). The
+      contracts button becomes available with the contract technology, which also opens the panel once
     - FF buildings can't be built on space platforms; the underwater pipe doesn't need heating on Aquilo
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel

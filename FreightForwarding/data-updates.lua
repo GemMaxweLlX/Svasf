@@ -17,6 +17,7 @@ require "__FreightForwarding__.prototypes.planet-seas"
 require "__FreightForwarding__.prototypes.dredger-tiers"
 require "__FreightForwarding__.prototypes.freight-contract"
 require "__FreightForwarding__.prototypes.tips-space-age"
+require "__FreightForwarding__.prototypes.shortcuts"
 require "__FreightForwarding__.prototypes.rocket-tiers"
 
 for _, tile in pairs(data.raw.tile) do
