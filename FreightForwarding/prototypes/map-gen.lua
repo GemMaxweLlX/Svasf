@@ -100,18 +100,20 @@ data:extend{
 local terrain_octaves = 10
 local roughness_persistence = 0.7
 local blotchiness = 2.75
-local bias = -60            -- Higher number (closer to 0) means water level is lower so islands are bigger
-local starting_plateau_bias = 20
 local starting_plateau_octaves = 6
-local island_scale = 2.1
-local empty_radius = 850    -- No other continents within this radius of spawn
 
-data:extend{
-  {
+-- opts: bias (higher, closer to 0: lower water level, bigger islands), starting_plateau_bias, island_scale (starting
+-- island size), empty_radius (no other islands within this radius of spawn), lakes_scale (higher: more, smaller islands)
+local function continents(name, opts)
+  local bias = opts.bias
+  local starting_plateau_bias = opts.starting_plateau_bias
+  local island_scale = opts.island_scale
+  local empty_radius = opts.empty_radius
+  return {
     -- Similar to vanilla 1.1, but with a big starting island and smaller islands around it.
     -- Name kept from 1.x so existing map exchange strings / presets keep working.
     type = "noise-expression",
-    name = "x-continents",
+    name = name,
     intended_property = "elevation",
     local_expressions = {
       -- Move the point where 'fractal similarity' is obvious off into the boonies
@@ -137,7 +139,7 @@ data:extend{
       lakes = simple_variable_persistence_multioctave_noise{
         x = "xs", y = "y", seed1 = 1,
         octave_count = terrain_octaves,
-        octave0_input_scale = 1,  -- Higher number means more islands
+        octave0_input_scale = opts.lakes_scale,  -- Higher number means more islands
         octave0_output_scale = 1/8,
         persistence = "persistence",
       },
@@ -162,7 +164,13 @@ data:extend{
       water_corrected = "island_elevation - ff_water_level * " .. num(IS_wlc_mult),
     },
     expression = min("water_corrected", "ff_starting_lake_elevation"),
-  },
+  }
+end
+
+data:extend{
+  continents("x-continents", {bias = -60, starting_plateau_bias = 20, island_scale = 2.1, empty_radius = 850, lakes_scale = 1}),
+  -- Archipelago (scenario and map preset): a small starting island and many small islands close by
+  continents("ff-archipelago", {bias = -56, starting_plateau_bias = 8, island_scale = 0.6, empty_radius = 100, lakes_scale = 3}),
   {
     -- Cliffs follow FF's elevation instead of vanilla's (used through the map gen preset / planet settings).
     type = "noise-expression",

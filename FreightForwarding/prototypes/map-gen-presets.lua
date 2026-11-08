@@ -48,6 +48,11 @@ for name, control in pairs(data.raw["autoplace-control"]) do
   end
 end
 
+-- Archipelago: the same settings on many small islands (also used by the Archipelago scenario)
+presets["ff-archipelago"] = table.deepcopy(presets["x-default"])
+presets["ff-archipelago"].order = ".2"
+presets["ff-archipelago"].basic_settings.property_expression_names.elevation = "ff-archipelago"
+
 -- Make FF terrain the Nauvis default, so "Default" preset (and Space Age's Nauvis) also gets islands.
 if settings.startup["ff-island-terrain-by-default"].value and nauvis and nauvis.map_gen_settings then
   local mgs = nauvis.map_gen_settings

@@ -3,7 +3,8 @@
 -- (scripts/subsea-pipeline.lua). Until it is laid a landing reaches only its neighbour; when the pipeline is done
 -- both landings are swapped to their "laid" twins, whose underground connection reaches MAX_DISTANCE tiles.
 --   * pipeline landing: built on the vanilla pipe to ground, 1 pipeline segment per tile
---   * duct landing (with Fluid Must Flow): built on the big duct to ground, 4 segments per tile, huge throughput
+--   * duct landing (Fluid Must Flow, a required dependency): built on its big duct to ground, 4 segments per tile,
+--     huge throughput
 -- Each kind has its own connection category, so a landing never joins an ordinary pipe to ground underground.
 
 if settings.startup["ff-classic-mode"].value then return end
@@ -125,7 +126,7 @@ local duct = landing("duct-underground", "ff-duct-landing", "ff-subsea-duct", 4,
 })
 
 local prerequisites = {"fluid-handling", "ff-sea-infrastructure"}
-if duct and data.raw.technology["ducts"] then prerequisites[#prerequisites + 1] = "ducts" end
+if duct and data.raw.technology["ducts"] then prerequisites[#prerequisites + 1] = "ducts" end  -- Fluid Must Flow
 for i = #prerequisites, 1, -1 do
   if not data.raw.technology[prerequisites[i]] then table.remove(prerequisites, i) end
 end
