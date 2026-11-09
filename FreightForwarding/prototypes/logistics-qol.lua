@@ -1,6 +1,8 @@
 -- Logistics quality of life. Runs in data-updates.
 --   * spoilage sensor (Space Age): a combinator next to a train stop that outputs how spoiled the stopped train's
 --     cargo is, for wait conditions (scripts/spoilage-sensor.lua)
+--   * cargo sensor (extended mode, with Intermodal Containers): a combinator next to a train stop or port that outputs
+--     what the containers in the stopped train or ship hold, unpacked (scripts/cargo-sensor.lua)
 
 local util = require("__FreightForwarding__.prototypes.data-util")
 
@@ -73,5 +75,36 @@ if mods["space-age"] then
     }}
     local tech = data.raw.technology["ff-refrigerated-containers"] and "ff-refrigerated-containers" or "agricultural-science-pack"
     util.add_unlock(tech, "ff-spoilage-sensor")
+  end
+end
+
+---------------------------------------------------------------------------------------------------
+-- Cargo sensor (extended mode)
+
+if not settings.startup["ff-classic-mode"].value and data.raw.item["ic-container"] then
+  local container_icon = data.raw.item["ic-container"]
+  local base_icons = container_icon.icons or {{icon = container_icon.icon, icon_size = container_icon.icon_size or 64}}
+  local function signal(name, letter, order)
+    local icons = table.deepcopy(base_icons)
+    icons[#icons + 1] = {icon = "__base__/graphics/icons/signal/signal_" .. letter .. ".png", icon_size = 64, scale = 0.25, shift = {8, 8}}
+    return {type = "virtual-signal", name = name, localised_name = {"virtual-signal-name." .. name}, icons = icons,
+            subgroup = "virtual-signal", order = "z[ff]-c" .. order}
+  end
+  data:extend{signal("ff-cargo-containers", "C", "a"), signal("ff-cargo-fill", "F", "b"), signal("ff-cargo-vehicles", "V", "c")}
+  if copy_entity("constant-combinator", "constant-combinator", "ff-cargo-sensor", {r = 0.55, g = 0.75, b = 1, a = 1}) then
+    data:extend{{
+      type = "recipe",
+      name = "ff-cargo-sensor",
+      enabled = false,
+      energy_required = 1,
+      ingredients = {
+        {type = "item", name = "constant-combinator", amount = 1},
+        {type = "item", name = "electronic-circuit", amount = 5},
+        {type = "item", name = "ic-container", amount = 1},
+      },
+      results = {{type = "item", name = "ff-cargo-sensor", amount = 1}},
+    }}
+    local tech = data.raw.technology["circuit-network"] and "circuit-network" or "ic-containerization-1"
+    util.add_unlock(tech, "ff-cargo-sensor")
   end
 end

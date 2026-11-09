@@ -37,5 +37,6 @@ handler.add_libraries {
   require "scripts.subsea-cable",
   require "scripts.subsea-pipeline",
   require "scripts.cargo-insurance",
+  require "scripts.cargo-sensor",
   require "scripts.delivery-permits",
 }
