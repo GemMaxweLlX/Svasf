@@ -22,6 +22,7 @@ require "__FreightForwarding__.prototypes.subsea-pipeline"
 require "__FreightForwarding__.prototypes.tank-containers"
 require "__FreightForwarding__.prototypes.cargo-insurance"
 require "__FreightForwarding__.prototypes.caravan-exchange"
+require "__FreightForwarding__.prototypes.tips-extended"
 require "__FreightForwarding__.prototypes.shortcuts"
 require "__FreightForwarding__.prototypes.rocket-tiers"
 

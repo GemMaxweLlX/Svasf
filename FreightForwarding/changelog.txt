@@ -125,6 +125,13 @@ Date: 7 November 2026
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
   New features:
+    - Cargo sensor: a combinator next to a train stop or port that outputs the unpacked contents of the containers in
+      the stopped train or ship (tank containers as fluids), the number of containers and how full the cargo slots are
+    - Caravan exchange: a trading post that exchanges containers of basic goods at drifting prices (10% fee)
+    - Great Caravan (Space Age): every few hours a giant contract with a unique permanent reward; caravan blueprints at
+      reputation 2, 4 and 6 (cheaper container, cheaper freight consignment, halved exchange fee)
+    - Routes panel: a shortcut bar button listing all trains and ships with their state, station, time, fill and cargo
+    - Tips and tricks for the extended mode features
     - Tank containers (extended mode): 2000 units of any barrellable fluid in a container, filled and emptied in a
       chemical plant; ships, trains and rockets carry them like any container
     - Subsea pipeline: pipeline landings facing each other across the water, joined by a pipeline laid along the
