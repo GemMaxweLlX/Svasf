@@ -134,6 +134,9 @@ Date: 7 November 2026
       spidertrons (map setting, 50% by default)
     - "Archipelago" scenario and map preset: a small starting island among many small islands, with a chain of goals
       and rewards from cargo ships to the rocket silo
+  Compatibility:
+    - Mining Space Industries II: checked with and without Space Age, Krastorio 2 and K2 Spaced Out. MSI's rocket
+      silo site replaces FF's rocket silo holes (as in 1.x); landfill keeps FF's logistic science requirement
   Quality of life:
     - Fuel depot: trains and ships stopped within 10 tiles refuel from it and drop their burnt fuel into it
     - Map tags for rocket silo holes, cobalt vents and big lava pools when they are charted (setting; remote
