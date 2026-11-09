@@ -40,5 +40,6 @@ handler.add_libraries {
   require "scripts.cargo-sensor",
   require "scripts.caravan-exchange",
   require "scripts.routes-panel",
+  require "scripts.dry-dock",
   require "scripts.delivery-permits",
 }

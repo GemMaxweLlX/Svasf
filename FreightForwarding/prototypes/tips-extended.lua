@@ -17,6 +17,7 @@ local TIPS = {
   {"ff-ext-subsea-pipeline", "[item=ff-pipeline-landing]", "ff-pipeline-landing"},
   {"ff-ext-subsea-cable", "[item=ff-cable-landing]", "ff-cable-landing"},
   {"ff-ext-sea-power", "[item=ff-port-crane]", "ff-port-crane"},
+  {"ff-ext-dry-dock", "[item=ff-dry-dock]", "ff-dry-dock"},
   {"ff-ext-insurance", "[item=ff-insurance-office]", "ff-insurance-office"},
   {"ff-ext-exchange", "[item=ff-caravan-exchange]", "ff-caravan-exchange"},
   {"ff-ext-great-caravan", "[item=ff-freight-consignment]", "ff-freight-consignment"},
