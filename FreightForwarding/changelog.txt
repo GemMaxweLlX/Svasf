@@ -125,6 +125,8 @@ Date: 7 November 2026
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
   New features:
+    - Dredger planner: a shortcut bar selection tool that plans dredging platform ghosts on every charted seamount or
+      vent where one fits (alt-select: the best dredger researched)
     - Living reefers (Space Age, map setting, off by default): reefers in trains and ships use 1 bioflux or
       nutrients per 10 minutes from the same hold; hungry reefers slow spoilage 2 times instead of 5
     - Lava barge Mk2 (Space Age): twice the hold of a cargo ship, heat-shielded, 15% slower than the lava barge

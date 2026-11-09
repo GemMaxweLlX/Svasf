@@ -42,5 +42,6 @@ handler.add_libraries {
   require "scripts.routes-panel",
   require "scripts.dry-dock",
   require "scripts.living-reefers",
+  require "scripts.dredger-planner",
   require "scripts.delivery-permits",
 }
