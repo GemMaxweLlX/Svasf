@@ -25,6 +25,7 @@ data:extend{
   {type = "int-setting", name = "ff-contract-offer-lifetime", setting_type = "runtime-global", default_value = 30, minimum_value = 1, maximum_value = 1440, order = "f-a"},
   {type = "int-setting", name = "ff-contract-refresh", setting_type = "runtime-global", default_value = 45, minimum_value = 1, maximum_value = 1440, order = "f-b"},
   {type = "int-setting", name = "ff-contract-deadline", setting_type = "runtime-global", default_value = 180, minimum_value = 5, maximum_value = 10000, order = "f-c"},
+  {type = "int-setting", name = "ff-contract-great-period", setting_type = "runtime-global", default_value = 180, minimum_value = 10, maximum_value = 10000, order = "f-d2"},
   {type = "int-setting", name = "ff-contract-penalty", setting_type = "runtime-global", default_value = 5, minimum_value = 0, maximum_value = 100, order = "f-d"},
   -- Cargo insurance: percent of a destroyed vehicle's cargo paid out into the nearest insurance office
   {type = "int-setting", name = "ff-insurance-payout", setting_type = "runtime-global", default_value = 50, minimum_value = 0, maximum_value = 100, order = "f-e"},

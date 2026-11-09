@@ -69,3 +69,39 @@ data:extend{
     order = "z[ff-contract]",
   },
 }
+
+-- Caravan blueprints: recipes granted by reputation with the caravan (scripts/freight-contract.lua), not by research
+local blueprint_consignment = {}
+for _, ingredient in pairs(ingredients) do
+  blueprint_consignment[#blueprint_consignment + 1] = {type = ingredient.type or "item", name = ingredient.name,
+                                                       amount = math.max(1, math.ceil(ingredient.amount * 0.75))}
+end
+data:extend{
+  {
+    type = "recipe",
+    name = "ff-caravan-consignment",
+    localised_name = {"recipe-name.ff-caravan-consignment"},
+    icons = icons,
+    enabled = false,
+    energy_required = 30,
+    ingredients = blueprint_consignment,
+    results = {{type = "item", name = "ff-freight-consignment", amount = 1}},
+    allow_decomposition = false,
+    order = "z[ff-freight-consignment]-b",
+  },
+}
+if data.raw.item["ic-container"] then
+  local container = data.raw.item["ic-container"]
+  data:extend{{
+    type = "recipe",
+    name = "ff-caravan-ic-container",
+    localised_name = {"recipe-name.ff-caravan-ic-container"},
+    icons = table.deepcopy(container.icons or {{icon = container.icon, icon_size = container.icon_size or 64}}),
+    enabled = false,
+    energy_required = 2,
+    ingredients = {{type = "item", name = "steel-plate", amount = 6}},
+    results = {{type = "item", name = "ic-container", amount = 1}},
+    allow_decomposition = false,
+    order = "z[ff-caravan-ic-container]",
+  }}
+end

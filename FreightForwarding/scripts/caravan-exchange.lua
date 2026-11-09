@@ -43,6 +43,12 @@ local function state()
   return storage.ff_exchange
 end
 
+-- Caravan blueprint "trade agreement" (reputation 6, scripts/freight-contract.lua) halves the fee
+local function fee_for(force)
+  local perks = storage.ff_caravan_perks and storage.ff_caravan_perks[force.index]
+  return perks and perks["exchange-fee"] and FEE / 2 or FEE
+end
+
 local function factor(item) return state().factors[item] or 1 end
 local function price(item) return market()[item].value * factor(item) end
 
@@ -69,7 +75,7 @@ local function trade(record)
   for _, stack in pairs(inventory.get_contents()) do
     if stack.name ~= target and market()[stack.name] then
       local removed = inventory.remove{name = stack.name, count = stack.count, quality = stack.quality}
-      record.credit = (record.credit or 0) + removed * price(stack.name) * (1 - FEE)
+      record.credit = (record.credit or 0) + removed * price(stack.name) * (1 - fee_for(entity.force))
       record.sold = (record.sold or 0) + removed
     end
   end
@@ -117,7 +123,7 @@ local function open_panel(player, entity)
   row.add{type = "choose-elem-button", name = "ff_exchange_target", elem_type = "item", item = record.target,
           elem_filters = {{filter = "name", name = names}}, tags = {unit = entity.unit_number}}
   inner.add{type = "label", caption = {"ff-exchange.credit", string.format("%.1f", record.credit or 0)}}
-  inner.add{type = "label", caption = {"ff-exchange.fee", math.floor(FEE * 100)}}
+  inner.add{type = "label", caption = {"ff-exchange.fee", string.format("%g", fee_for(entity.force) * 100)}}
   inner.add{type = "label", caption = {"ff-exchange.next", math.ceil(math.max(0, (s.next_prices or 0) - game.tick) / 3600)}}
   local pane = inner.add{type = "scroll-pane"}
   pane.style.maximal_height = 400
