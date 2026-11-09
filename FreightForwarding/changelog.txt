@@ -125,6 +125,8 @@ Date: 7 November 2026
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
   New features:
+    - Living reefers (Space Age, map setting, off by default): reefers in trains and ships use 1 bioflux or
+      nutrients per 10 minutes from the same hold; hungry reefers slow spoilage 2 times instead of 5
     - Lava barge Mk2 (Space Age): twice the hold of a cargo ship, heat-shielded, 15% slower than the lava barge
     - Cryo tanks (Space Age): tank containers for Aquilo's fluids (ammonia, fluorine, lithium brine); cryogenic
       fluids boil off (half after 50 minutes, all after 100) unless re-cooled in a cryogenic plant
