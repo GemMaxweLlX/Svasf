@@ -29,3 +29,17 @@ if consignment then
     small_icons = icons_of(consignment),
   }}
 end
+
+-- Routes panel (scripts/routes-panel.lua): all trains and ships
+local ship_item = data.raw["item-with-entity-data"]["cargo_ship"] or data.raw["item-with-entity-data"]["locomotive"]
+if ship_item then
+  data:extend{{
+    type = "shortcut",
+    name = "ff-routes-panel",
+    order = "z[ff]-c",
+    action = "lua",
+    toggleable = true,
+    icons = icons_of(ship_item),
+    small_icons = icons_of(ship_item),
+  }}
+end
