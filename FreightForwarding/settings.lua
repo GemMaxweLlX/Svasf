@@ -197,3 +197,4 @@ force_setting("int", "bztitanium-mining-fluid-amount", 3)
 
 require "__FreightForwarding__.compatibility.beautiful-bridge-railway.settings"
 require "__FreightForwarding__.compatibility.krastorio2.settings"
+require "__FreightForwarding__.compatibility.mining-space-industries.settings"
