@@ -125,6 +125,9 @@ Date: 7 November 2026
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
   New features:
+    - Lava barge Mk2 (Space Age): twice the hold of a cargo ship, heat-shielded, 15% slower than the lava barge
+    - Cryo tanks (Space Age): tank containers for Aquilo's fluids (ammonia, fluorine, lithium brine); cryogenic
+      fluids boil off (half after 50 minutes, all after 100) unless re-cooled in a cryogenic plant
     - Dry dock: repairs ships standing nearby with repair packs and swaps a ship to another type (e.g. fast or heavy
       cargo ship) without unloading: cargo, fuel and schedule move over, the old ship goes into the dock
     - Cargo sensor: a combinator next to a train stop or port that outputs the unpacked contents of the containers in

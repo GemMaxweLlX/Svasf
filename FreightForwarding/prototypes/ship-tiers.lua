@@ -169,8 +169,31 @@ if data.raw.technology["metallurgic-science-pack"] and data.raw.item["tungsten-p
       time = 60,
     },
   }
+  -- Lava barge Mk2: twice the hold, but slower and pricier, so the first barge stays useful on short runs
+  if data.raw.item["tungsten-carbide"] and data.raw.item["ff-titansteel-plate"] then
+    make_ship{
+      name = "ff-lava-barge-mk2",
+      order = "-c2",
+      tint = {r = 0.85, g = 0.35, b = 0.15, a = 1},
+      speed = 0.75,
+      power = 1.4,
+      hold = 2,
+      ingredients = {
+        {type = "item", name = "ff-lava-barge", amount = 1},
+        {type = "item", name = "tungsten-carbide", amount = 60},
+        {type = "item", name = "ff-titansteel-plate", amount = 30},
+      },
+      prerequisites = {"ff-lava-barge", "ff-titansteel-processing"},
+      unit = {
+        count = 600,
+        ingredients = science("automation-science-pack", "logistic-science-pack", "chemical-science-pack",
+          "space-science-pack", "metallurgic-science-pack"),
+        time = 60,
+      },
+    }
+  end
   -- Heat shield
-  for _, name in pairs{"ff-lava-barge", "ff-lava-barge-engine"} do
+  for _, name in pairs{"ff-lava-barge", "ff-lava-barge-engine", "ff-lava-barge-mk2", "ff-lava-barge-mk2-engine"} do
     local prototype = data.raw["cargo-wagon"][name] or data.raw["locomotive"][name]
     if prototype then
       prototype.resistances = prototype.resistances or {}

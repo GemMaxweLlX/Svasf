@@ -45,7 +45,7 @@ end
 local BADGES = {
   -- ships
   ["ff-fast-cargo-ship"] = {2, "vulcanus"}, ["ff-heavy-cargo-ship"] = {3, "aquilo"},
-  ["ff-lava-barge"] = {nil, "vulcanus"}, ["ff-swamp-barge"] = {nil, "gleba"}, ["ff-icebreaker"] = {nil, "aquilo"},
+  ["ff-lava-barge"] = {nil, "vulcanus"}, ["ff-lava-barge-mk2"] = {2, "vulcanus"}, ["ff-swamp-barge"] = {nil, "gleba"}, ["ff-icebreaker"] = {nil, "aquilo"},
   -- trains
   ["ff-locomotive-mk2"] = {2, "fulgora"}, ["ff-locomotive-mk3"] = {3, "aquilo"},
   ["ff-cargo-wagon-mk2"] = {2, "vulcanus"}, ["ff-fluid-wagon-mk2"] = {2, "vulcanus"},

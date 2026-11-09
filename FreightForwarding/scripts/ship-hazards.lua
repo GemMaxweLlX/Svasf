@@ -7,7 +7,8 @@
 --             lightning unless a lightning rod or collector is near
 
 local LAVA_DAMAGE = 300  -- per second
-local LAVA_BARGES = {["ff-lava-barge"] = true, ["ff-lava-barge-engine"] = true}
+local LAVA_BARGES = {["ff-lava-barge"] = true, ["ff-lava-barge-engine"] = true,
+                     ["ff-lava-barge-mk2"] = true, ["ff-lava-barge-mk2-engine"] = true}
 local SWAMP_BARGES = {["ff-swamp-barge"] = true, ["ff-swamp-barge-engine"] = true}
 local ICEBREAKERS = {["ff-icebreaker"] = true, ["ff-icebreaker-engine"] = true}
 local ICE_RADIUS = 7
