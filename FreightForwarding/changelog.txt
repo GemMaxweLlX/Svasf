@@ -138,7 +138,8 @@ Date: 7 November 2026
     - Mining Space Industries II: checked with and without Space Age, Krastorio 2 and K2 Spaced Out. MSI's rocket
       silo site replaces FF's rocket silo holes (as in 1.x); landfill keeps FF's logistic science requirement; the rocket delivery mission is halved (cargo per container,
       MSI containers, 2-4 requests by default) and with Space Age its containers weigh 500 kg, so the light rocket
-      silo can launch them
+      silo can launch them. Lore: MSI is a partner of the Long Caravan - its cargo is packed in intermodal
+      containers, and an "MSI charter" contract pays with research speed and a new MSI mission
   Quality of life:
     - Fuel depot: trains and ships stopped within 10 tiles refuel from it and drop their burnt fuel into it
     - Map tags for rocket silo holes, cobalt vents and big lava pools when they are charted (setting; remote

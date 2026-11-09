@@ -50,8 +50,17 @@ local CONTRACT_TYPES = {
   observatory = {size = 2, values = {25}, rare = true, apply = function(force)
     force.laboratory_speed_modifier = force.laboratory_speed_modifier + 0.25
   end},
+  -- Mining Space Industries II: MSI is a partner of the caravan. Its charter ship pays with research speed and
+  -- passes on a new MSI mission (a wreck or broken machine with a lost technology)
+  msi = {size = 1, values = {5}, mod = "Mining-Space-Industries-II", apply = function(force)
+    force.laboratory_speed_modifier = force.laboratory_speed_modifier + 0.05
+    if remote.interfaces["MSI2"] and remote.interfaces["MSI2"].spawn_new_mission then
+      local categories = {"science_packs", "power", "production", "military", "transportation", "upgrades"}
+      pcall(remote.call, "MSI2", "spawn_new_mission", force.name, categories[math.random(#categories)])
+    end
+  end},
 }
-local TYPE_ORDER = {"navigation", "survey", "archive", "cargo", "drones", "workshop", "flagship", "forge", "observatory"}
+local TYPE_ORDER = {"navigation", "survey", "archive", "cargo", "drones", "workshop", "flagship", "forge", "observatory", "msi"}
 
 -- Reputation with the caravan: +1 for a contract fulfilled on time (+2 for a special order), -1 when late.
 -- Rare ships come with reputation REP_RARE or more; a bad reputation makes contracts bigger (+10% per point below 0).
@@ -132,7 +141,10 @@ local function draw_offers(state)
   for _, name in pairs(TYPE_ORDER) do pool[#pool + 1] = name end
   local rare_allowed = (state.reputation or 0) >= REP_RARE
   for i = #pool, 1, -1 do
-    if CONTRACT_TYPES[pool[i]].rare and not rare_allowed then table.remove(pool, i) end
+    local contract_type = CONTRACT_TYPES[pool[i]]
+    if (contract_type.rare and not rare_allowed) or (contract_type.mod and not script.active_mods[contract_type.mod]) then
+      table.remove(pool, i)
+    end
   end
   local specials = {}
   for _, entry in pairs(SPECIAL_ORDERS) do
@@ -591,6 +603,7 @@ FreightContract.events = {
       local state = get_state(event.research.force)
       if not state.active then draw_offers(state) end  -- timers start now
       event.research.force.print({"ff-contract.signal"})
+      if script.active_mods["Mining-Space-Industries-II"] then event.research.force.print({"ff-contract.msi-partner"}) end
       for _, player in pairs(event.research.force.players) do panels_of(player).contracts = true end  -- open it once
       update_all_panels(event.research.force)
     end
