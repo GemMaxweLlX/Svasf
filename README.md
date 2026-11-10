@@ -47,7 +47,8 @@ Everything from classic mode, plus:
 
 ## Installing
 
-Download the zips from the repository's releases or build them (below), and put them in your Factorio `mods` folder:
+Build the zips (see below) or take them from the mod portal once they are published, and put them in your
+Factorio `mods` folder:
 
 * `IntermodalContainers-continued_2.1.5.zip`
 * `FreightForwarding-continued_2.0.0.zip`
@@ -55,7 +56,7 @@ Download the zips from the repository's releases or build them (below), and put 
 Freight Forwarding also needs these mods from the mod portal: Cargo Ships, BZ Lead, BZ Titanium, Fluid Must Flow,
 Robot256Lib, Spidertron Enhancements, Spidertron Patrols and flib. Space Age is optional.
 
-Start a new game with the **Freight Forwarding Default** map preset (or **Freight Forwarding – Archipelago**).
+Start a new game with the **Freight Forwarding Default** map preset (or **Freight Forwarding - Archipelago**).
 
 ## Building
 
