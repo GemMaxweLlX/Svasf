@@ -37,5 +37,11 @@ handler.add_libraries {
   require "scripts.subsea-cable",
   require "scripts.subsea-pipeline",
   require "scripts.cargo-insurance",
+  require "scripts.cargo-sensor",
+  require "scripts.caravan-exchange",
+  require "scripts.routes-panel",
+  require "scripts.dry-dock",
+  require "scripts.living-reefers",
+  require "scripts.dredger-planner",
   require "scripts.delivery-permits",
 }

@@ -50,8 +50,36 @@ local CONTRACT_TYPES = {
   observatory = {size = 2, values = {25}, rare = true, apply = function(force)
     force.laboratory_speed_modifier = force.laboratory_speed_modifier + 0.25
   end},
+  -- The Great Caravan: every few hours (setting ff-contract-great-period) one giant ship joins the offers, with a big
+  -- contract, a long deadline and a unique permanent reward; +3 reputation when fulfilled on time
+  great_hold = {size = 3, values = {10}, great = true, apply = function(force)
+    force.character_inventory_slots_bonus = force.character_inventory_slots_bonus + 10
+  end},
+  great_engines = {size = 3, values = {50}, great = true, apply = function(force)
+    force.worker_robots_battery_modifier = force.worker_robots_battery_modifier + 0.5
+  end},
+  great_labs = {size = 3, values = {10}, great = true, apply = function(force)
+    force.laboratory_productivity_bonus = force.laboratory_productivity_bonus + 0.1
+  end},
+  -- Mining Space Industries II: MSI is a partner of the caravan. Its charter ship pays with research speed and
+  -- passes on a new MSI mission (a wreck or broken machine with a lost technology)
+  msi = {size = 1, values = {5}, mod = "Mining-Space-Industries-II", apply = function(force)
+    force.laboratory_speed_modifier = force.laboratory_speed_modifier + 0.05
+    if remote.interfaces["MSI2"] and remote.interfaces["MSI2"].spawn_new_mission then
+      local categories = {"science_packs", "power", "production", "military", "transportation", "upgrades"}
+      pcall(remote.call, "MSI2", "spawn_new_mission", force.name, categories[math.random(#categories)])
+    end
+  end},
 }
-local TYPE_ORDER = {"navigation", "survey", "archive", "cargo", "drones", "workshop", "flagship", "forge", "observatory"}
+local TYPE_ORDER = {"navigation", "survey", "archive", "cargo", "drones", "workshop", "flagship", "forge", "observatory", "msi", "great_hold", "great_engines", "great_labs"}
+local GREAT_TYPES = {"great_hold", "great_engines", "great_labs"}
+
+-- Caravan blueprints: reaching a reputation grants a recipe or a perk for good (kept if the reputation drops later)
+local BLUEPRINTS = {
+  {reputation = 2, recipe = "ff-caravan-ic-container"},  -- intermodal container from 6 steel instead of 8
+  {reputation = 4, recipe = "ff-caravan-consignment"},   -- freight consignment for 3/4 of the goods
+  {reputation = 6, perk = "exchange-fee"},               -- caravan exchange fee halved
+}
 
 -- Reputation with the caravan: +1 for a contract fulfilled on time (+2 for a special order), -1 when late.
 -- Rare ships come with reputation REP_RARE or more; a bad reputation makes contracts bigger (+10% per point below 0).
@@ -132,7 +160,11 @@ local function draw_offers(state)
   for _, name in pairs(TYPE_ORDER) do pool[#pool + 1] = name end
   local rare_allowed = (state.reputation or 0) >= REP_RARE
   for i = #pool, 1, -1 do
-    if CONTRACT_TYPES[pool[i]].rare and not rare_allowed then table.remove(pool, i) end
+    local contract_type = CONTRACT_TYPES[pool[i]]
+    if (contract_type.rare and not rare_allowed) or contract_type.great
+       or (contract_type.mod and not script.active_mods[contract_type.mod]) then
+      table.remove(pool, i)
+    end
   end
   local specials = {}
   for _, entry in pairs(SPECIAL_ORDERS) do
@@ -147,6 +179,15 @@ local function draw_offers(state)
       offer.item, offer.count, offer.multiplier = special[1], special[2], 2
     end
     offers[#offers + 1] = offer
+  end
+  -- The Great Caravan
+  local period = setting_ticks("ff-contract-great-period")
+  state.next_great = state.next_great or (game.tick + period)
+  if game.tick >= state.next_great then
+    offers[#offers + 1] = {type = GREAT_TYPES[rng(1, #GREAT_TYPES)], great = true,
+                           expires = game.tick + 2 * lifetime}
+    state.next_great = game.tick + period
+    state.great_announce = true
   end
   state.offers = offers
   state.refresh_at = game.tick + setting_ticks("ff-contract-refresh")
@@ -185,6 +226,23 @@ local function get_state(force)
   if state.active and not state.deadline then state.deadline = game.tick + setting_ticks("ff-contract-deadline") end
   if not state.active and not state.offers then draw_offers(state) end
   return state
+end
+
+--- Grant the blueprints for the reputation reached (once each)
+local function grant_blueprints(force, state)
+  state.blueprints = state.blueprints or {}
+  for _, blueprint in pairs(BLUEPRINTS) do
+    if (state.reputation or 0) >= blueprint.reputation and not state.blueprints[blueprint.reputation] then
+      state.blueprints[blueprint.reputation] = true
+      if blueprint.recipe and force.recipes[blueprint.recipe] then force.recipes[blueprint.recipe].enabled = true end
+      if blueprint.perk then
+        storage.ff_caravan_perks = storage.ff_caravan_perks or {}
+        storage.ff_caravan_perks[force.index] = storage.ff_caravan_perks[force.index] or {}
+        storage.ff_caravan_perks[force.index][blueprint.perk] = true
+      end
+      force.print({"ff-contract.blueprint", {"ff-blueprint." .. (blueprint.recipe or blueprint.perk)}})
+    end
+  end
 end
 
 local function contract_available(force)
@@ -315,6 +373,7 @@ local function build_contracts(player)
                    "\n", {"ff-gui.offer-deadline", format_time(deadline_for(state, offer))}}}
       button.style.horizontally_stretchable = true
       if CONTRACT_TYPES[offer.type].rare or offer.item then button.style.font_color = {1, 0.75, 0.2} end
+      if offer.great then button.style.font_color = {0.5, 0.85, 1} end
       add_text(frame, {"ff-gui.reward", reward_text(offer.type, offer.multiplier)})
       add_text(frame, {"ff-gui.offer-expires", format_time(offer.expires - game.tick)}).name = "ff_offer_timer_" .. i
     end
@@ -323,6 +382,11 @@ local function build_contracts(player)
   end
   local reputation = state.reputation or 0
   add_text(frame, {"ff-gui.reputation", reputation, reputation >= REP_RARE and {"ff-gui.rare-open"} or {"ff-gui.rare-closed", REP_RARE}})
+  for _, blueprint in pairs(BLUEPRINTS) do
+    local got = state.blueprints and state.blueprints[blueprint.reputation]
+    add_text(frame, {got and "ff-gui.blueprint-got" or "ff-gui.blueprint-next", {"ff-blueprint." .. (blueprint.recipe or blueprint.perk)}, blueprint.reputation})
+  end
+  if state.next_great then add_text(frame, {"ff-gui.great-next", format_time(math.max(0, state.next_great - game.tick))}) end
   if (state.completed or 0) > 0 then
     add_text(frame, {"ff-gui.completed", state.completed}, "bold_label")
     for _, name in pairs(TYPE_ORDER) do
@@ -401,11 +465,12 @@ local function check()
     state.bonuses[type_name] = (state.bonuses[type_name] or 0) + multiplier
     state.completed = (state.completed or 0) + 1
     local on_time = not state.penalty
-    local change = on_time and (offer.item and 2 or 1) or -1
+    local change = on_time and (offer.great and 3 or offer.item and 2 or 1) or -1
     state.reputation = (state.reputation or 0) + change
     force.print({"ff-contract.fulfilled-type", state.number, {"ff-contract-name." .. type_name}, reward_text(type_name, multiplier)})
     force.print({on_time and "ff-contract.reputation-up" or "ff-contract.reputation-down", math.abs(change), state.reputation})
     if state.reputation >= REP_RARE and state.reputation - change < REP_RARE then force.print({"ff-contract.rare-unlocked"}) end
+    grant_blueprints(force, state)
     if state.number == 1 then
       -- With Krastorio 2 Spaced Out the goal is K2's intergalactic transceiver: the first contract grants the
       -- alliance it needs instead of winning
@@ -513,6 +578,10 @@ local function tick_timers()
         if game.tick >= (state.refresh_at or 0) then
           draw_offers(state)
           force.print({"ff-contract.refreshed"})
+          if state.great_announce then
+            state.great_announce = nil
+            force.print({"ff-contract.great-arrives"})
+          end
           rebuild = true
         else
           for i = #state.offers, 1, -1 do
@@ -591,6 +660,7 @@ FreightContract.events = {
       local state = get_state(event.research.force)
       if not state.active then draw_offers(state) end  -- timers start now
       event.research.force.print({"ff-contract.signal"})
+      if script.active_mods["Mining-Space-Industries-II"] then event.research.force.print({"ff-contract.msi-partner"}) end
       for _, player in pairs(event.research.force.players) do panels_of(player).contracts = true end  -- open it once
       update_all_panels(event.research.force)
     end
@@ -621,6 +691,12 @@ FreightContract.add_remote_interface = function()
     set_reputation = function(force_index, value)  -- for testing and scenarios
       local state = get_state(game.forces[force_index or 1])
       state.reputation = value
+      draw_offers(state)
+      grant_blueprints(game.forces[force_index or 1], state)
+    end,
+    great_now = function(force_index)  -- for testing: the Great Caravan arrives at the next refresh
+      local state = get_state(game.forces[force_index or 1])
+      state.next_great = game.tick
       draw_offers(state)
     end,
     cancel = function(force_index) return cancel(game.forces[force_index or 1]) end,

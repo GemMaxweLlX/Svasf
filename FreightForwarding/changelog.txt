@@ -125,6 +125,22 @@ Date: 7 November 2026
     - Light silos and small landing pads can be upgraded in place (upgrade planner)
     - Titansteel no longer blocks the first rocket: rocket parts stay vanilla, rocket frames are unlocked with titansteel
   New features:
+    - Dredger planner: a shortcut bar selection tool that plans dredging platform ghosts on every charted seamount or
+      vent where one fits (alt-select: the best dredger researched)
+    - Living reefers (Space Age, map setting, off by default): reefers in trains and ships use 1 bioflux or
+      nutrients per 10 minutes from the same hold; hungry reefers slow spoilage 2 times instead of 5
+    - Lava barge Mk2 (Space Age): twice the hold of a cargo ship, heat-shielded, 15% slower than the lava barge
+    - Cryo tanks (Space Age): tank containers for Aquilo's fluids (ammonia, fluorine, lithium brine); cryogenic
+      fluids boil off (half after 50 minutes, all after 100) unless re-cooled in a cryogenic plant
+    - Dry dock: repairs ships standing nearby with repair packs and swaps a ship to another type (e.g. fast or heavy
+      cargo ship) without unloading: cargo, fuel and schedule move over, the old ship goes into the dock
+    - Cargo sensor: a combinator next to a train stop or port that outputs the unpacked contents of the containers in
+      the stopped train or ship (tank containers as fluids), the number of containers and how full the cargo slots are
+    - Caravan exchange: a trading post that exchanges containers of basic goods at drifting prices (10% fee)
+    - Great Caravan (Space Age): every few hours a giant contract with a unique permanent reward; caravan blueprints at
+      reputation 2, 4 and 6 (cheaper container, cheaper freight consignment, halved exchange fee)
+    - Routes panel: a shortcut bar button listing all trains and ships with their state, station, time, fill and cargo
+    - Tips and tricks for the extended mode features
     - Tank containers (extended mode): 2000 units of any barrellable fluid in a container, filled and emptied in a
       chemical plant; ships, trains and rockets carry them like any container
     - Subsea pipeline: pipeline landings facing each other across the water, joined by a pipeline laid along the
@@ -134,6 +150,12 @@ Date: 7 November 2026
       spidertrons (map setting, 50% by default)
     - "Archipelago" scenario and map preset: a small starting island among many small islands, with a chain of goals
       and rewards from cargo ships to the rocket silo
+  Compatibility:
+    - Mining Space Industries II: checked with and without Space Age, Krastorio 2 and K2 Spaced Out. MSI's rocket
+      silo site replaces FF's rocket silo holes (as in 1.x); landfill keeps FF's logistic science requirement; the rocket delivery mission is halved (cargo per container,
+      MSI containers, 2-4 requests by default) and with Space Age its containers weigh 500 kg, so the light rocket
+      silo can launch them. Lore: MSI is a partner of the Long Caravan - its cargo is packed in intermodal
+      containers, and an "MSI charter" contract pays with research speed and a new MSI mission
   Quality of life:
     - Fuel depot: trains and ships stopped within 10 tiles refuel from it and drop their burnt fuel into it
     - Map tags for rocket silo holes, cobalt vents and big lava pools when they are charted (setting; remote

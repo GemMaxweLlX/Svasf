@@ -23,6 +23,7 @@
     "? alien-biomes",
     "? Hovercrafts",
     "FluidMustFlow >= 1.5.1",
+    "(?) Rocket-Silo-Construction",
     "? CanalBuilderMAV",
     "? beautiful_bridge_railway_Cargoships",
     "? FreightForwardingPack",
